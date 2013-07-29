@@ -38,9 +38,9 @@ public class PopViewLayout extends RelativeLayout {
 		
 		ViewGroup parent = null;
 		
-		parent = (ViewGroup) content.getParent();
+//		parent = (ViewGroup) content.getParent();
 		
-//		parent = (ViewGroup)activity.getWindow().getDecorView();
+		parent = (ViewGroup)activity.getWindow().getDecorView();
 		
 		parent.addView(this);
 	}
