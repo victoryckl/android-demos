@@ -1,0 +1,150 @@
+这里只考虑了图片尺寸大于屏幕的情况
+
+图片比VIEW瘦，即mAspectQuotient < 1时，这里把mAspectQuotient == 1也合并到这里处理
+--------------------------------------------------------------
+
+最小缩放比例，条件 缩小后图片的高 == VIEW的高，此时左右两边会有空隙
+bitmapHeight * ZoomY = viewHeight
+ZoomY = viewHeight / bitmapHeight
+Math.min(mZoom, mZoom / mAspectQuotient) * viewHeight / bitmapHeight = viewHeight / bitmapHeight
+Math.min(mZoom, mZoom / mAspectQuotient) = 1
+mZoom >= 1 && mZoom / mAspectQuotient >= 1
+mZoom >= 1 && mZoom >= mAspectQuotient
+因 1 >= mAspectQuotient，故 mZoom >= 1
+所以 mMinZoom = 1
+
+最大缩放比例，即原始图片，条件 ZoomX = 1 或者 ZoomY == 1
+ZoomX = 1
+Math.min(mZoom, mZoom * mAspectQuotient) * mViewWidth / mBitmapWidth = 1
+Math.min(mZoom, mZoom * mAspectQuotient) = mBitmapWidth / mViewWidth
+mZoom >= mBitmapWidth / mViewWidth   &&   mZoom * mAspectQuotient >= mBitmapWidth / mViewWidth
+mZoom >= mBitmapWidth / mViewWidth   &&   mZoom >= mBitmapWidth / mViewWidth / mAspectQuotient
+mZoom >= (mBitmapWidth / mViewWidth)   &&   mZoom >= (mBitmapWidth / mViewWidth) / mAspectQuotient
+因 mAspectQuotient <= 1，故 (mBitmapWidth / mViewWidth) / mAspectQuotient >= (mBitmapWidth / mViewWidth)
+所以 mZoom >= (mBitmapWidth / mViewWidth) / mAspectQuotient，
+即 mMaxZoom = (mBitmapWidth / mViewWidth) / mAspectQuotient
+mAspectQuotient = bmpW/bmpH / (vW/vH) = bmpW * vH / (vW * bmpH)
+ mMaxZoom = bmpW / vW / (bmpW * vH / (vW * bmpH)) = bmpW * (vw * bmph) / (vw *bmpw*vh) = bmph / vh
+
+ZoomY == 1
+Math.min(mZoom, mZoom / mAspectQuotient) * mViewHeight / mBitmapHeight = 1
+Math.min(mZoom, mZoom / mAspectQuotient) = mBitmapHeight / mViewHeight
+mZoom >= (mBitmapHeight / mViewHeight)  &&  mZoom / mAspectQuotient >= (mBitmapHeight / mViewHeight)
+mZoom >= (mBitmapHeight / mViewHeight)  &&  mZoom >= (mBitmapHeight / mViewHeight) * mAspectQuotient
+因 mAspectQuotient <= 1，故 (mBitmapHeight / mViewHeight) >= (mBitmapHeight / mViewHeight) * mAspectQuotient
+所以 mZoom >= (mBitmapHeight / mViewHeight)，即 mMaxZoom = (mBitmapHeight / mViewHeight) = bmph / vh
+
+中间缩放比例，条件 缩小后图片的宽 == VIEW的宽，此时正好没有空隙
+mBitmapWidth * ZoomX = mViewWidth
+ZoomX = mViewWidth / mBitmapWidth
+Math.min(mZoom, mZoom * mAspectQuotient) * mViewWidth / mBitmapWidth = (mViewWidth / mBitmapWidth)
+Math.min(mZoom, mZoom * mAspectQuotient) = 1
+mZoom >= 1 && mZoom * mAspectQuotient >= 1
+因 mAspectQuotient <= 1，故 mZoom >= 1 / mAspectQuotient
+即 mMidZoom = 1 / mAspectQuotient
+
+最小panX，
+mRectSrc.left = (int)(panX * bitmapWidth - viewWidth / (zoomX * 2)) = 0
+panX * bitmapWidth = viewWidth / (zoomX * 2)
+panX = viewWidth / (zoomX * 2) / bitmapWidth
+mMinPanX = viewWidth / (zoomX * 2) / bitmapWidth
+mMinPanX = viewWidth / (zoomX * 2 * bitmapWidth)
+
+最大panX，
+viewWidth = bitmapWidth * zoomX - mRectSrc.left * zoomX
+viewWidth / zoomX = bitmapWidth - mRectSrc.left
+mRectSrc.left = bitmapWidth - viewWidth / zoomX 
+(int)(panX * bitmapWidth - viewWidth / (zoomX * 2)) = bitmapWidth - viewWidth / zoomX
+panX * bitmapWidth = bitmapWidth - viewWidth / zoomX + viewWidth / (zoomX * 2)
+panX * bitmapWidth = bitmapWidth - viewWidth / zoomX + viewWidth / zoomX / 2
+panX * bitmapWidth = bitmapWidth - 0.5f * viewWidth / zoomX
+panX * bitmapWidth = bitmapWidth - 0.5f * viewWidth / zoomX
+panX = 1 - 0.5f * viewWidth / zoomX / bitmapWidth
+panX = 1 - 0.5f * viewWidth / (zoomX * bitmapWidth)
+
+最小panY，
+mRectSrc.top = (int)(panY * bitmapHeight - viewHeight / (zoomY * 2)) = 0
+panY * bitmapHeight = viewHeight / (zoomY * 2)
+panY = viewHeight / (zoomY * 2) / bitmapHeight
+panY = viewHeight / (zoomY * 2 * bitmapHeight)
+
+最大panY，
+viewHeight = bitmapHeight * zoomY - mRectSrc.top * zoomY
+viewHeight / zoomY = bitmapHeight - mRectSrc.top
+mRectSrc.top = bitmapHeight - viewHeight / zoomY
+(int)(panY * bitmapHeight - viewHeight / (zoomY * 2)) = bitmapHeight - viewHeight / zoomY
+panY * bitmapHeight = bitmapHeight - viewHeight / zoomY + viewHeight / (zoomY * 2)
+panY * bitmapHeight = bitmapHeight - 0.5f * viewHeight / zoomY
+panY = 1 - 0.5f * viewHeight / ( zoomY * bitmapHeight)
+
+坐标转换
+toScreenX
+screenX - mRectDst.left = (imageX - mRectSrc.left) * ZoomX 
+screenX = (imageX - mRectSrc.left) * ZoomX + mRectDst.left
+
+toScreenY
+screenY = (imageY - mRectSrc.top) * ZoomY + mRectDst.top;
+
+toImageX
+(imageX - mRectSrc.left) * ZoomX = screenX - mRectDst.left
+imageX - mRectSrc.left = (screenX - mRectDst.left) / ZoomX
+imageX = (screenX - mRectDst.left) / ZoomX + mRectSrc.left
+
+移动图片时，图片的视觉位移应该与手指位移相等
+dScreenX = dImageX
+(mRectSrc.left1 - mRectSrc.left2) * zoomX = dScreenX1 - dScreenX2
+(mRectSrc.left1 - mRectSrc.left2) * zoomX = dx
+(mRectSrc.left1 - mRectSrc.left2) = dx / zoomX
+(int)(panX1 * bitmapWidth - viewWidth / (zoomX * 2)) - (int)(panX2 * bitmapWidth - viewWidth / (zoomX * 2)) = dx / zoomX
+panX1 * bitmapWidth - viewWidth / (zoomX * 2) - panX2 * bitmapWidth + viewWidth / (zoomX * 2) = dx / zoomX
+panX1 * bitmapWidth  - panX2 * bitmapWidth = dx / zoomX
+panX1 - panX2 = dx / (bitmapWidth * zoomX)
+dPanX = dx / (bitmapWidth * zoomX)
+
+
+
+图片比VIEW胖，即mAspectQuotient > 1时，
+--------------------------------------------------------------
+最小缩放比例，条件 缩小后图片的宽 == VIEW的宽，此时上下两边会有空隙
+mBitmapWidth * ZoomX = mViewWidth
+ZoomX = mViewWidth / mBitmapWidth
+Math.min(mZoom, mZoom * mAspectQuotient) * mViewWidth / mBitmapWidth = (mViewWidth / mBitmapWidth)
+Math.min(mZoom, mZoom * mAspectQuotient) = 1
+mZoom >= 1 && mZoom * mAspectQuotient >= 1
+因 mAspectQuotient > 1，故 mZoom >= 1
+即 mMidZoom = 1
+
+最大缩放比例，即原始图片，条件 ZoomX = 1 或者 ZoomY == 1
+ZoomX = 1
+Math.min(mZoom, mZoom * mAspectQuotient) * mViewWidth / mBitmapWidth = 1
+Math.min(mZoom, mZoom * mAspectQuotient) = mBitmapWidth / mViewWidth
+mZoom >= mBitmapWidth / mViewWidth   &&   mZoom * mAspectQuotient >= mBitmapWidth / mViewWidth
+mZoom >= mBitmapWidth / mViewWidth   &&   mZoom >= mBitmapWidth / mViewWidth / mAspectQuotient
+mZoom >= (mBitmapWidth / mViewWidth)   &&   mZoom >= (mBitmapWidth / mViewWidth) / mAspectQuotient
+因 mAspectQuotient > 1，故 (mBitmapWidth / mViewWidth) > (mBitmapWidth / mViewWidth) / mAspectQuotient
+所以 mZoom >= (mBitmapWidth / mViewWidth) 
+即 mMaxZoom = (mBitmapWidth / mViewWidth)
+
+
+中间缩放比例，条件 缩小后图片的高 == VIEW的高，此时正好没有空隙
+bitmapHeight * ZoomY = viewHeight
+ZoomY = viewHeight / bitmapHeight
+Math.min(mZoom, mZoom / mAspectQuotient) * viewHeight / bitmapHeight = viewHeight / bitmapHeight
+Math.min(mZoom, mZoom / mAspectQuotient) = 1
+mZoom >= 1 && mZoom / mAspectQuotient >= 1
+mZoom >= 1 && mZoom >= mAspectQuotient
+因 mAspectQuotient > 1，故 mZoom >= mAspectQuotient
+所以 mMinZoom = mAspectQuotient
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
