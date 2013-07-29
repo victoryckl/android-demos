@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/hello" />
+    
+    <Button
+        android:id="@+id/refresh"
+        android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:text="refresh"/>"
+	        
+    <LinearLayout 
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+	    <TextView
+	        android:id="@+id/mountText"
+	        android:layout_weight="1"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"/>
+	    
+	    <Button
+	        android:id="@+id/mountBtn1"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="mount to rw"/>"
+	</LinearLayout>
+	
+    <LinearLayout 
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+	    <EditText
+	        android:id="@+id/cmdEdit1"
+	        android:layout_weight="1"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="echo hello,system! > /system/hello.txt"/>
+	    
+	    <Button
+	        android:id="@+id/execBtn1"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="exec"/>"
+	</LinearLayout>
+	
+	<Button
+        android:id="@+id/jumptomount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="挂载T卡"/>"
+	            
+	<TextView 
+	    android:id="@+id/outputinfo"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"/>    
+</LinearLayout>

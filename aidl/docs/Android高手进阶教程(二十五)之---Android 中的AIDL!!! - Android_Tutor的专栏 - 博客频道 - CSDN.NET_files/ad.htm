@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<!-- saved from url=(0078)http://blog.csdn.net/common/ad.html?t=12&containerId=ad_commend&frmId=ad_frm_2 -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>CSDN Ad</title>
+    <style type="text/css">
+    body { margin:0px; padding:0px;}
+    </style>
+</head>
+<body>
+<div id="div1"><style type="text/css">
+ul { margin:0px; padding:0 4px 0 0; }
+ul, x:-moz-any-link, x:default { width:90%; }
+ul li { padding:3px 0px;}
+a { font-size:12px; text-decoration:none; color:#006699; }
+a:hover { color:#000; }
+</style>
+<ul>
+<li><a href="http://blog.csdn.net/morewindows/article/details/7470936" target="_blank">* 秒杀多线程第七篇：互斥量Mutex</a></li>
+<li><a href="http://blog.csdn.net/lycb_gz/article/details/7471060" target="_blank">* HSRP和VRRP工作原理</a></li>
+<li><a href="http://blog.csdn.net/poechant/article/details/7467971" target="_blank">* POCO库中文编程参考指南（8）丰富的Socket编程</a></li>
+<li><a href="http://blog.csdn.net/orbit/article/details/7467543" target="_blank">* 算法系列之十二：几种边标志填充算法</a></li>
+<li><a href="http://blog.csdn.net/shyleoking/article/details/7467488" target="_blank">* HTML5 rotate 做仪表盘</a></li>
+<li><a href="http://blog.csdn.net/newhappy2008/article/details/7466028" target="_blank">* Oracle从10g升级到11g详细步骤</a></li>
+
+</ul></div>
+<script type="text/javascript">
+    window.onload = function () {
+
+        var old_domain = document.domain;
+        //document.domain = "csdn.net";
+
+        //这种给广告区域赋值的方式，对于有些JS广告不能完美的显示
+        //top.document.getElementById('ad_commend').innerHTML = document.getElementById('div1').innerHTML;
+
+        var h = document.body.offsetHeight + 2;
+        setTimeout(function () {
+            if (h > 800) h = document.getElementById('div1').offsetHeight + 4;
+            top.document.getElementById('ad_frm_2').style.height = h + 'px';
+        }, 100);        
+    };
+</script>
+
+
+</body></html>

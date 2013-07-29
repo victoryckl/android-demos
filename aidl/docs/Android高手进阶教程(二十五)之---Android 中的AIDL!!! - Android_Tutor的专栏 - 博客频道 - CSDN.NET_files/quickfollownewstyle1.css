@@ -1,0 +1,16 @@
+@charset "UTF-8";
+.main{height:75px;overflow:hidden;}
+.bg_start{width:11px;height:100%;background-position:-77px -1px;}
+.bg_middle{height:100%;background-position:0px -77px;background-repeat:repeat-x;}
+.bg_end{width:11px;height:100%;background-position:-89px -1px;}
+.avatar{border:1px solid #85898c;margin:0;padding:0;margin-top:10px;display:block;width:50px;height:50px;}
+.info{text-indent:17px;margin-left:10px;margin-top:12px;}
+.account{height:19px;line-height:19px;background-position:-87px -342px;background-repeat:no-repeat;font-weight:bold;overflow:hidden;}
+a.action{width:66px;height:21px;display:block;margin-top:5px;}
+span.action{width:48px;height:19px;display:block;margin-top:5px;}
+.follow{background-position:-34px -364px;}
+.followed{background-position:-52px -438px;}
+.cfollow{display:inline-block;text-indent:0;width:auto;height:18px;line-height:18px;text-align:center;background-position:0px -172px;background-repeat:repeat-x;color:#fe8e21;}
+.cfollowleft{display:inline-block;margin-left:3px;text-indent:0;width:11px;height:18px;line-height:18px;background-position:-76px -153px;}
+.cfollowright{display:inline-block;text-indent:0;width:8px;height:18px;line-height:18px;background-position:-92px -153px;}
+/*  |xGv00|5c64e429fa4e9a6ebf9f647e671fd128 */

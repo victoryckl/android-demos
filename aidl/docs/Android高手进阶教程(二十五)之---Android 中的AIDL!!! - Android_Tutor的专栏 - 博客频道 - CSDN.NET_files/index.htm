@@ -1,0 +1,84 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0095)http://follow.v.t.qq.com/index.php?c=follow&a=quick&name=frankiewei&style=1&t=1326381473169&f=1 -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+<title>腾讯微博－与其在别处仰望 不如在这里并肩</title> 
+ 
+<meta name="Keywords" content=""> 
+<meta name="Description" content=""> 
+<script type="text/javascript" src="jquery(2).js"></script>
+<style>
+#content{font: 12px/2 Tahoma,Arial;text-align: left;}
+.bg{background:url("http://mat1.gtimg.com/app/vt/images/follow/quickfollowbgnew.gif?v=1215");}
+.toleft{float:left;}
+.cfont{font-size:10px;font-family:"微软雅黑";}
+</style>
+<link href="quickfollownewstyle1.css" type="text/css" rel="stylesheet">
+</head> 
+<body style="margin: 0; background: transparent; overflow:hidden;">
+<div id="content">
+<input type="hidden" id="name" value="frankiewei">
+<div class="main">
+        <div class="bg toleft bg_start"></div>
+    <div class="bg toleft bg_middle" style="width:205px;">
+       <img class="toleft avatar" src="50" width="50" height="50">
+       <div class="toleft info">
+            <div class="bg account" style="width:142px;">魏祝林<span class="bg cfont cfollowleft">&nbsp;</span><span class="bg cfont cfollow">600</span><span class="bg cfont cfollowright">&nbsp;</span></div>
+                            <a href="http://follow.v.t.qq.com/index.php?c=follow&a=quick&name=frankiewei&style=1&t=1326381473169&f=1#" class="bg action follow" id="followbtn"></a>
+                   </div>
+    </div>
+    <div class="bg toleft bg_end"></div>
+    </div>
+</div>
+<script>
+var s = 1;
+var unlogin=true;$('#followbtn').click(function(){
+    if(unlogin)
+    {
+       var returnvalue=window.showModalDialog("http://follow.v.t.qq.com/index.php?c=follow&a=login", "", "dialogWidth=500px;dialogHeight=300px");
+       if(returnvalue==undefined){
+        return;
+     }
+   }
+   postFollow();
+});
+
+function getcookie(name) {
+    var cookie_start = document.cookie.indexOf(name);
+    var cookie_end = document.cookie.indexOf(";", cookie_start);
+    return cookie_start == -1 ? '' : unescape(document.cookie.substring(cookie_start + name.length + 1, (cookie_end > cookie_start ? cookie_end : document.cookie.length)));
+} 
+
+function postFollow()
+{
+	$.ajax({
+		   type: "POST",
+		   url: "http://follow.v.t.qq.com/index.php?c=follow&a=listen",
+		   data: "name="+$('#name').val()+"&hash="+getcookie('hash')+"&time="+new Date().getTime(),
+		   success: function(msg){
+		     var d=eval('('+(msg||"{}")+')');
+		     if (d.ret == 0) {
+                 if (false) {
+                 } else if (s==1 ) {
+                     var followed = $('<span class="bg action followed">&nbsp;</span>').css("overflow","hidden");
+                     $('#followbtn').replaceWith(followed);
+		         } else if( s==2) {
+                     $('#followbtn').replaceWith('已收听');
+		         } else if( s==3) {
+                     alert("收听成功");
+		         } else if( s==4) {
+                     $('#followbtn').replaceWith('<span class="bg toleft noaction"></span>');
+		         } else if( s==5) {
+                     $('#followbtn').replaceWith('<span class="bg toleft noaction"></span>');
+		         } else {
+		             $('#followbtn').html('已收听');
+		             $('#followbtn').unbind('click');
+		         }
+		    } else {
+		       alert(d.msg);
+		    }
+		   }
+		   });
+}
+</script>
+ 
+</body></html>
