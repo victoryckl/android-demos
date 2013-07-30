@@ -12,6 +12,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.RemoteException;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -108,5 +109,11 @@ public class AidlClientActivity extends Activity {
     	} else {
     		Log.i(TAG, "mIaidlServerService is null!");
     	}
+    }
+    
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+    	finish();
+    	return super.onKeyDown(keyCode, event);
     }
 }
