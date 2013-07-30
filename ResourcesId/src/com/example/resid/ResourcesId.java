@@ -5,16 +5,16 @@ import android.content.res.Resources;
 
 public class ResourcesId {
 	private static final String TAG = "ResourcesId";
-	private static Context mContext;
-	private static Resources mResources;
-	private static String mPackageName;
+	private Context mContext;
+	private Resources mResources;
+	private String mPackageName;
 	
 	private ResourcesId() {}
 	
 	private static class ResourcesIdHolder {
 		private static ResourcesId instance = new ResourcesId();
 	}
-	private static void setContext(Context context) {
+	private void setContext(Context context) {
 		if (context != null) {
 			mContext = context.getApplicationContext();
 			mResources = mContext.getResources();
