@@ -3,27 +3,27 @@
 set adb_p=tool\adb.exe
 echo %adb_p%
 
-@echo µÈ´ýÐ¡»úÁ¬½Ó ...
+@echo ?È´?Ð¡??Á¬?? ...
 %adb_p% wait-for-device
-echo Éè±¸Á¬½Ó³É¹¦
-echo ¹ÒÔØsystemÎª¿É¶ÁÐ´ ...
+echo ?è±¸Á¬?Ó³É¹?
+echo ????systemÎª?É¶?Ð´ ...
 %adb_p% remount
-call :PRINT_MSG %errorlevel% ¹ÒÔØsystem
+call :PRINT_MSG %errorlevel% ????system
 
-echo Éý¼¶libwebcore.so ...
-%adb_p% push data\libwebcore.so /system/lib/
-call :PRINT_MSG %errorlevel% Éý¼¶libwebcore.so
+echo ????libwebcore.so ...
+%adb_p% push data\libfor-test.so /system/lib/
+call :PRINT_MSG %errorlevel% ????libfor-test.so
 
-echo ÖØÆô»úÆ÷...
+echo ????????...
 %adb_p% reboot
 pause
 GOTO :EOF
 
 :PRINT_MSG
 if %1 equ 0 (
-echo %2 ³É¹¦
+echo %2 ?É¹?
 )else (
-echo %2 Ê§°Ü£¬°´ÈÎÒâ¼üÍË³ö
+echo %2 Ê§?Ü£??????????Ë³?
 pause
 exit
 )
