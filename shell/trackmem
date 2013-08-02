@@ -1,0 +1,12 @@
+#!/system/bin/sh
+
+while true; do
+procrank | grep $1
+sleep 1
+done
+
+# usge:
+# adb push trackmem /data/local
+# adb shell
+# chmod 775 /data/local/trackmem
+# /data/local/trackmem com.android.browser
