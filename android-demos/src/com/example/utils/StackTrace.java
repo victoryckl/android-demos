@@ -1,9 +1,9 @@
 package com.example.utils;
 
-import android.util.Log;
+import com.example.utils.Log;
 
 public class StackTrace {
-	private static final String TAG = "StackTrace";
+	private static final String TAG = "call-stack";
 	
 	private StackTrace() {
 		
@@ -12,9 +12,13 @@ public class StackTrace {
 	public static final void printStackTrace() {
 		StackTraceElement[] stackElements = new Throwable().getStackTrace();
 		if (stackElements != null) {
-			for (StackTraceElement st : stackElements) {
-				Log.i(TAG, st.toString());
+			int size = stackElements.length;
+			String tag = TAG + " " + Thread.currentThread().getId();
+			Log.i(tag, "call-stack begin |------->");
+			for (int i=1; i<size; i++) {
+				Log.i(tag, stackElements[i].toString());
 			}
+			Log.i(tag, "call-stack end <-------|");
 		}
 	}
 }

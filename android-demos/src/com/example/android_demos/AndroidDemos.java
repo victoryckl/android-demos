@@ -1,6 +1,7 @@
 package com.example.android_demos;
 
 import com.example.utils.SToast;
+import com.example.utils.StackTrace;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -14,6 +15,13 @@ public class AndroidDemos extends Activity {
 		setContentView(R.layout.activity_android_demos);
 		
 		SToast.show(this, "OnCreate()");
+		StackTrace.printStackTrace();
+		
+		new Thread(){
+			public void run() {
+				StackTrace.printStackTrace();
+			};
+		}.start();
 	}
 
 	@Override
