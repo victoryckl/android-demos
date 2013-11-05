@@ -64,7 +64,7 @@ public class GuessCodepage {
 	/**
 	 * 获取inputStream对应的文本编码
 	 * @param inputStream
-	 *          待测的文本输入流
+	 *          待测的文本输入流，必须支持mark
 	 * @param length
 	 * 			测量该流所需的读入字节数
 	 */
