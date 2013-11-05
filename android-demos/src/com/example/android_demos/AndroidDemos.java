@@ -5,31 +5,55 @@ import com.example.utils.StackTrace;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.Intent;
 import android.view.Menu;
+import android.view.View;
+import android.view.View.OnClickListener;
 
 public class AndroidDemos extends Activity {
+	private final static String TAG = AndroidDemos.class.getSimpleName();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_android_demos);
 		
-		SToast.show(this, "OnCreate()");
-		StackTrace.printStackTrace();
+//		SToast.show(this, "OnCreate()");
+//		StackTrace.printStackTrace();
+//		
+//		new Thread(){
+//			public void run() {
+//				StackTrace.printStackTrace();
+//			};
+//		}.start();
 		
-		new Thread(){
-			public void run() {
-				StackTrace.printStackTrace();
-			};
-		}.start();
+		init();
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.android_demos, menu);
-		SToast.show(this, "onCreateOptionsMenu()");
+//		SToast.show(this, "onCreateOptionsMenu()");
 		return true;
 	}
 
+	private void init() {
+		findViewById(R.id.btn_go_to_edit).setOnClickListener(mBtnClickListener);
+	}
+	
+	private OnClickListener mBtnClickListener = new OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			switch (v.getId()) {
+			case R.id.btn_go_to_edit:
+				Intent intent = new Intent();
+				intent.setClass(AndroidDemos.this, EditActivity.class);
+				startActivity(intent);
+				break;
+			default:
+				break;
+			}
+		}
+	};
 }

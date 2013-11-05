@@ -4,5 +4,6 @@
     <string name="app_name">android-demos</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
+    <string name="edit_with_btn">带清除按钮的编辑框</string>
 
 </resources>
