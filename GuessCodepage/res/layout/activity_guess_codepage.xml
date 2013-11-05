@@ -1,0 +1,55 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".GuessCodepageActivity" >
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/hello_world" />
+    
+    <EditText
+        android:id="@+id/x_edit_path"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="@string/x_str_file_path"
+        android:minWidth="200dip" />
+    
+    <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        
+        <Button
+            android:id="@+id/x_btn_choose_file"
+            android:layout_width="wrap_content"
+            android:layout_height="60dip"
+            android:text="@string/x_choose_file" />
+        
+        <Button
+            android:id="@+id/x_btn_guess_codepage"
+            android:layout_width="wrap_content"
+            android:layout_height="60dip"
+            android:text="@string/x_guess_codepage" />
+        
+    </LinearLayout>
+    
+    <TextView
+        android:id="@+id/x_tv_codepage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/x_str_unknow_codepage"/>
+    
+    <TextView
+        android:id="@+id/x_tv_default_codepage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/x_str_default_codepage"/>
+    <TextView
+        android:id="@+id/x_tv_support_codepage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/x_str_default_codepage"/>
+</LinearLayout>

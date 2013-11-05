@@ -1,0 +1,46 @@
+This zipfile contains the java libaries needed to run cpdetector. 
+
+If you want to use the command line tool info.monitorenter.cpdetector.CodepageProcessor 
+you have to use jargs.jar in the classpath too: 
+
+unix: java -classpath ./ext/jargs-1.0.jar:cpdetector_1.0.9.jar:./ext/antlr-2.7.4.jar info.monitorenter.cpdetector.CodepageProcessor 
+windows: unix: java -classpath ./ext/jargs-1.0.jar;cpdetector_1.0.9.jar;./ext/antlr-2.7.4.jar info.monitorenter.cpdetector.CodepageProcessor 
+
+Output then is: 
+
+usage: java -cp jargs-1.0.jar;cpdetector_1.0.9.jar:antlr-2.7.4.jar:chardet.jar info.monitorenter.cpdetector.CodepageProcessor -r <testdocumentdir> -o <testoutputdir> [options]
+options: 
+
+  Optional:
+  -c              : Only print available charsets on this system.
+  -e <extensions> : A comma- or semicolon- separated string for document extensions like "-e txt,dat" (without dot or space!).
+  -m              : Move files with unknown charset to directory "unknown".
+  -v              : Verbose output.
+  -w <int>        : Wait <int> seconds before trying next document (good, if you want to work on the very same machine).
+  -t <charset>    : Try to transform the document to given charset (codepage) name. 
+                    This is only possible for documents that are detected to have a  
+                    codepage that is supported by the current java VM. If not possible 
+                    sorting will be done as normal. 
+  -d              : Semicolon-separated list of fully qualified classnames. 
+                    These classes will be casted to ICodepageDetector instances 
+                    and used in the order specified.
+                    If this argument is ommited, a HTMLCodepageDetector followed by .
+                    a JChardetFacade is used by default.
+  Mandatory (if no -c option given) :
+  -r            : Root directory containing the collection (recursive).
+  -o            : Output directory containing the sorted collection.
+
+Error: Parameter for collection root directory is missing.
+java.util.MissingResourceException: Parameter for collection root directory is missing.
+	at info.monitorenter.cpdetector.CodepageProcessor.parseArgs(CodepageProcessor.java:228)
+	at info.monitorenter.cpdetector.CodepageProcessor.main(CodepageProcessor.java:653)
+ 
+
+If you integrate cpdetector in your java application you just need 
+to use: 
+- chardet.jar
+- antlr.jar
+
+antlr.jar is version 2.7.4. Porting to version 3 has been stopped after 
+encountering some problems with packages an required import for lexer 
+to specify lexer options in combination with non-unamed package. 

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">GuessCodepage</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+
+    <string name="x_app_name">MyPopupWindow</string>
+    <string name="x_hello_world">Hello world!</string>
+    <string name="x_action_settings">Settings</string>
+    <string name="x_fullscreen">放大</string>
+    <string name="x_smallscreen">缩小</string>
+    <string name="x_back">返回</string>
+    <string name="x_btn_popview">pop view</string>
+    <string name="x_guess_codepage">猜测文本编码</string>
+    <string name="x_videoview">使用ViewVideo播放视频</string>
+    <string name="x_mediaplayer">使用MediaPlayer播放视频</string>
+	<string name="x_video_name">视频播放测试</string>
+	<string name="x_choose_file">选择文件</string>
+	<string name="x_str_file_path">文件路径</string>
+	<string name="x_str_no_file_browser">亲，木有文件管理器-_-!</string>
+	<string name="x_str_select_file">请选择多媒体文件</string>
+	<string name="x_str_no_path">亲，木有路径-_-!!</string>
+	<string name="x_btn_video_demo">视频播放测试</string>
+	<string name="x_str_unknow_codepage">编码：未知</string>
+	<string name="x_str_codepage">编码：</string>
+	
+	<string name="x_str_default_codepage">系统默认编码：</string>
+	<string name="x_str_support_codepage">系统支持编码：</string>
+	
+</resources>
