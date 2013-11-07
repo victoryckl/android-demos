@@ -45,4 +45,20 @@
             android:background="@android:color/transparent" />
         
     </LinearLayout>
+    
+    <TextView
+        android:layout_margin="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="封装成控件："/>
+    
+    <com.example.widget.CombineEdit
+        android:id="@+id/combine_edit"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dip"
+        android:layout_marginLeft="5dip"
+        android:layout_marginRight="5dip"
+        android:layout_marginTop="5dip" />
+    
 </LinearLayout>
