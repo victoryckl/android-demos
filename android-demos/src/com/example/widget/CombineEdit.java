@@ -95,4 +95,8 @@ public class CombineEdit extends LinearLayout {
 			}
 		}
 	};
+	
+	public EditText getEditText() {
+		return mEditText;
+	}
 }
