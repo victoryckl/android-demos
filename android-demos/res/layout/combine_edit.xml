@@ -7,9 +7,8 @@
         android:id="@+id/combine_btn_search"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_marginLeft="5dp"
         android:paddingRight="2dp"
-        android:scaleType="fitXY"
+        android:scaleType="centerInside"
         android:src="@drawable/ic_search_category_default"
         android:background="@android:color/transparent"/>
 
@@ -18,9 +17,10 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:layout_gravity="center_vertical"
         android:background="@null"
         android:hint="搜索"
-        android:imeOptions="actionDone"
+        android:imeOptions="actionSearch|flagNoFullscreen"
         android:singleLine="true"
         android:textSize="20sp" />
     
@@ -29,7 +29,8 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:visibility="invisible"
-        android:layout_marginRight="2dp"
+        android:layout_marginRight="0dp"
+        android:scaleType="center"
         android:src="@drawable/ic_notification_clear_all"
         android:background="@android:color/transparent" />
 

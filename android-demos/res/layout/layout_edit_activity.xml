@@ -52,7 +52,7 @@
         android:layout_height="wrap_content"
         android:text="封装成控件："/>
     
-    <com.example.widget.CombineEdit
+    <com.example.widgets.CombineEdit
         android:id="@+id/combine_edit"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"

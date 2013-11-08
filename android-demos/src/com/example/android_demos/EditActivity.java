@@ -1,5 +1,8 @@
 package com.example.android_demos;
 
+import com.example.widgets.CombineEdit;
+import com.example.widgets.CombineEdit.CombineEventListener;
+
 import android.R.menu;
 import android.app.Activity;
 import android.os.Bundle;
@@ -14,6 +17,7 @@ import android.widget.Toast;
 public class EditActivity extends Activity {
 	private ImageButton mBtnClear;
 	private EditText mEditText;
+	private CombineEdit mCombineEdit;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -28,6 +32,19 @@ public class EditActivity extends Activity {
 		
 		mEditText = (EditText)findViewById(R.id.edit_search);
 		mEditText.addTextChangedListener(mTextWatcher);
+		
+		mCombineEdit = (CombineEdit) findViewById(R.id.combine_edit);
+		mCombineEdit.setCombineEventListener(new CombineEventListener() {
+			@Override
+			public boolean onSearchClick(EditText e) {
+				Toast.makeText(getApplicationContext(), "searching..."+e.getText(), Toast.LENGTH_SHORT).show();
+				return true;
+			}
+			@Override
+			public boolean onClearClick(EditText e) {
+				return false;
+			}
+		});
 	}
 	
 	private OnClickListener mBtnOnClickListener = new OnClickListener() {

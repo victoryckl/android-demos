@@ -1,4 +1,4 @@
-package com.example.widget;
+package com.example.widgets;
 
 import com.example.android_demos.EditActivity;
 import com.example.android_demos.R;
@@ -9,12 +9,16 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
 public class CombineEdit extends LinearLayout {
@@ -54,6 +58,7 @@ public class CombineEdit extends LinearLayout {
 		
 		mEditText = (EditText) findViewById(R.id.combine_edit_search);
 		mEditText.addTextChangedListener(mTextWatcher);
+		mEditText.setOnEditorActionListener(mEditorActionListener);
 		
 		mBtnClear = (ImageButton) findViewById(R.id.combine_btn_clear);
 		mBtnClear.setOnClickListener(mBtnOnClickListener);
@@ -64,10 +69,10 @@ public class CombineEdit extends LinearLayout {
 		public void onClick(View v) {
 			switch (v.getId()) {
 			case R.id.combine_btn_search:
-				Toast.makeText(getContext(), "do nothing", Toast.LENGTH_SHORT).show();
+				toSearch();
 				break;
 			case R.id.combine_btn_clear:
-				mEditText.setText("");
+				toClear();
 				break;
 			default:
 				break;
@@ -95,8 +100,51 @@ public class CombineEdit extends LinearLayout {
 			}
 		}
 	};
+
+	private OnEditorActionListener mEditorActionListener = new OnEditorActionListener() {
+		@Override
+		public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+			switch (actionId) {
+			case EditorInfo.IME_ACTION_SEARCH:
+				toSearch();
+				return true;
+			default:
+				break;
+			}
+			return false;
+		}
+	}; 
 	
 	public EditText getEditText() {
 		return mEditText;
+	}
+	
+	/*******************/
+	public interface CombineEventListener {
+		boolean onSearchClick(EditText e);
+		boolean onClearClick(EditText e);
+	}
+	
+	private CombineEventListener mCombineEventListener = null;
+	public void setCombineEventListener(CombineEventListener l) {
+		mCombineEventListener = l;
+	}
+	
+	private void toSearch() {
+		if (mCombineEventListener != null) {
+			if (mCombineEventListener.onSearchClick(mEditText)) {
+				return ;
+			}
+		}
+		Toast.makeText(getContext(), "do nothing", Toast.LENGTH_SHORT).show();
+	}
+	
+	private void toClear() {
+		if (mCombineEventListener != null) {
+			if (mCombineEventListener.onClearClick(mEditText)) {
+				return ;
+			}
+		}
+		mEditText.setText("");
 	}
 }
