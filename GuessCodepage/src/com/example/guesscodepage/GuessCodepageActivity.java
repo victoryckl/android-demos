@@ -3,6 +3,7 @@ package com.example.guesscodepage;
 import java.nio.charset.Charset;
 
 import com.example.utils.GuessCodepage;
+import com.example.utils.HttpUtils;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -41,6 +42,8 @@ public class GuessCodepageActivity extends Activity {
 	}
 
 	private void init() {
+		HttpUtils.initStrictMode();
+		
 		mEditFilePath = (EditText)findViewById(R.id.x_edit_path);
 		findViewById(R.id.x_btn_choose_file).setOnClickListener(mBtnClickListener);
 		findViewById(R.id.x_btn_guess_codepage).setOnClickListener(mBtnClickListener);
@@ -121,7 +124,7 @@ public class GuessCodepageActivity extends Activity {
 		String path = getPath();
 		
 		if (path != null) {
-			String code = GuessCodepage.getFileEncode(path);
+			String code = GuessCodepage.getCodepage(path);
 			if (code != null) {
 				mTextCodepage.setText(mStrCodepage+code);
 				return ;

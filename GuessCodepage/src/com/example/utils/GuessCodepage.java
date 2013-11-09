@@ -7,8 +7,12 @@ import info.monitorenter.cpdetector.io.ParsingDetector;
 import info.monitorenter.cpdetector.io.UnicodeDetector;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.PushbackInputStream;
 import java.net.URL;
+import java.nio.charset.Charset;
 
 public class GuessCodepage {
 	/**
@@ -16,7 +20,7 @@ public class GuessCodepage {
 	 * @param path
 	 *            要判断文件编码格式的源文件的路径
 	 */
-	public static String getFileEncode(String path) {
+	private static String getFileEncode(String path) {
 		/*
 		 * detector是探测器，它把探测任务交给具体的探测实现类的实例完成。
 		 * cpDetector内置了一些常用的探测实现类，这些探测实现类的实例可以通过add方法 加进来，如ParsingDetector、
@@ -46,7 +50,7 @@ public class GuessCodepage {
 	 * @param path
 	 *            要判断文件编码格式的源文件的URL
 	 */
-	public static String getFileEncode(URL url) {
+	private static String getUrlEncode(URL url) {
 		CodepageDetectorProxy detector = CodepageDetectorProxy.getInstance();
 		addDetector(detector);
 		java.nio.charset.Charset charset = null;
@@ -68,7 +72,7 @@ public class GuessCodepage {
 	 * @param length
 	 * 			测量该流所需的读入字节数
 	 */
-	public static String getSteamEncode(InputStream inputStream, int length) {
+	private static String getSteamEncode(InputStream inputStream, int length) {
 		CodepageDetectorProxy detector = CodepageDetectorProxy.getInstance();
 		addDetector(detector);
 		java.nio.charset.Charset charset = null;
@@ -99,5 +103,103 @@ public class GuessCodepage {
 		detector.add(ASCIIDetector.getInstance());
 		// UnicodeDetector用于Unicode家族编码的测定
 		detector.add(UnicodeDetector.getInstance());
+	}
+	
+	/*******************/
+	private static final int BOM_SIZE = 4;
+	
+	private static String detectByHeadBytes(String path) throws IOException {
+		FileInputStream fi = new FileInputStream(path);
+		String charset = detectByHeadBytes(fi);
+		fi.close();
+		return charset;
+	}
+	
+	private static String detectByHeadBytes(URL url) throws IOException {
+		HttpUtils http = new HttpUtils();
+		String charset = detectByHeadBytes(http.getInputStream(url));
+		http.close();
+		return charset;
+	}
+	
+	private static String detectByHeadBytes(InputStream in) throws IOException {
+		if (in == null) return null;
+		
+		PushbackInputStream internalIn = new PushbackInputStream(in, BOM_SIZE);
+		String encoding = null;
+		byte bom[] = new byte[BOM_SIZE];
+		int n;
+		n = internalIn.read(bom, 0, bom.length);
+
+		if ((bom[0] == (byte) 0x00) && (bom[1] == (byte) 0x00)
+				&& (bom[2] == (byte) 0xFE) && (bom[3] == (byte) 0xFF)) {
+			encoding = "UTF-32BE";
+		} else if ((bom[0] == (byte) 0xFF) && (bom[1] == (byte) 0xFE)
+				&& (bom[2] == (byte) 0x00) && (bom[3] == (byte) 0x00)) {
+			encoding = "UTF-32LE";
+		} else if ((bom[0] == (byte) 0xEF) && (bom[1] == (byte) 0xBB)
+				&& (bom[2] == (byte) 0xBF)) {
+			encoding = "UTF-8";
+		} else if ((bom[0] == (byte) 0xFE) && (bom[1] == (byte) 0xFF)) {
+			encoding = "UTF-16BE";
+		} else if ((bom[0] == (byte) 0xFF) && (bom[1] == (byte) 0xFE)) {
+			encoding = "UTF-16LE";
+		} else {
+			// Unicode BOM mark not found, unread all bytes
+		}
+		System.out.println("encoding="+encoding+", read=" + n);
+
+		internalIn.unread(bom, 0, n);
+
+		return encoding;
+	}
+	
+	/********************************/
+	public static String getCodepage(String path) {
+		String charset = null;
+		try {
+			charset = detectByHeadBytes(path);
+			if (charset != null) {
+				return charset;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return getFileEncode(path);
+	}
+	
+	public static String getCodepage(URL url) {
+		String charset = null;
+		try {
+			charset = detectByHeadBytes(url);
+			if (charset != null) {
+				return charset;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return getUrlEncode(url);
+	}
+	
+	public static String getCodepage(InputStream in) {
+		String charset = null;
+		try {
+			charset = detectByHeadBytes(in);
+			if (charset != null) {
+				return charset;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			return getSteamEncode(in, in.available());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 }
