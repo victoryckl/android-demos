@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <array name="array_drawable">
+        <item>@drawable/ic_launcher</item>
+        <item>@drawable/ic_search</item>
+        <item>@drawable/ic_notification_clear_all</item>
+    </array>
+
+    <string-array name="array_string">
+        <item>@string/c1</item>
+        <item>@string/c2</item>
+        <item>@string/c3</item>
+    </string-array>
+    
+    <array name="array_color">
+        <item>@color/c1</item>
+        <item>@color/c2</item>
+        <item>@color/c3</item>
+    </array>
+</resources>

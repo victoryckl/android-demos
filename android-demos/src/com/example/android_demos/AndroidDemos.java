@@ -42,20 +42,25 @@ public class AndroidDemos extends Activity {
 		findViewById(R.id.btn_go_to_edit).setOnClickListener(mBtnClickListener);
 		findViewById(R.id.btn_go_to_imagebutton).setOnClickListener(mBtnClickListener);
 		findViewById(R.id.btn_go_to_title).setOnClickListener(mBtnClickListener);
+		findViewById(R.id.btn_go_to_get_res).setOnClickListener(mBtnClickListener);
 	}
 	
 	private OnClickListener mBtnClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
+			Intent intent = new Intent();
 			switch (v.getId()) {
 			case R.id.btn_go_to_edit:
-				Intent intent = new Intent();
 				intent.setClass(AndroidDemos.this, EditActivity.class);
 				startActivity(intent);
 				break;
 			case R.id.btn_go_to_imagebutton:
 				break;
 			case R.id.btn_go_to_title:
+				break;
+			case R.id.btn_go_to_get_res:
+				intent.setClass(AndroidDemos.this, ArrayResIdActivity.class);
+				startActivity(intent);
 				break;
 			default:
 				break;

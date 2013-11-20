@@ -24,6 +24,7 @@
         </activity>
         
         <activity android:name="com.example.android_demos.EditActivity"/>
+        <activity android:name="com.example.android_demos.ArrayResIdActivity"/>
     </application>
 
 </manifest>

@@ -26,13 +26,20 @@
         android:layout_below="@id/btn_go_to_edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/edit_with_btn"/>
+        android:text="@string/imagebutton_with_text"/>
         
     <Button 
         android:id="@+id/btn_go_to_title"
         android:layout_below="@id/btn_go_to_imagebutton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/edit_with_btn"/>
+        android:text="@string/titlebar_show_window"/>
+    
+    <Button 
+        android:id="@+id/btn_go_to_get_res"
+        android:layout_below="@id/btn_go_to_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/get_res_id"/>
     
 </RelativeLayout>

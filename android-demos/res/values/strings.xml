@@ -5,5 +5,11 @@
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
     <string name="edit_with_btn">带清除按钮的编辑框</string>
+    <string name="imagebutton_with_text">带文字的图片按钮</string>
+    <string name="titlebar_show_window">标题栏弹出框</string>
+    <string name="get_res_id">获取资源数组中的资源id</string>
 
+    <string name="c1">F00</string>  
+    <string name="c2">0F0</string>
+    <string name="c3">00F</string>
 </resources>
