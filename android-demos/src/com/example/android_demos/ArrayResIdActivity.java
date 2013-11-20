@@ -33,7 +33,8 @@ public class ArrayResIdActivity extends Activity {
 		try {
 			for (int i = 0; i < array.length(); i++) {
 				Drawable d = array.getDrawable(i);
-				text += d +"\n";
+				int id = array.getResourceId(i, 0);
+				text += "0x"+Integer.toHexString(id) + ", " + d +"\n";
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -50,7 +51,8 @@ public class ArrayResIdActivity extends Activity {
 		try {
 			for (int i = 0; i < array.length(); i++) {
 				String s = array.getString(i);
-				text += s + "\n";
+				int id = array.getResourceId(i, 0);
+				text += "0x"+Integer.toHexString(id) + ", " + s +"\n";
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -67,7 +69,8 @@ public class ArrayResIdActivity extends Activity {
 		try {
 			for (int i = 0; i < array.length(); i++) {
 				int s = array.getColor(i, 0);
-				text += Integer.toHexString(s) + "\n";
+				int id = array.getResourceId(i, 0);
+				text += "0x"+Integer.toHexString(id) + ", " + Integer.toHexString(s) + "\n";
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
