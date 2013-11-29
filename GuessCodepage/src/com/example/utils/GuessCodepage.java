@@ -6,6 +6,7 @@ import info.monitorenter.cpdetector.io.JChardetFacade;
 import info.monitorenter.cpdetector.io.ParsingDetector;
 import info.monitorenter.cpdetector.io.UnicodeDetector;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -65,6 +66,7 @@ public class GuessCodepage {
 			return null;
 	}
 	
+	private static final int DETECT_SIZE = 1024*4;//detect 4k bytes
 	/**
 	 * 获取inputStream对应的文本编码
 	 * @param inputStream
@@ -77,6 +79,9 @@ public class GuessCodepage {
 		addDetector(detector);
 		java.nio.charset.Charset charset = null;
 		try {
+			if (length > DETECT_SIZE) {
+				length = DETECT_SIZE;
+			}
 			charset = detector.detectCodepage(inputStream, length);
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -195,7 +200,8 @@ public class GuessCodepage {
 		}
 		
 		try {
-			return getSteamEncode(in, in.available());
+			BufferedInputStream bis = new BufferedInputStream(in);
+			return getSteamEncode(bis, bis.available());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
