@@ -1,0 +1,13 @@
+_Space.BlogSharedUser.showList({
+list:[
+			{uname:"smilerll",portrait:"ac49736d696c65726c6c8103"}
+		,			{uname:"sunboyljp",portrait:"52f573756e626f796c6a704603"}
+		,			{uname:"god_sperm",portrait:"4fdd676f645f737065726d0e0a"}
+		,			{uname:"zlz0807",portrait:"dfff7a6c7a30383037550b"}
+		,			{uname:"Ïò¿Æ0622",portrait:"6cc6cff2bfc630363232fb06"}
+		,			{uname:"njyllm",portrait:"37406e6a796c6c6d930c"}
+		,			{uname:"595131720",portrait:"fd50353935313331373230dd0a"}
+		,			{uname:"DavidChiu",portrait:"95e1446176696443686975b300"}
+			],count:10
+}
+)

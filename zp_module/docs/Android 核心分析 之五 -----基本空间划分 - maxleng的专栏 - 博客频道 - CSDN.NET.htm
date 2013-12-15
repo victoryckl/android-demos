@@ -1,0 +1,483 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0052)http://blog.csdn.net/maxleng/article/details/5490713 -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET</title>
+
+<meta name="description" content=" 基本空间划分Google给了我们一张系统架构图，在这张图上我们可以看到Android的大体框架组成。     从上图可以看到：Android Applications,Application Framework,Dalvik Virtual Machine,Linux。如果将Android泛化，我们可以将系统划分成两部分：   ">
+<script type="text/javascript" async="" src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/ga.js"></script><script src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/jquery.js" type="text/javascript"></script>
+<script src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/plugins.js" type="text/javascript"></script>
+<script src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/common.js" type="text/javascript"></script>
+<link rel="Stylesheet" type="text/css" href="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/style.css">
+<link id="RSSLink" title="RSS" type="application/rss+xml" rel="alternate" href="http://blog.csdn.net/maxleng/rss/list">
+<link rel="shortcut icon" href="http://blog.csdn.net/favicon.ico">
+<link type="text/css" rel="stylesheet" href="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/default.css">
+</head>
+<body>
+<script src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/pub_topnav_2011.js" type="text/javascript"></script><link rel="stylesheet" type="text/css" href="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/navtop_2011.css">
+<div class="nav_top_2011">
+<p>欢迎<em>victoryckl</em><a href="http://my.csdn.net/my/notifications" class="num" id="header_notice_num">0</a>我的：<a href="http://my.csdn.net/my/letter">收件箱<span id="header_letter_num"></span></a><a href="http://download.csdn.net/my" class="red">资源</a><a href="http://write.blog.csdn.net/" class="red">博客</a><a href="http://my.csdn.net/">空间</a><a href="http://passport.csdn.net/account/profile">设置</a>|<a href="http://passport.csdn.net/help/faq">帮助</a>|<a href="http://passport.csdn.net/account/logout">退出</a></p><ul>
+<li><a href="http://www.csdn.net/" target="_blank">CSDN首页</a></li>
+<li><a href="http://news.csdn.net/" target="_blank">资讯</a></li>
+<li><a href="http://bbs.csdn.net/" target="_blank">论坛</a></li>
+<li><a href="http://blog.csdn.net/" target="_blank">博客</a></li>
+<li><a href="http://download.csdn.net/" target="_blank">下载</a></li>
+<li><a href="http://so.csdn.net/" target="_blank">搜索</a></li>
+<li class="more"><h2 id="topnav_btnmore"><a href="javascript:void(0);">更多</a></h2>
+<ul id="topnav_hidlist">
+<li><a href="http://cto.csdn.net/" target="_blank">CTO俱乐部</a></li>
+<li><a href="http://student.csdn.net/" target="_blank">学生大本营</a></li>
+<li><a href="http://edu.csdn.net/" target="_blank">培训充电</a></li>
+<li><a href="http://mobile.csdn.net/" target="_blank">移动开发</a></li>
+<li><a href="http://sd.csdn.net/" target="_blank">软件研发</a></li>
+<li><a href="http://cloud.csdn.net/" target="_blank">云计算</a></li>
+<li><a href="http://www.programmer.com.cn/" target="_blank">程序员</a></li>
+<li><a href="http://www.iteye.com/" target="_blank">ITeye</a>&lt;&gt;
+</li><li><a href="http://tup.csdn.net/" target="_blank">TUP</a></li>
+</ul>
+</li>
+</ul>
+</div>
+
+
+<div id="container">
+<div id="header">
+    <div class="header">
+        <div id="blog_title">
+            <h1>
+                <a href="http://blog.csdn.net/maxleng">maxleng的专栏</a></h1>
+            <h2>正在研究Android</h2>
+            <div class="clear">
+            </div>
+        </div>
+        <div class="clear">
+        </div>
+    </div>
+</div>
+<div id="navigator">
+    <div class="navigator_bg">
+    </div>
+    <div class="navigator">
+        <ul>
+            <!--<li id="btnHome"><a href="/maxleng"><span><img src="http://static.blog.csdn.net/images/ico_home.gif">我的首页</span></a></li>-->
+            <li id="btnContents"><a href="http://blog.csdn.net/maxleng?viewmode=contents"><span><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/ico_list.gif">目录视图</span></a></li>
+            <li id="btnView"><a href="http://blog.csdn.net/maxleng?viewmode=list"><span><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/ico_summary.gif">摘要视图</span></a></li>
+            <li id="btnRss"><a href="http://blog.csdn.net/maxleng/rss/list"><span><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/ico_rss.gif">订阅</span></a></li>
+</ul>
+    </div>
+</div>
+<script type="text/javascript">
+    var username = "maxleng";
+    var blog_address = "http://blog.csdn.net/maxleng";
+    var static_host = "http://static.blog.csdn.net";
+    var currentUserName = $.cookie("UserName");
+</script>
+        
+<div id="body">
+<div id="main">
+<div class="main">
+<div class="notice"> 
+
+<a href="http://blog.csdn.net/blogdevteam/article/details/7468291" target="_blank"><font color="red">4月18日22:00至4月19日2:00网站服务暂停公告</font></a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="http://blog.csdn.net/blogdevteam/article/details/7415936" target="_blank"><font color="red">博客频道4月技术图书有奖试读火爆开启</font></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="http://www.mobileasiaexpo.cn/?MAECN=CSDN2" target="_blank"><font color="blue">移动业界领袖会议·上海·6.20</font></a>
+<br>
+
+
+<a href="http://event.blog.csdn.net/TopColumn/awardlist.aspx" target="_blank"><font color="red">CSDN十大风云博客专栏评选结果公布！</font></a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="http://topic.csdn.net/u/20120416/10/9123faba-8474-4f2a-a0cf-a1b7d0fe5913.html" target="_blank"><font color="red">下载频道分享季1：分享经典，领取积分！</font></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="http://event.blog.csdn.net/BlogSkin/Vote.aspx" target="_blank"><font color="red">CSDN博客皮肤评选活动火爆开启！</font></a>
+</div><script type="text/javascript" src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/ad.js"></script>
+
+<div id="article_details" class="details">
+    <div class="article_title">
+    <span class="ico ico_type_Original"></span>
+    <h3>
+        <span class="link_title"><a href="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET.htm">
+        Android 核心分析 之五 -----基本空间划分
+        </a></span>
+    </h3>
+</div>
+
+        
+    <div class="article_manage">
+    <span class="link_postdate">2010-04-15 21:58</span>
+    <span class="link_view" title="阅读次数">27528人阅读</span>
+    <span class="link_comments" title="评论次数"><a href="http://blog.csdn.net/maxleng/article/details/5490713#comments">评论</a>(29)</span>
+    <span class="link_collect"><a href="javascript:void(0);" onclick="javascript:collectArticle(&#39;Android 核心分析 之五 -----基本空间划分&#39;,&#39;5490713&#39;);return false;" title="收藏">收藏</a></span>
+    <span class="link_report"><a href="http://blog.csdn.net/maxleng/article/details/5490713#report" onclick="javascript:report(5490713,2);return false;" title="举报">举报</a></span>
+    
+</div>
+
+    
+<div id="article_content" class="article_content">
+    <p>&nbsp;</p>
+<h2 style="text-align: center;">基本空间划分</h2>
+<p class="p0"><span style="font-family: mceinline;">Google</span><span><span style="font-family: mceinline;">给了我们一张系统架构图，在这张图上我们可以看到</span></span><span><span style="font-family: mceinline;">Android</span></span><span><span style="font-family: mceinline;">的大体框架组成。</span></span></p>
+<p class="p0" style="text-align: center;"><span><span style="font-family: mceinline;"><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/0_1271339954ajAQ.gif" alt=""></span></span></p>
+<p class="p0">&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><span><span style="font-family: mceinline;">
+</span></span></p>
+<p class="p0">从上图可以看到：<span>Android&nbsp;Applications,Application&nbsp;Framework,Dalvik&nbsp;Virtual&nbsp;Machine,Linux</span><span>。</span>如果将<span>Android</span><span>泛化，我们可以将系统划分成两部分：</span></p>
+<p style="text-align: center;"><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/0_1271339975UeTf.gif" alt=""></p>
+<p class="p0">&nbsp;</p>
+<p class="p0">&nbsp;</p>
+<p>
+<span style="font-family: 宋体;">
+</span></p><p class="p0"><span style="font-family: mceinline;">&nbsp;但是为了研究的方便我们先看最为本质的三层，上面是</span><span><span style="font-family: mceinline;">Android</span></span><span><span style="font-family: mceinline;">，中间叫</span></span><span><span style="font-family: mceinline;">Dalvik</span></span><span><span style="font-family: mceinline;">虚拟机，下面叫</span></span><span><span style="font-family: mceinline;">Linux</span></span><span><span style="font-family: mceinline;">。</span></span></p>
+<p class="p0" style="text-align: center;"><span><span style="font-family: mceinline;"><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/0_1271339987OMmQ.gif" alt=""></span></span></p>
+<p class="p0"><span style="font-family: mceinline;"><br></span></p>
+<p class="p0">&nbsp;</p>
+<span style="font-family: 宋体;">
+<p class="p0">&nbsp;</p>
+<p class="p0"><span style="font-family: mceinline;">&nbsp;&nbsp; &nbsp;虽然上两层都包含在</span><span><span style="font-family: mceinline;">Android</span></span><span><span style="font-family: mceinline;">中，但是为了理解的方便或者从实用主义出发，我还是将虚拟机这次给分开出来，因为我研究的对象是</span></span><span><span style="font-family: mceinline;">Android</span></span><span><span style="font-family: mceinline;">的手机系统相关部分，对于虚拟机我们不做太深入的研究。</span></span></p>
+<p class="p0"><span style="white-spac&lt;mce:script type=">
+
+e: pre;"&gt;<span style="font-family: mceinline;">	</span></span><span style="font-family: mceinline;">从上面我们可以看到这个系统静态的划分成这样的三层。但是从动态运行逻辑上不是这样划分的，所以空间的划分是一个有趣的概念。</span><span><span style="font-family: mceinline;">我们从操作系统的角度看，</span></span><span><span style="font-family: mceinline;">Android</span></span><span><span style="font-family: mceinline;">就是一堆</span></span><span><span style="font-family: mceinline;">Linux</span></span><span><span style="font-family: mceinline;">应用的集合。从</span></span><span><span style="font-family: mceinline;">Linux</span></span><span><span style="font-family: mceinline;">角度看到的空间划分：进程空间和内核空间。从</span></span><span><span style="font-family: mceinline;">Android</span></span><span><span style="font-family: mceinline;">的应用对应着</span></span><span><span style="font-family: mceinline;">Linux</span></span><span><span style="font-family: mceinline;">的一个个进程。</span></span></p>
+<p class="p0" style="text-align: center;"><span><span style="font-family: mceinline;"><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/0_1271339996aAOe.gif" alt=""></span></span></p>
+<p class="p0">&nbsp;</p>
+<p class="p0"><span style="font-family: mceinline;">&nbsp;</span><span style="white-space: pre;"><span style="font-family: mceinline;">	</span></span><span style="font-family: mceinline;">Andoid</span><span><span style="font-family: mceinline;">中包含一个</span></span><span><span style="font-family: mceinline;">Java</span></span><span><span style="font-family: mceinline;">虚拟机</span></span><span style="font-family: mceinline;">，虚拟机是运行在Linux</span><span><span style="font-family: mceinline;">之上的，</span></span><span><span style="font-family: mceinline;">Android</span></span><span style="font-family: mceinline;">构建在</span><span><span style="font-family: mceinline;">JVM</span></span><span><span style="font-family: mceinline;">之上，</span></span><span><span style="font-family: mceinline;"><span style="font-family: mceinline;">从</span><span><span style="font-family: mceinline;">Android</span></span><span><span style="font-family: mceinline;">动态</span></span><span style="font-family: mceinline;">运行逻辑上我们需要将</span><span><span style="font-family: mceinline;">Android</span></span><span><span style="font-family: mceinline;">划分成</span></span><span><span style="font-family: mceinline;">Android</span></span><span><span style="font-family: mceinline;">空间和非</span></span><span><span style="font-family: mceinline;">Android</span></span><span><span style="font-family: mceinline;">空间。</span></span>在</span></span><span><span style="font-family: mceinline;">Andoid</span></span><span><span style="font-family: mceinline;">系统中我们面对的是</span></span><span><span style="font-family: mceinline;">Andoid</span></span><span><span style="font-family: mceinline;">概念空间，而不是</span></span><span><span style="font-family: mceinline;">Linux</span></span><span><span style="font-family: mceinline;">进程了，在</span></span><span><span style="font-family: mceinline;">Andoid</span></span><span style="font-family: mceinline;">概念空间中已经没有了</span><span><span style="font-family: mceinline;">Lliux</span></span><span><span style="font-family: mceinline;">进程的概念</span></span><span style="font-family: mceinline;">，而是</span><span><span style="font-family: mceinline;">Service</span></span><span><span style="font-family: mceinline;">，</span></span><span><span style="font-family: mceinline;">proxy</span></span><span><span style="font-family: mceinline;">，</span></span><span><span style="font-family: mceinline;">Activity</span></span><span><span style="font-family: mceinline;">，</span></span><span><span style="font-family: mceinline;">provider</span></span><span><span style="font-family: mceinline;">等。</span></span></p>
+<p>&nbsp;</p>
+<p class="p0"><span><span style="font-family: mceinline;"><br></span></span></p>
+<p class="p0" style="text-align: center;"><span><span style="font-family: mceinline;"><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/0_12713400118M3T.gif" alt=""></span></span></p>
+<p class="p0">&nbsp;</p>
+<p class="p0"><span style="white-space: pre;"><span style="font-family: mceinline;">	</span></span><span style="font-family: mceinline;">至于虚拟机</span><span><span style="font-family: mceinline;">JVM</span></span><span><span style="font-family: mceinline;">，我们只需要知道</span></span><span><span style="font-family: mceinline;">JVM</span></span><span><span style="font-family: mceinline;">是</span></span><span style="font-family: mceinline;">Dalvik&nbsp;VM</span><span><span style="font-family: mceinline;">（虚拟机）这是一个专为嵌入式设备打造的ＪＡＶＡ虚拟机，是一个有着自己的</span></span><span><span style="font-family: mceinline;">code-byte</span></span><span><span style="font-family: mceinline;">和格式的可以在嵌入式设备上高效运行的</span></span><span><span style="font-family: mceinline;">Java</span></span><span><span style="font-family: mceinline;">虚拟机。</span></span></p>
+<p class="p0"><span>
+</span></p>
+<p class="p0"><span style="white-space: pre;"><span style="font-family: mceinline;">	</span></span><span style="font-family: mceinline;">为了研究的深入，我们还是需要涉及到</span><span><span style="font-family: mceinline;">JNI&nbsp;Native</span></span><span><span style="font-family: mceinline;">部分。在这个分类中我将</span></span><span><span style="font-family: mceinline;">JVM</span></span><span><span style="font-family: mceinline;">分为</span></span><span><span style="font-family: mceinline;">JVM</span></span><span><span style="font-family: mceinline;">空间和</span></span><span><span style="font-family: mceinline;">C++</span></span><span><span style="font-family: mceinline;">空间。</span></span></p>
+</span>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p class="p0" style="text-align: center;"><span><span style="font-family: mceinline;"><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/0_1271340021242D.gif" alt=""></span></span></p>
+<p class="p0"><span style="font-family: 宋体;">
+</span></p>
+<p class="p0"><span style="white-space: pre;"><span style="font-family: mceinline;">	</span></span><span style="font-family: mceinline;">Android</span><span><span style="font-family: mceinline;">应用的开发者是工作在</span></span><span><span style="font-family: mceinline;">Android</span></span><span style="font-family: mceinline;">外特性概念空间的，这里没有了</span><span><span style="font-family: mceinline;">Linux</span></span><span><span style="font-family: mceinline;">的一点气息，</span></span><span><span style="font-family: mceinline;">Android</span></span><span><span style="font-family: mceinline;">构建的外特性空间概念包含了：</span></span><span><span style="font-family: mceinline;">Activity,Provider,Interface,Events,Provider</span></span><span><span style="font-family: mceinline;">，</span></span><span><span style="font-family: mceinline;">Service</span></span><span><span style="font-family: mceinline;">等。至于</span><span><span style="font-family: mceinline;">JVM</span></span><span><span style="font-family: mceinline;">空间和</span></span><span><span style="font-family: mceinline;">C++</span></span><span><span style="font-family: mceinline;">空间的划分是为了研究</span></span><span><span style="font-family: mceinline;">Android</span></span><span><span style="font-family: mceinline;">核心的描述而提出的，我们在做</span></span><span><span style="font-family: mceinline;">Android</span></span><span><span style="font-family: mceinline;">系统开发时，常常需要修改到</span></span><span><span style="font-family: mceinline;">JNI</span></span><span><span style="font-family: mceinline;">的</span></span><span><span style="font-family: mceinline;">Native</span></span><span><span style="font-family: mceinline;">部分。后面我将用较多的篇幅来深入阐述这个部分。</span></span></span></p>
+<p class="p0">&nbsp;</p>
+<p></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p class="p0">&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</div>
+<div class="share_buttons" id="sharePanel"><span>分享到：</span> <a name="sina" class="share_sina" title="分享到新浪微博"></a><a name="qq" class="share_qq" title="分享到腾讯微博"></a></div>
+
+<div class="article_next_prev">
+        <li class="prev_article">
+            <span>上一篇：</span><a href="http://blog.csdn.net/maxleng/article/details/5476636">Android核心分析之四 ---手机的软件形态</a></li>
+        <li class="next_article">
+            <span>下一篇：</span><a href="http://blog.csdn.net/maxleng/article/details/5490770">Android 核心分析 之六 -----IPC框架分析 Binder，Service，Service manager</a></li>
+</div>
+
+
+</div>
+<div id="ad_cen"><iframe id="ad_frm_0" frameborder="0" scrolling="no" style="border-top-width: 0px; border-right-width: 0px; border-bottom-width: 0px; border-left-width: 0px; overflow-x: hidden; overflow-y: hidden; width: 732px; height: 95px; " src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/ad(2).htm"></iframe></div>
+<script type="text/javascript">
+    new Ad(4, 'ad_cen');
+</script>
+<div id="comment_title" class="panel_head">查看评论<a name="comments"></a></div>
+<div id="comment_list"><dl class="comment_item comment_topic" id="comment_item_2024771"><dt class="comment_head" floor="28">28楼 <span class="user"><a class="username" href="http://blog.csdn.net/zhangjiejemyok" target="_blank">zhangjiejemyok</a> <span class="ptime">2011-11-19 12:21发表</span>  <a href="http://blog.csdn.net/maxleng/article/details/5490713#reply" class="cmt_btn reply" title="回复">[回复]</a> <span class="comment_manage" style="display:none;" commentid="2024771" username="zhangjiejemyok"> <a href="http://blog.csdn.net/maxleng/article/details/5490713#quote" class="cmt_btn quote" title="引用">[引用]</a> <a href="http://blog.csdn.net/maxleng/article/details/5490713#report" class="cmt_btn report" title="举报">[举报]</a></span></span></dt><dd class="comment_userface"><a href="http://blog.csdn.net/zhangjiejemyok" target="_blank"><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/3_zhangjiejemyok.jpg" width="40" height="40"></a></dd><dd class="comment_body">顶一个，学习了！</dd></dl><dl class="comment_item comment_topic" id="comment_item_2003969"><dt class="comment_head" floor="27">27楼 <span class="user"><a class="username" href="http://blog.csdn.net/joel_lv" target="_blank">joel_lv</a> <span class="ptime">2011-11-01 16:53发表</span>  <a href="http://blog.csdn.net/maxleng/article/details/5490713#reply" class="cmt_btn reply" title="回复">[回复]</a> <span class="comment_manage" style="display:none;" commentid="2003969" username="joel_lv"> <a href="http://blog.csdn.net/maxleng/article/details/5490713#quote" class="cmt_btn quote" title="引用">[引用]</a> <a href="http://blog.csdn.net/maxleng/article/details/5490713#report" class="cmt_btn report" title="举报">[举报]</a></span></span></dt><dd class="comment_userface"><a href="http://blog.csdn.net/joel_lv" target="_blank"><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/3_joel_lv.jpg" width="40" height="40"></a></dd><dd class="comment_body">很受用啊</dd></dl><dl class="comment_item comment_topic" id="comment_item_2003279"><dt class="comment_head" floor="26">26楼 <span class="user"><a class="username" href="http://blog.csdn.net/Jamess88" target="_blank">Jamess88</a> <span class="ptime">2011-11-01 09:08发表</span>  <a href="http://blog.csdn.net/maxleng/article/details/5490713#reply" class="cmt_btn reply" title="回复">[回复]</a> <span class="comment_manage" style="display:none;" commentid="2003279" username="Jamess88"> <a href="http://blog.csdn.net/maxleng/article/details/5490713#quote" class="cmt_btn quote" title="引用">[引用]</a> <a href="http://blog.csdn.net/maxleng/article/details/5490713#report" class="cmt_btn report" title="举报">[举报]</a></span></span></dt><dd class="comment_userface"><a href="http://blog.csdn.net/Jamess88" target="_blank"><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/3_jamess88.jpg" width="40" height="40"></a></dd><dd class="comment_body">學習中,頂一個!</dd></dl><dl class="comment_item comment_topic" id="comment_item_2002785"><dt class="comment_head" floor="25">25楼 <span class="user"><a class="username" href="http://blog.csdn.net/w7849516230" target="_blank">w7849516230</a> <span class="ptime">2011-10-31 16:55发表</span>  <a href="http://blog.csdn.net/maxleng/article/details/5490713#reply" class="cmt_btn reply" title="回复">[回复]</a> <span class="comment_manage" style="display:none;" commentid="2002785" username="w7849516230"> <a href="http://blog.csdn.net/maxleng/article/details/5490713#quote" class="cmt_btn quote" title="引用">[引用]</a> <a href="http://blog.csdn.net/maxleng/article/details/5490713#report" class="cmt_btn report" title="举报">[举报]</a></span></span></dt><dd class="comment_userface"><a href="http://blog.csdn.net/w7849516230" target="_blank"><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/3_w7849516230.jpg" width="40" height="40"></a></dd><dd class="comment_body">恩，前面文章的感觉是根据已有的来说的，要是从需要的角度来分析，然后与现有的对照，感觉会好些！现在的算是正式开始了吧！支持！！！！</dd></dl><dl class="comment_item comment_topic" id="comment_item_1958541"><dt class="comment_head" floor="24">24楼 <span class="user"><a class="username" href="http://blog.csdn.net/ccqxccqx" target="_blank">ccqxccqx</a> <span class="ptime">2011-09-15 16:37发表</span>  <a href="http://blog.csdn.net/maxleng/article/details/5490713#reply" class="cmt_btn reply" title="回复">[回复]</a> <span class="comment_manage" style="display:none;" commentid="1958541" username="ccqxccqx"> <a href="http://blog.csdn.net/maxleng/article/details/5490713#quote" class="cmt_btn quote" title="引用">[引用]</a> <a href="http://blog.csdn.net/maxleng/article/details/5490713#report" class="cmt_btn report" title="举报">[举报]</a></span></span></dt><dd class="comment_userface"><a href="http://blog.csdn.net/ccqxccqx" target="_blank"><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/3_ccqxccqx.jpg" width="40" height="40"></a></dd><dd class="comment_body">mark,看了一点就受益匪浅啊</dd></dl><dl class="comment_item comment_topic" id="comment_item_1950160"><dt class="comment_head" floor="23">23楼 <span class="user"><a class="username" href="http://blog.csdn.net/qinjuning" target="_blank">qinjuning</a> <span class="ptime">2011-09-07 09:31发表</span>  <a href="http://blog.csdn.net/maxleng/article/details/5490713#reply" class="cmt_btn reply" title="回复">[回复]</a> <span class="comment_manage" style="display:none;" commentid="1950160" username="qinjuning"> <a href="http://blog.csdn.net/maxleng/article/details/5490713#quote" class="cmt_btn quote" title="引用">[引用]</a> <a href="http://blog.csdn.net/maxleng/article/details/5490713#report" class="cmt_btn report" title="举报">[举报]</a></span></span></dt><dd class="comment_userface"><a href="http://blog.csdn.net/qinjuning" target="_blank"><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/3_qinjuning.jpg" width="40" height="40"></a></dd><dd class="comment_body">看到了应用空间的ＪＶＭ空间以及Ｃ＋＋空间</dd></dl><dl class="comment_item comment_topic" id="comment_item_1927402"><dt class="comment_head" floor="22">22楼 <span class="user"><a class="username" href="http://blog.csdn.net/huzhennan5793" target="_blank">huzhennan5793</a> <span class="ptime">2011-08-26 11:07发表</span>  <a href="http://blog.csdn.net/maxleng/article/details/5490713#reply" class="cmt_btn reply" title="回复">[回复]</a> <span class="comment_manage" style="display:none;" commentid="1927402" username="huzhennan5793"> <a href="http://blog.csdn.net/maxleng/article/details/5490713#quote" class="cmt_btn quote" title="引用">[引用]</a> <a href="http://blog.csdn.net/maxleng/article/details/5490713#report" class="cmt_btn report" title="举报">[举报]</a></span></span></dt><dd class="comment_userface"><a href="http://blog.csdn.net/huzhennan5793" target="_blank"><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/3_huzhennan5793.jpg" width="40" height="40"></a></dd><dd class="comment_body">膜拜学习中</dd></dl><dl class="comment_item comment_topic" id="comment_item_1925371"><dt class="comment_head" floor="21">21楼 <span class="user"><a class="username" href="http://blog.csdn.net/lindir" target="_blank">lindir</a> <span class="ptime">2011-08-24 18:08发表</span>  <a href="http://blog.csdn.net/maxleng/article/details/5490713#reply" class="cmt_btn reply" title="回复">[回复]</a> <span class="comment_manage" style="display:none;" commentid="1925371" username="lindir"> <a href="http://blog.csdn.net/maxleng/article/details/5490713#quote" class="cmt_btn quote" title="引用">[引用]</a> <a href="http://blog.csdn.net/maxleng/article/details/5490713#report" class="cmt_btn report" title="举报">[举报]</a></span></span></dt><dd class="comment_userface"><a href="http://blog.csdn.net/lindir" target="_blank"><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/3_lindir.jpg" width="40" height="40"></a></dd><dd class="comment_body">看迷糊了。。。</dd></dl><dl class="comment_item comment_topic" id="comment_item_1869644"><dt class="comment_head" floor="20">20楼 <span class="user"><a class="username" href="http://blog.csdn.net/mzz5240" target="_blank">mzz5240</a> <span class="ptime">2011-08-09 17:08发表</span>  <a href="http://blog.csdn.net/maxleng/article/details/5490713#reply" class="cmt_btn reply" title="回复">[回复]</a> <span class="comment_manage" style="display:none;" commentid="1869644" username="mzz5240"> <a href="http://blog.csdn.net/maxleng/article/details/5490713#quote" class="cmt_btn quote" title="引用">[引用]</a> <a href="http://blog.csdn.net/maxleng/article/details/5490713#report" class="cmt_btn report" title="举报">[举报]</a></span></span></dt><dd class="comment_userface"><a href="http://blog.csdn.net/mzz5240" target="_blank"><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/3_mzz5240.jpg" width="40" height="40"></a></dd><dd class="comment_body">支持 博主</dd></dl><dl class="comment_item comment_topic" id="comment_item_1858013"><dt class="comment_head" floor="19">19楼 <span class="user"><a class="username" href="http://blog.csdn.net/heicainiuniu" target="_blank">heicainiuniu</a> <span class="ptime">2011-07-29 12:03发表</span>  <a href="http://blog.csdn.net/maxleng/article/details/5490713#reply" class="cmt_btn reply" title="回复">[回复]</a> <span class="comment_manage" style="display:none;" commentid="1858013" username="heicainiuniu"> <a href="http://blog.csdn.net/maxleng/article/details/5490713#quote" class="cmt_btn quote" title="引用">[引用]</a> <a href="http://blog.csdn.net/maxleng/article/details/5490713#report" class="cmt_btn report" title="举报">[举报]</a></span></span></dt><dd class="comment_userface"><a href="http://blog.csdn.net/heicainiuniu" target="_blank"><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/3_heicainiuniu.jpg" width="40" height="40"></a></dd><dd class="comment_body">受教了</dd></dl><dl class="comment_item comment_topic" id="comment_item_1834645"><dt class="comment_head" floor="18">18楼 <span class="user"><a class="username" href="http://blog.csdn.net/wzhm2002" target="_blank">wzhm2002</a> <span class="ptime">2011-07-04 21:33发表</span>  <a href="http://blog.csdn.net/maxleng/article/details/5490713#reply" class="cmt_btn reply" title="回复">[回复]</a> <span class="comment_manage" style="display:none;" commentid="1834645" username="wzhm2002"> <a href="http://blog.csdn.net/maxleng/article/details/5490713#quote" class="cmt_btn quote" title="引用">[引用]</a> <a href="http://blog.csdn.net/maxleng/article/details/5490713#report" class="cmt_btn report" title="举报">[举报]</a></span></span></dt><dd class="comment_userface"><a href="http://blog.csdn.net/wzhm2002" target="_blank"><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/3_wzhm2002.jpg" width="40" height="40"></a></dd><dd class="comment_body">lz 理解很到位</dd></dl><dl class="comment_item comment_topic" id="comment_item_1802085"><dt class="comment_head" floor="17">17楼 <span class="user"><a class="username" href="http://blog.csdn.net/fyh2003" target="_blank">fyh2003</a> <span class="ptime">2011-06-20 14:20发表</span>  <a href="http://blog.csdn.net/maxleng/article/details/5490713#reply" class="cmt_btn reply" title="回复">[回复]</a> <span class="comment_manage" style="display:none;" commentid="1802085" username="fyh2003"> <a href="http://blog.csdn.net/maxleng/article/details/5490713#quote" class="cmt_btn quote" title="引用">[引用]</a> <a href="http://blog.csdn.net/maxleng/article/details/5490713#report" class="cmt_btn report" title="举报">[举报]</a></span></span></dt><dd class="comment_userface"><a href="http://blog.csdn.net/fyh2003" target="_blank"><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/3_fyh2003.jpg" width="40" height="40"></a></dd><dd class="comment_body"><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/e01.gif"></dd></dl><dl class="comment_item comment_topic" id="comment_item_1620594"><dt class="comment_head" floor="16">16楼 <span class="user"><a class="username" href="http://blog.csdn.net/jinnwu" target="_blank">jinnwu</a> <span class="ptime">2011-03-22 14:41发表</span>  <a href="http://blog.csdn.net/maxleng/article/details/5490713#reply" class="cmt_btn reply" title="回复">[回复]</a> <span class="comment_manage" style="display:none;" commentid="1620594" username="jinnwu"> <a href="http://blog.csdn.net/maxleng/article/details/5490713#quote" class="cmt_btn quote" title="引用">[引用]</a> <a href="http://blog.csdn.net/maxleng/article/details/5490713#report" class="cmt_btn report" title="举报">[举报]</a></span></span></dt><dd class="comment_userface"><a href="http://blog.csdn.net/jinnwu" target="_blank"><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/3_jinnwu.jpg" width="40" height="40"></a></dd><dd class="comment_body">刚踏入，还不是很清晰，继续学习。</dd></dl><dl class="comment_item comment_topic" id="comment_item_1607600"><dt class="comment_head" floor="15">15楼 <span class="user"><a class="username" href="http://blog.csdn.net/Nemo_Mylobe" target="_blank">Nemo_Mylobe</a> <span class="ptime">2011-03-07 16:42发表</span>  <a href="http://blog.csdn.net/maxleng/article/details/5490713#reply" class="cmt_btn reply" title="回复">[回复]</a> <span class="comment_manage" style="display:none;" commentid="1607600" username="Nemo_Mylobe"> <a href="http://blog.csdn.net/maxleng/article/details/5490713#quote" class="cmt_btn quote" title="引用">[引用]</a> <a href="http://blog.csdn.net/maxleng/article/details/5490713#report" class="cmt_btn report" title="举报">[举报]</a></span></span></dt><dd class="comment_userface"><a href="http://blog.csdn.net/Nemo_Mylobe" target="_blank"><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/3_nemo_mylobe.jpg" width="40" height="40"></a></dd><dd class="comment_body">您文中提到 Dalvik 是为嵌入式打造的vm， 我的问题是，Dalvik和JVM是什么关系呢？  JVM的延伸吗？ 还是其他。<br>这篇维基百科中介绍的Dalvik和JVM是有一些本质的区别http://en.wikipedia.org/wiki/Dalvik_%28software%29</dd></dl><dl class="comment_item comment_topic" id="comment_item_1607599"><dt class="comment_head" floor="14">14楼 <span class="user"><a class="username" href="http://blog.csdn.net/Nemo_Mylobe" target="_blank">Nemo_Mylobe</a> <span class="ptime">2011-03-07 16:42发表</span>  <a href="http://blog.csdn.net/maxleng/article/details/5490713#reply" class="cmt_btn reply" title="回复">[回复]</a> <span class="comment_manage" style="display:none;" commentid="1607599" username="Nemo_Mylobe"> <a href="http://blog.csdn.net/maxleng/article/details/5490713#quote" class="cmt_btn quote" title="引用">[引用]</a> <a href="http://blog.csdn.net/maxleng/article/details/5490713#report" class="cmt_btn report" title="举报">[举报]</a></span></span></dt><dd class="comment_userface"><a href="http://blog.csdn.net/Nemo_Mylobe" target="_blank"><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/3_nemo_mylobe.jpg" width="40" height="40"></a></dd><dd class="comment_body">有幸能够拜读到博主的文章，博主能带着我们从物性人性、概念空间这样的高度来看待一个系统，确实收获颇丰，非常感谢。</dd></dl><dl class="comment_item comment_topic" id="comment_item_1584663"><dt class="comment_head" floor="13">13楼 <span class="user"><a class="username" href="http://blog.csdn.net/zyymcu" target="_blank">zyymcu</a> <span class="ptime">2011-01-24 16:18发表</span>  <a href="http://blog.csdn.net/maxleng/article/details/5490713#reply" class="cmt_btn reply" title="回复">[回复]</a> <span class="comment_manage" style="display:none;" commentid="1584663" username="zyymcu"> <a href="http://blog.csdn.net/maxleng/article/details/5490713#quote" class="cmt_btn quote" title="引用">[引用]</a> <a href="http://blog.csdn.net/maxleng/article/details/5490713#report" class="cmt_btn report" title="举报">[举报]</a></span></span></dt><dd class="comment_userface"><a href="http://blog.csdn.net/zyymcu" target="_blank"><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/3_zyymcu.jpg" width="40" height="40"></a></dd><dd class="comment_body">Android就是一堆Linux应用的集合。<img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/e03.gif">所以说嘛，说Android是个操作系统就有点牵强，是个文件系统还差不多。</dd></dl><dl class="comment_item comment_topic" id="comment_item_1578962"><dt class="comment_head" floor="12">12楼 <span class="user"><a class="username" href="http://blog.csdn.net/jdc0109" target="_blank">jdc0109</a> <span class="ptime">2011-01-13 17:00发表</span>  <a href="http://blog.csdn.net/maxleng/article/details/5490713#reply" class="cmt_btn reply" title="回复">[回复]</a> <span class="comment_manage" style="display:none;" commentid="1578962" username="jdc0109"> <a href="http://blog.csdn.net/maxleng/article/details/5490713#quote" class="cmt_btn quote" title="引用">[引用]</a> <a href="http://blog.csdn.net/maxleng/article/details/5490713#report" class="cmt_btn report" title="举报">[举报]</a></span></span></dt><dd class="comment_userface"><a href="http://blog.csdn.net/jdc0109" target="_blank"><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/3_jdc0109.jpg" width="40" height="40"></a></dd><dd class="comment_body"><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/e01.gif"></dd></dl><dl class="comment_item comment_topic" id="comment_item_1565756"><dt class="comment_head" floor="11">11楼 <span class="user"><a class="username" href="http://blog.csdn.net/evanwu_85" target="_blank">evanwu_85</a> <span class="ptime">2010-12-25 21:42发表</span>  <a href="http://blog.csdn.net/maxleng/article/details/5490713#reply" class="cmt_btn reply" title="回复">[回复]</a> <span class="comment_manage" style="display:none;" commentid="1565756" username="evanwu_85"> <a href="http://blog.csdn.net/maxleng/article/details/5490713#quote" class="cmt_btn quote" title="引用">[引用]</a> <a href="http://blog.csdn.net/maxleng/article/details/5490713#report" class="cmt_btn report" title="举报">[举报]</a></span></span></dt><dd class="comment_userface"><a href="http://blog.csdn.net/evanwu_85" target="_blank"><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/3_evanwu_85.jpg" width="40" height="40"></a></dd><dd class="comment_body">&amp;quot;在Andoid系统中我们面对的是Andoid概念空间，而不是Linux进程了，在Andoid概念空间中已经没有了Lliux进程的概念，而是Service，proxy，Activity，provider等。&amp;quot;<br>Google之所以在Linux架个android，就是为了映射到人更容易理解得概念空间？</dd></dl><dl class="comment_item comment_topic" id="comment_item_1559480"><dt class="comment_head" floor="10">10楼 <span class="user"><a class="username" href="http://blog.csdn.net/qicen" target="_blank">qicen</a> <span class="ptime">2010-12-17 13:31发表</span>  <a href="http://blog.csdn.net/maxleng/article/details/5490713#reply" class="cmt_btn reply" title="回复">[回复]</a> <span class="comment_manage" style="display:none;" commentid="1559480" username="qicen"> <a href="http://blog.csdn.net/maxleng/article/details/5490713#quote" class="cmt_btn quote" title="引用">[引用]</a> <a href="http://blog.csdn.net/maxleng/article/details/5490713#report" class="cmt_btn report" title="举报">[举报]</a></span></span></dt><dd class="comment_userface"><a href="http://blog.csdn.net/qicen" target="_blank"><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/3_qicen.jpg" width="40" height="40"></a></dd><dd class="comment_body">继续拜读了</dd></dl><dl class="comment_item comment_topic" id="comment_item_1553083"><dt class="comment_head" floor="9">9楼 <span class="user"><a class="username" href="http://blog.csdn.net/volunteerma" target="_blank">volunteerma</a> <span class="ptime">2010-12-09 15:31发表</span>  <a href="http://blog.csdn.net/maxleng/article/details/5490713#reply" class="cmt_btn reply" title="回复">[回复]</a> <span class="comment_manage" style="display:none;" commentid="1553083" username="volunteerma"> <a href="http://blog.csdn.net/maxleng/article/details/5490713#quote" class="cmt_btn quote" title="引用">[引用]</a> <a href="http://blog.csdn.net/maxleng/article/details/5490713#report" class="cmt_btn report" title="举报">[举报]</a></span></span></dt><dd class="comment_userface"><a href="http://blog.csdn.net/volunteerma" target="_blank"><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/3_volunteerma.jpg" width="40" height="40"></a></dd><dd class="comment_body"><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/e03.gif"></dd></dl><dl class="comment_item comment_topic" id="comment_item_1550840"><dt class="comment_head" floor="8">8楼 <span class="user"><a class="username" href="http://blog.csdn.net/chenlaner" target="_blank">chenlaner</a> <span class="ptime">2010-12-07 11:08发表</span>  <a href="http://blog.csdn.net/maxleng/article/details/5490713#reply" class="cmt_btn reply" title="回复">[回复]</a> <span class="comment_manage" style="display:none;" commentid="1550840" username="chenlaner"> <a href="http://blog.csdn.net/maxleng/article/details/5490713#quote" class="cmt_btn quote" title="引用">[引用]</a> <a href="http://blog.csdn.net/maxleng/article/details/5490713#report" class="cmt_btn report" title="举报">[举报]</a></span></span></dt><dd class="comment_userface"><a href="http://blog.csdn.net/chenlaner" target="_blank"><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/3_chenlaner.jpg" width="40" height="40"></a></dd><dd class="comment_body">全部收藏学习<img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/e03.gif"></dd></dl><dl class="comment_item comment_topic" id="comment_item_1544668"><dt class="comment_head" floor="7">7楼 <span class="user"><a class="username" href="http://blog.csdn.net/jack_fangdb" target="_blank">jack_fangdb</a> <span class="ptime">2010-11-29 20:52发表</span>  <a href="http://blog.csdn.net/maxleng/article/details/5490713#reply" class="cmt_btn reply" title="回复">[回复]</a> <span class="comment_manage" style="display:none;" commentid="1544668" username="jack_fangdb"> <a href="http://blog.csdn.net/maxleng/article/details/5490713#quote" class="cmt_btn quote" title="引用">[引用]</a> <a href="http://blog.csdn.net/maxleng/article/details/5490713#report" class="cmt_btn report" title="举报">[举报]</a></span></span></dt><dd class="comment_userface"><a href="http://blog.csdn.net/jack_fangdb" target="_blank"><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/3_jack_fangdb.jpg" width="40" height="40"></a></dd><dd class="comment_body">DALVIK 不是 JVM 和java 估计会有专利冲突，所以google 写了自己的虚拟机，特意说，DALVIK 不是JVM</dd></dl><dl class="comment_item comment_topic" id="comment_item_1476127"><dt class="comment_head" floor="6">6楼 <span class="user"><a class="username" href="http://blog.csdn.net/yujixi123" target="_blank">yujixi123</a> <span class="ptime">2010-08-18 13:31发表</span>  <a href="http://blog.csdn.net/maxleng/article/details/5490713#reply" class="cmt_btn reply" title="回复">[回复]</a> <span class="comment_manage" style="display:none;" commentid="1476127" username="yujixi123"> <a href="http://blog.csdn.net/maxleng/article/details/5490713#quote" class="cmt_btn quote" title="引用">[引用]</a> <a href="http://blog.csdn.net/maxleng/article/details/5490713#report" class="cmt_btn report" title="举报">[举报]</a></span></span></dt><dd class="comment_userface"><a href="http://blog.csdn.net/yujixi123" target="_blank"><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/3_yujixi123.jpg" width="40" height="40"></a></dd><dd class="comment_body">“从操作系统的角度看，Android就是一堆Linux应用的集合。从Linux角度看到的空间划分：进程空间和内核空间。从Android的应用对应着Linux的一个个进程。”<br>非常赞同</dd></dl><dl class="comment_item comment_topic" id="comment_item_1467079"><dt class="comment_head" floor="5">5楼 <span class="user"><a class="username" href="http://blog.csdn.net/hairui" target="_blank">hairui</a> <span class="ptime">2010-08-06 00:45发表</span>  <a href="http://blog.csdn.net/maxleng/article/details/5490713#reply" class="cmt_btn reply" title="回复">[回复]</a> <span class="comment_manage" style="display:none;" commentid="1467079" username="hairui"> <a href="http://blog.csdn.net/maxleng/article/details/5490713#quote" class="cmt_btn quote" title="引用">[引用]</a> <a href="http://blog.csdn.net/maxleng/article/details/5490713#report" class="cmt_btn report" title="举报">[举报]</a></span></span></dt><dd class="comment_userface"><a href="http://blog.csdn.net/hairui" target="_blank"><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/3_hairui.jpg" width="40" height="40"></a></dd><dd class="comment_body">&amp;quot;在这个分类中我将JVM分为JVM空间和C++空间。&amp;quot;<br>是不是划分为 Java 空间和 C++ 空间更加确切？</dd></dl><dl class="comment_item comment_topic" id="comment_item_1443722"><dt class="comment_head" floor="4">4楼 <span class="user"><a class="username" href="http://blog.csdn.net/darkengine" target="_blank">darkengine</a> <span class="ptime">2010-07-09 10:31发表</span>  <a href="http://blog.csdn.net/maxleng/article/details/5490713#reply" class="cmt_btn reply" title="回复">[回复]</a> <span class="comment_manage" style="display:none;" commentid="1443722" username="darkengine"> <a href="http://blog.csdn.net/maxleng/article/details/5490713#quote" class="cmt_btn quote" title="引用">[引用]</a> <a href="http://blog.csdn.net/maxleng/article/details/5490713#report" class="cmt_btn report" title="举报">[举报]</a></span></span></dt><dd class="comment_userface"><a href="http://blog.csdn.net/darkengine" target="_blank"><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/3_darkengine.jpg" width="40" height="40"></a></dd><dd class="comment_body">“虚拟机是运行在Linux之上的，Android构建在JVM之上”<br>就是说，Dalvik VM是一个LINUX的用户空间进程，而整个Android概念空间的运行是基于这个进程的？能这样理解么？</dd><dl class="comment_item comment_reply" id="comment_item_1446263"><dt class="comment_head" floor="4">Re: <span class="user"><a class="username" href="http://blog.csdn.net/maxleng" target="_blank">maxleng</a> <span class="ptime">2010-07-12 08:47发表</span>  <a href="http://blog.csdn.net/maxleng/article/details/5490713#reply" class="cmt_btn reply" title="回复">[回复]</a> <span class="comment_manage" style="display:none;" commentid="1446263" username="maxleng"> <a href="http://blog.csdn.net/maxleng/article/details/5490713#quote" class="cmt_btn quote" title="引用">[引用]</a> <a href="http://blog.csdn.net/maxleng/article/details/5490713#report" class="cmt_btn report" title="举报">[举报]</a></span></span></dt><dd class="comment_userface"><a href="http://blog.csdn.net/maxleng" target="_blank"><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/3_maxleng.jpg" width="40" height="40"></a></dd><dd class="comment_body">回复 darkengine：不能这样理解。我指的是概念空间的架构。而实际的VM实例进程有很多，这个一个集合，而不是一个。</dd></dl></dl><dl class="comment_item comment_topic" id="comment_item_1443544"><dt class="comment_head" floor="3">3楼 <span class="user"><a class="username" href="http://blog.csdn.net/%E5%8C%BF%E5%90%8D%E7%94%A8%E6%88%B7" target="_blank">匿名用户</a> <span class="ptime">2010-07-09 09:12发表</span>  <a href="http://blog.csdn.net/maxleng/article/details/5490713#reply" class="cmt_btn reply" title="回复">[回复]</a> <span class="comment_manage" style="display:none;" commentid="1443544" username="匿名用户"> <a href="http://blog.csdn.net/maxleng/article/details/5490713#quote" class="cmt_btn quote" title="引用">[引用]</a> <a href="http://blog.csdn.net/maxleng/article/details/5490713#report" class="cmt_btn report" title="举报">[举报]</a></span></span></dt><dd class="comment_userface"><a href="http://blog.csdn.net/%E5%8C%BF%E5%90%8D%E7%94%A8%E6%88%B7" target="_blank"><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/3_匿名用户.jpg" width="40" height="40"></a></dd><dd class="comment_body">看到第五篇了，很欣赏博主的文章，觉得理解到这个程度已然不易，然而用如此高水平的语言表达出来才更神奇，建议博主出本书，我第一个买。</dd></dl><dl class="comment_item comment_topic" id="comment_item_1392982"><dt class="comment_head" floor="2">2楼 <span class="user"><a class="username" href="http://blog.csdn.net/hyqzzylmd" target="_blank">hyqzzylmd</a> <span class="ptime">2010-05-25 10:21发表</span>  <a href="http://blog.csdn.net/maxleng/article/details/5490713#reply" class="cmt_btn reply" title="回复">[回复]</a> <span class="comment_manage" style="display:none;" commentid="1392982" username="hyqzzylmd"> <a href="http://blog.csdn.net/maxleng/article/details/5490713#quote" class="cmt_btn quote" title="引用">[引用]</a> <a href="http://blog.csdn.net/maxleng/article/details/5490713#report" class="cmt_btn report" title="举报">[举报]</a></span></span></dt><dd class="comment_userface"><a href="http://blog.csdn.net/hyqzzylmd" target="_blank"><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/3_hyqzzylmd.jpg" width="40" height="40"></a></dd><dd class="comment_body">分析的非常好</dd></dl><dl class="comment_item comment_topic" id="comment_item_1389713"><dt class="comment_head" floor="1">1楼 <span class="user"><a class="username" href="http://blog.csdn.net/%E5%8C%BF%E5%90%8D%E7%94%A8%E6%88%B7" target="_blank">匿名用户</a> <span class="ptime">2010-05-21 16:58发表</span>  <a href="http://blog.csdn.net/maxleng/article/details/5490713#reply" class="cmt_btn reply" title="回复">[回复]</a> <span class="comment_manage" style="display:none;" commentid="1389713" username="匿名用户"> <a href="http://blog.csdn.net/maxleng/article/details/5490713#quote" class="cmt_btn quote" title="引用">[引用]</a> <a href="http://blog.csdn.net/maxleng/article/details/5490713#report" class="cmt_btn report" title="举报">[举报]</a></span></span></dt><dd class="comment_userface"><a href="http://blog.csdn.net/%E5%8C%BF%E5%90%8D%E7%94%A8%E6%88%B7" target="_blank"><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/3_匿名用户.jpg" width="40" height="40"></a></dd><dd class="comment_body"><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/e01.gif"></dd></dl><div class="clear"></div></div>
+<div id="comment_bar" style="display: none; "></div>
+<div id="comment_form"><a name="commentbox"></a><a name="reply"></a><a name="quote"></a><form action="http://blog.csdn.net/maxleng/comment/submit?id=5490713" method="post"><div class="commentform"><div class="panel_head">发表评论</div><ul><li class="left">用 户 名：</li><li class="right">victoryckl</li></ul><ul><li class="left">评论内容：</li><li class="right" style="position:relative;"><div id="ubbtools"><a href="http://blog.csdn.net/maxleng/article/details/5490713#insertcode" code="code"><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/code.gif" border="0" alt="插入代码" title="插入代码"></a></div><div id="lang_list" style="display:none; position:absolute;top:25px; left:0px;"><a href="http://blog.csdn.net/maxleng/article/details/5490713#html">HTML/XML</a><a href="http://blog.csdn.net/maxleng/article/details/5490713#javascript">JavaScript</a><a href="http://blog.csdn.net/maxleng/article/details/5490713#css">CSS</a><a href="http://blog.csdn.net/maxleng/article/details/5490713#php">PHP</a><a href="http://blog.csdn.net/maxleng/article/details/5490713#csharp">C#</a><a href="http://blog.csdn.net/maxleng/article/details/5490713#cpp">C++</a><a href="http://blog.csdn.net/maxleng/article/details/5490713#java">Java</a><a href="http://blog.csdn.net/maxleng/article/details/5490713#python">Python</a><a href="http://blog.csdn.net/maxleng/article/details/5490713#ruby">Ruby</a><a href="http://blog.csdn.net/maxleng/article/details/5490713#vb">Visual Basic</a><a href="http://blog.csdn.net/maxleng/article/details/5490713#delphi">Delphi</a><a href="http://blog.csdn.net/maxleng/article/details/5490713#sql">SQL</a><a href="http://blog.csdn.net/maxleng/article/details/5490713#plain">其它</a></div><textarea class="comment_content" name="comment_content" id="comment_content" style="width: 400px; height: 200px;"></textarea></li></ul><ul><input type="hidden" id="comment_replyId" name="comment_replyId"><input type="hidden" id="comment_userId" name="comment_userId" value="521203"><input type="hidden" id="commentId" name="commentId" value=""><input type="submit" class="comment_btn" value="提交">&nbsp;&nbsp;<span id="tip_comment" style="color: Red; display: none;"></span></ul></div></form></div>
+<div class="announce">* 以上用户言论只代表其个人观点，不代表CSDN网站的观点或立场<a name="reply"></a><a name="quote"></a></div>
+<script type="text/javascript">
+    var fileName = '5490713';
+    var commentscount = 29;
+    var islock = false
+</script>
+<script type="text/javascript" src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/comment.js"></script>
+<div id="ad_bot"><iframe id="ad_frm_1" frameborder="0" scrolling="no" style="border-top-width: 0px; border-right-width: 0px; border-bottom-width: 0px; border-left-width: 0px; overflow-x: hidden; overflow-y: hidden; width: 732px; height: 170px; " src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/ad(3).htm"></iframe></div>
+<script type="text/javascript">
+    new Ad(5, 'ad_bot');
+</script>
+<div id="report_dialog"></div>
+
+
+<div class="clear"></div>
+</div>
+</div>
+<div id="side">
+    <div class="side">
+<div id="panel_Profile" class="panel">
+    <ul class="panel_head"><span>个人资料</span></ul>
+    <ul class="panel_body profile">
+        <div id="blog_userface">
+            <a href="http://my.csdn.net/maxleng" target="_blank">
+            <img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/1_maxleng.jpg" title="访问我的空间" style="max-width:90%">
+            </a>
+            <br>
+            <span><a href="http://my.csdn.net/maxleng" target="_blank">maxleng</a></span>
+        </div>
+<div class="interact">
+<!--<a href="#" class="attented" title="已关注"></a>-->
+<a href="http://blog.csdn.net/maxleng/article/details/5490713#" class="attent" id="span_add_follow" title="[加关注]"></a>
+<a href="http://my.csdn.net/my/letter/send/maxleng" class="letter" title="[发私信]"></a>
+</div>
+        <div id="blog_medal">
+        <div id="bms_box"><a href="http://medal.blog.csdn.net/allmedal.aspx" target="_blank"><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/columnstar_s.gif" onmouseover="m_over_m(this,0)" onmouseout="m_out_m()" alt=""></a></div></div>
+        <ul id="blog_rank">
+            <li>访问：<span>769584次</span></li>
+            <li>积分：<span>4191分</span></li>
+            <li>排名：<span>第715名</span></li>
+        </ul>
+        <ul id="blog_statistics">
+            <li>原创：<span>31篇</span></li>
+            <li>转载：<span>0篇</span></li>
+            <li>译文：<span>0篇</span></li>
+            <li>评论：<span>939条</span></li>
+        </ul>
+    </ul>
+</div>
+
+<script type="text/javascript">
+var _blogger='maxleng';
+$(document).ready(function () {
+    $('#span_add_follow').click(function () {
+        var url = "http://my.csdn.net/index.php/follow/do_follow?jsonpcallback=?";
+        $.getJSON(url, { "username": _blogger }, function (data) {
+            if (data.succ == 1) {
+                alert('关注成功！');
+                $('#span_add_follow').attr('class', 'attented').click(function () { return false; });
+            } else {
+                alert(data.msg);
+            }
+        });
+    });
+    if (getUN().toLowerCase() == _blogger.toLowerCase()) {
+        $('.interact').hide();
+    }
+});
+function getUN() {
+    var m = document.cookie.match(new RegExp("(^| )UserName=([^;]*)(;|$)"));
+    if (m) return m[2];
+    else return '';
+}
+</script>
+
+<div class="panel" id="panel_Search">
+    <ul class="panel_head"><span>文章搜索</span></ul>
+    <ul class="panel_body">
+        <form id="frmSearch" action="http://so.csdn.net/search" class="form_search" target="_blank">
+        <span><input id="inputSearch" type="text" class="blogsearch" title="请输入关键字"></span>
+        <input id="btnSubmit" type="submit" value="搜索" title="search in blog">
+        <input type="hidden" name="q" id="inputQ">
+        <input type="hidden" name="t" value="blog">
+        <a id="btnSearchBlog" target="_blank"></a>
+        </form>
+    </ul>
+</div><div id="panel_Category" class="panel">
+    <ul class="panel_head"><span>博客专栏</span></ul>
+    <ul class="panel_body" id="sp_column">
+    <table cellpadding="0" cellspacing="0"><tbody><tr>
+    <td style="padding:10px 10px 0 0;">
+    <a href="http://blog.csdn.net/column/details/androidcore.html" target="_blank"><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/20111124134411858.jpg" style="width:75px;height:75px;"></a>
+    </td>
+    <td style="padding:10px 0; vertical-align:top;">
+    <a href="http://blog.csdn.net/column/details/androidcore.html" target="_blank">Android核心分析</a>
+    <p>文章数：28篇</p>
+    <span>阅读量：748262</span>
+    </td>
+    </tr></tbody></table>
+    </ul>
+</div><div id="panel_Category" class="panel">
+    <ul class="panel_head"><span>文章分类</span></ul>
+    <ul class="panel_body">
+        <li>
+        <a href="http://blog.csdn.net/maxleng/article/category/677334">技术</a><span>(0)</span>
+        
+        </li>
+        <li>
+        <a href="http://blog.csdn.net/maxleng/article/category/677336">生活</a><span>(0)</span>
+        
+        </li>
+        <li>
+        <a href="http://blog.csdn.net/maxleng/article/category/677335">管理</a><span>(1)</span>
+        
+        </li>
+    </ul>
+</div><div id="panel_Archive" class="panel">
+    <ul class="panel_head"><span>文章存档</span></ul>
+    <ul class="panel_body">
+        <div id="archive_list">
+        <!--归档统计-->
+        <li><a href="http://blog.csdn.net/maxleng/article/month/2010/07">2010年07月</a>(3)</li><li><a href="http://blog.csdn.net/maxleng/article/month/2010/06">2010年06月</a>(6)</li><li><a href="http://blog.csdn.net/maxleng/article/month/2010/05">2010年05月</a>(13)</li><li><a href="http://blog.csdn.net/maxleng/article/month/2010/04">2010年04月</a>(9)</li>
+        </div>
+    </ul>
+</div>
+<div id="hotarticls" class="panel">
+    <ul class="panel_head"><span>阅读排行</span></ul>
+    <ul class="panel_body">
+        <li>
+            <a href="http://blog.csdn.net/maxleng/article/details/5490770" title="Android 核心分析 之六 -----IPC框架分析 Binder，Service，Service manager">Android 核心分析 之六 ----...</a> (104288)
+        </li>
+        <li>
+            <a href="http://blog.csdn.net/maxleng/article/details/5508372" title="Android 核心分析 之八------Android 启动过程详解">Android 核心分析 之八-----...</a> (51564)
+        </li>
+        <li>
+            <a href="http://blog.csdn.net/maxleng/article/details/5504485" title=" Android 核心分析 之七------Service深入分析"> Android 核心分析 之七----...</a> (46156)
+        </li>
+        <li>
+            <a href="http://blog.csdn.net/maxleng/article/details/5671271" title="Android核心分析（26）-----Android GDI之SurfaceFlinger">Android核心分析（26）-----...</a> (35233)
+        </li>
+        <li>
+            <a href="http://blog.csdn.net/maxleng/article/details/5471557" title="Android核心分析 之一--------分析方法论探讨之设计意图">Android核心分析 之一------...</a> (34601)
+        </li>
+        <li>
+            <a href="http://blog.csdn.net/maxleng/article/details/5621345" title="Android核心分析（21）----Android应用框架之AndroidApplication">Android核心分析（21）----A...</a> (30772)
+        </li>
+        <li>
+            <a href="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET.htm" title="Android 核心分析 之五 -----基本空间划分">Android 核心分析 之五 ----...</a> (27527)
+        </li>
+        <li>
+            <a href="http://blog.csdn.net/maxleng/article/details/5508488" title="Android核心分析 之九-------Zygote Service">Android核心分析 之九------...</a> (26758)
+        </li>
+        <li>
+            <a href="http://blog.csdn.net/maxleng/article/details/5472988" title="Android核心分析 之二 -------方法论探讨之概念空间篇 ">Android核心分析 之二 -----...</a> (25773)
+        </li>
+        <li>
+            <a href="http://blog.csdn.net/maxleng/article/details/5593759" title="Android核心分析（18）-----Android电话系统之RIL-Java">Android核心分析（18）-----...</a> (25404)
+        </li>
+    </ul>
+</div>
+<div id="hotarticls" class="panel">
+    <ul class="panel_head"><span>评论排行</span></ul>
+    <ul class="panel_body">
+        <li>
+            <a href="http://blog.csdn.net/maxleng/article/details/5471557" title="Android核心分析 之一--------分析方法论探讨之设计意图">Android核心分析 之一------...</a> (79)
+        </li>
+        <li>
+            <a href="http://blog.csdn.net/maxleng/article/details/5765088" title="一个程序员眼中的团队原型思考(3)---- 个体的孤独和团队的力量">一个程序员眼中的团队原型思考(3)---...</a> (71)
+        </li>
+        <li>
+            <a href="http://blog.csdn.net/maxleng/article/details/5490770" title="Android 核心分析 之六 -----IPC框架分析 Binder，Service，Service manager">Android 核心分析 之六 ----...</a> (68)
+        </li>
+        <li>
+            <a href="http://blog.csdn.net/maxleng/article/details/5504485" title=" Android 核心分析 之七------Service深入分析"> Android 核心分析 之七----...</a> (63)
+        </li>
+        <li>
+            <a href="http://blog.csdn.net/maxleng/article/details/5765047" title="一个程序员眼中的团队原型思考（1）-个体的孤独和团队的力量">一个程序员眼中的团队原型思考（1）-个体...</a> (57)
+        </li>
+        <li>
+            <a href="http://blog.csdn.net/maxleng/article/details/5671377" title="Android核心分析（28）-----Android GDI之Surface&amp;Canvas">Android核心分析（28）-----...</a> (41)
+        </li>
+        <li>
+            <a href="http://blog.csdn.net/maxleng/article/details/5508372" title="Android 核心分析 之八------Android 启动过程详解">Android 核心分析 之八-----...</a> (39)
+        </li>
+        <li>
+            <a href="http://blog.csdn.net/maxleng/article/details/5576637" title="Android核心分析（17） ------电话系统之rilD">Android核心分析（17） ----...</a> (37)
+        </li>
+        <li>
+            <a href="http://blog.csdn.net/maxleng/article/details/5472988" title="Android核心分析 之二 -------方法论探讨之概念空间篇 ">Android核心分析 之二 -----...</a> (34)
+        </li>
+        <li>
+            <a href="http://blog.csdn.net/maxleng/article/details/5621345" title="Android核心分析（21）----Android应用框架之AndroidApplication">Android核心分析（21）----A...</a> (34)
+        </li>
+    </ul>
+</div>
+<div id="homepageArticles" class="panel">
+    <ul class="panel_head"><span>推荐文章</span></ul>
+    <ul class="panel_body" id="ad_commend"><iframe id="ad_frm_2" frameborder="0" scrolling="no" style="border-top-width: 0px; border-right-width: 0px; border-bottom-width: 0px; border-left-width: 0px; overflow-x: hidden; overflow-y: hidden; width: 182px; height: 218px; " src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/ad.htm"></iframe></ul>
+</div>
+<script type="text/javascript" src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/ad.js"></script>
+<script type="text/javascript">
+    new Ad(12, 'ad_commend');
+</script><div id="newcomments" class="panel">
+<ul class="panel_head"><span>最新评论</span></ul>
+<ul class="panel_body">
+    <li>
+    <a href="http://blog.csdn.net/maxleng/article/details/5471557#comments">Android核心分析 之一--------分析方法论探讨之设计意图</a>
+    <p style="margin:0px;">mobaini:
+谢谢楼主，我正好需要写一片关于ios研究的文章。我发现把楼主的文章中所有的android改为ios，...
+    </p>
+    </li>
+    <li>
+    <a href="http://blog.csdn.net/maxleng/article/details/5593759#comments">Android核心分析（18）-----Android电话系统之RIL-Java</a>
+    <p style="margin:0px;">head_body:
+写的很好。谢谢！
+    </p>
+    </li>
+    <li>
+    <a href="http://blog.csdn.net/maxleng/article/details/5670970#comments">Android核心分析（25）------Android GDI之共享缓冲区机制</a>
+    <p style="margin:0px;">dajijidanaizi:
+Hi,整个系统中只有一个SharedClient对象,请问应该怎样理解：(1)是系统中只有一个Sha...
+    </p>
+    </li>
+    <li>
+    <a href="http://blog.csdn.net/maxleng/article/details/5552976#comments">Android核心分析 之十一-------Android GWES之消息系统</a>
+    <p style="margin:0px;">zuoluo032:
+这个有点范，加个例子就好了
+    </p>
+    </li>
+    <li>
+    <a href="http://blog.csdn.net/maxleng/article/details/5471557#comments">Android核心分析 之一--------分析方法论探讨之设计意图</a>
+    <p style="margin:0px;">longfeey:
+@wwweducn:同感，每次读源码，读着读着，就跑偏了！
+    </p>
+    </li>
+    <li>
+    <a href="http://blog.csdn.net/maxleng/article/details/5671375#comments">Android核心分析（27）-----Android GDI 之SurfaceFlinger之动态结构示意图</a>
+    <p style="margin:0px;">longfeey:
+太N了，我看了好几周代码了，都迷迷糊糊的，没有搞明白！
+    </p>
+    </li>
+    <li>
+    <a href="http://blog.csdn.net/maxleng/article/details/5557758#comments">Android 核心分析(13) -----Android GWES之Android窗口管理</a>
+    <p style="margin:0px;">fronterZ:
+从代码里面看 WindowManagerImpl使用ViewRoot与别处进行交互呢？？这里的Win...
+    </p>
+    </li>
+    <li>
+    <a href="http://blog.csdn.net/maxleng/article/details/5618698#comments">Android核心分析（20)----Android应用程序框架之无边界设计意图</a>
+    <p style="margin:0px;">hp_2008:
+一切源于哲学，哲学指导一切
+    </p>
+    </li>
+    <li>
+    <a href="http://blog.csdn.net/maxleng/article/details/5621345#comments">Android核心分析（21）----Android应用框架之AndroidApplication</a>
+    <p style="margin:0px;">fronterZ:
+讲的不是蛮清楚...
+    </p>
+    </li>
+    <li>
+    <a href="http://blog.csdn.net/maxleng/article/details/5504485#comments"> Android 核心分析 之七------Service深入分析</a>
+    <p style="margin:0px;">weihan1314:
+up and down
+    </p>
+    </li>
+</ul>
+</div>
+    </div>
+    <div class="clear">
+    </div>
+</div>
+
+<div class="clear"></div>
+</div>
+<script type="text/javascript" src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/shCore-src.js"></script>
+<script type="text/javascript" src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/ZeroClipboard.js"></script>
+<script type="text/javascript" src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/article_code.js"></script>
+
+<script type="text/javascript" src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/show.js"></script>
+<script type="text/javascript" src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/showblogmedal.ashx"></script>
+<script type="text/javascript">document.write("<img src=http://counter.csdn.net/pv.aspx?id=24 border=0 width=0 height=0>");</script><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/pv.aspx" border="0" width="0" height="0">
+<script type="text/javascript" src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/counter.js"></script><script type="text/javascript" charset="UTF-8" src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/msg.popup.js"></script><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/visitlog.php" width="1" height="1" border="0" alt="">
+<script type="text/javascript" src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/publib_footer.js"></script><link rel="stylesheet" type="text/css" href="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/pub_footerstyle.css"><div class="pub_footerall"><dl><dt></dt> <dd><a href="http://www.csdn.net/company/about.html" target="_blank">公司简介</a>|<a href="http://www.csdn.net/company/recruit.html" target="_blank">招贤纳士</a>|<a href="http://www.csdn.net/company/marketing.html" target="_blank">广告服务</a>|<a href="http://www.csdn.net/company/account.html" target="_blank">银行汇款帐号</a>|<a href="http://www.csdn.net/company/contact.html" target="_blank">联系方式</a>|<a href="http://www.csdn.net/company/statement.html" target="_blank">版权声明</a>|<a href="http://www.csdn.net/company/layer.html" target="_blank">法律顾问</a>|<a href="mailto:webmaster@csdn.net">问题报告</a></dd><dd>北京创新乐知信息技术有限公司 版权所有,&nbsp;京&nbsp;ICP&nbsp;证&nbsp;070598&nbsp;号</dd><dd>世纪乐知(北京)网络技术有限公司 提供技术支持</dd><dd>江苏乐知网络技术有限公司 提供商务支持</dd><dd><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/pic_email.gif" alt="" title=""> Email:webmaster@csdn.net</dd><dd>Copyright © 1999-2012, CSDN.NET, All Rights Reserved</dd><dd><a href="http://www.hd315.gov.cn/beian/view.asp?bianhao=010202001032100010" target="_blank"><img src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/gongshang_logos.gif" alt="GongshangLogo" title=""></a></dd></dl></div>
+
+
+<script type="text/javascript" src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/ad(1).js"></script>
+
+
+</div>
+
+<img style="width: 1px; height: 1px; position: absolute; visibility: hidden; " src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/show.aspx"><img style="width: 1px; height: 1px; position: absolute; visibility: hidden; " src="./Android 核心分析 之五 -----基本空间划分 - maxleng的专栏 - 博客频道 - CSDN.NET_files/view.aspx"></body></html>

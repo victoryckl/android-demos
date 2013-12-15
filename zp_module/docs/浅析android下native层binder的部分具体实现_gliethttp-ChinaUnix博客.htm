@@ -1,0 +1,903 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0052)http://blog.chinaunix.net/uid-20564848-id-73547.html -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=GBK">
+
+
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7">
+<title> 浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客</title>
+<meta name="description" content=" 浅析android下native层binder的部分具体实现在defaultServiceManager()方法中：[luther.gliethttp]==&amp;gtdefaultServiceManager==&amp;gtsp&amp;ltIServiceManager&gt; gDefaultServiceManager的m_ptr指向new BpServiceManager(obj)因为=这个操作符被sp类模板重载这个o"><script type="text/javascript" async="" src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/ga.js"></script><script language="javascript" type="text/javascript" src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/script_cookie.js"></script>
+<script language="javascript" type="text/javascript" src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/script_common.js"></script>
+<script language="javascript" type="text/javascript" src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/script_menu.js"></script>
+<script language="javascript" type="text/javascript" src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/script_ajax.js"></script>
+<script language="javascript" type="text/javascript" src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/script_face.js"></script>
+<script language="javascript" type="text/javascript" src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/script_manage.js"></script>
+<link rel="StyleSheet" href="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/style.css" type="text/css" media="screen">
+ 
+<link rel="StyleSheet" href="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/default.css" type="text/css" media="screen">
+</head>
+<body><link href="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/jiathis_share.css" rel="stylesheet" type="text/css"><iframe style="position: absolute; opacity: 0; display: none; " frameborder="0"></iframe><div id="ckepop" style="position: absolute; z-index: 1000000000; top: 50%; left: 50%; overflow-x: auto; overflow-y: auto; display: none; "></div><div id="ckepop" style="position: absolute; z-index: 1000000000; display: none; overflow-x: auto; overflow-y: auto; "></div><iframe style="display: none; " frameborder="0" src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/jiathis_utility.htm"></iframe>
+
+<style type="text/css">
+@import url(http://blog.chinaunix.net/css/nav.css);
+</style>
+
+<div class="login">
+<div class="Content">
+<div class="l1" id="ll">
+
+<a href="http://www.chinaunix.net/" target="_blank">CU首页</a>
+<a href="http://blog.chinaunix.net/link.php?url=http://bbs.chinaunix.net" title="CU论坛" target="_blank">CU论坛首页</a>
+<a href="http://blog.chinaunix.net/link.php?url=http://blog.chinaunix.net" title="CU博客" target="_blank">CU博客首页</a>   ┊ 
+<a href="http://blog.chinaunix.net/do.php?ac=wuxingzypcw213">登录</a>
+<a href="http://blog.chinaunix.net/do.php?ac=8f442ba1e0c79cd3efcd1fd42b8aad8e">注册</a>
+   ┊    
+<a href="http://blog.chinaunix.net/network.php">随便看看</a>
+</div>
+<div class="r1">
+<form action="http://blog.chinaunix.net/cp.php" method="get">
+    <input type="hidden" name="ac" id="ac" value="search">
+<input type="submit" class="btn1" style="margin-bottom:0px;" value="">
+<select name="searchType" id="searchType" style="line-height: 13px;margin-bottom:0px;padding:0px;height:21px;">
+<option value="blog">博文</option>
+<option value="friend">博主</option>
+<option value="album">相册</option>
+<option value="poll">投票</option>
+<option value="event">活动</option>
+</select>
+<input type="text" class="inp1" name="searchkey" id="searchkey" style="margin-bottom:0px;">
+<a href="http://blog.chinaunix.net/cp.php?ac=blog" class="a1">发博文</a>
+</form>
+</div>
+</div>
+</div>
+
+<ul id="ucappmenu_menu" class="dropmenu_drop" style="display:none;">
+<li><a href="http://blog.chinaunix.net/link.php?url=http://bbs.chinaunix.net" title="CU论坛" target="_blank">CU论坛首页</a></li>
+<li><a href="http://blog.chinaunix.net/link.php?url=http://blog.chinaunix.net" title="CU博客" target="_blank">CU博客首页</a></li>
+</ul>
+
+
+<div id="append_parent" style="z-index:99999;"></div>
+<div id="ajaxwaitid"></div>
+<span id="pageSet"></span>
+<div class="Content" id="Content">
+<div class="top" id="top" style=" position:relative;">
+    <div class="tm"><a href="http://blog.chinaunix.net/link.php?url=http%3A%2F%2Fblog.chinaunix.net%2Fuid-24789255-id-3135976.html%26stats%3Dclick" target="_blank">公告：Android开发征文 即将结束欢迎参与！ </a></div>
+<div class="addr">
+       			<b id="home_title">gliethttp</b>
+   	 <p>
+<a href="http://blog.chinaunix.net/uid/20564848.html">gliethttp.blog.chinaunix.net</a>
+</p>
+<span id="blog_brief">
+<span id="blog_b">飞镖luther.ge@163.com</span>&nbsp;&nbsp;&nbsp;
+</span>
+<div id="blog_brief_form" style="display:none; height:auto;">
+ 		<form id="brief_form" method="post" action="http://blog.chinaunix.net/do.php?ac=ajax&op=blog_brief">
+              			<input type="text" id="blog_brief" name="blog_brief" value="飞镖luther.ge@163.com" size="50" style="margin-bottom:0px;">
+             			<input type="button" onclick="checkBbrief();" value="提交" class="submit" style="height:20px;margin-bottom:0px;">&nbsp;
+            			<input type="hidden" name="formhash" value="afbe2f4a">
+              			<input type="button" value="取消" class="submit" style="height:20px;margin-bottom:0px;" onclick="s(&#39;blog_brief&#39;);h(&#39;blog_brief_form&#39;);">
+             		 </form>
+</div>
+             
+<!-- 徽章定位3 -->
+</div>
+<div class="daoh">
+<a href="http://blog.chinaunix.net/uid/20564848.html">首页</a> | 
+<a href="http://blog.chinaunix.net/uid/20564848/frmd/-1.html" class="here" ;="">博文目录</a>  |  
+<a href="http://blog.chinaunix.net/space.php?do=album&view=me&uid=20564848">相册</a>  |  
+<a href="http://blog.chinaunix.net/group.php" target="_blank">博客圈</a>  |
+<a href="http://blog.chinaunix.net/space.php?do=profile&uid=20564848">关于我</a>  |
+<a href="http://blog.chinaunix.net/space.php?do=profile&uid=20564848#comment">留言</a>
+</div>
+</div>
+<link href="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/fck_editorarea.css" rel="stylesheet" type="text/css">
+<div class="l2 r4">	
+<!-- 个人资料 -->
+<div class="bor1 mt10" id="profile">
+<div class="tit1">个人资料</div>
+<div class="Img dingwei_img1"><a href="http://blog.chinaunix.net/uid/20564848.html"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/48_avatar_big.jpg" onerror="this.onerror=null;this.src=&#39;http://passport.ixpub.net/images/noavatar_big.gif&#39;"></a>
+</div>
+<div class="Text">
+<div class="p1">
+<a href="http://blog.chinaunix.net/uid/20564848.html">gliethttp</a>
+   		   		</div>
+<div class="p3" style="height:38px;">
+ <a href="http://blog.chinaunix.net/space.php?do=doing&view=me&uid=20564848" target="_blank">微博</a>
+ <a href="http://bbs.chinaunix.net/" target="_blank">论坛</a>
+</div>
+<div class="p3"> 
+ <a href="http://blog.chinaunix.net/cp.php?ac=pm&uid=20564848" id="a_pm" onclick="ajaxmenu(event, this.id, 1)">发纸条</a> 
+ <a href="http://blog.chinaunix.net/cp.php?ac=poke&op=send&uid=20564848" id="a_poke" onclick="ajaxmenu(event, this.id, 1)">打招呼</a>
+ <span id="attention"><a href="javascript:;" onclick="attention(20564848 , &#39;add&#39;);">加关注</a></span>
+   <a href="http://blog.chinaunix.net/cp.php?ac=friend&op=add&uid=20564848" id="a_friend_li" onclick="ajaxmenu(event, this.id, 1)">加好友</a>
+ </div>
+
+<div class="list1">
+<ul>
+<li>博客访问：5417577</li>
+<li>博文数量：2180</li>
+<li>博客积分：11516</li>
+<li>博客等级：<a href="http://blog.chinaunix.net/cp.php?ac=credit&op=usergroup">上将</a> </li>
+<li>关注人气： 32</li>
+<li>注册时间：2007-05-17 13:56:51</li>
+</ul>
+</div>
+</div>
+</div>
+
+<!-- 文章分类 -->
+<div class="bor1 mt10" id="blist">
+<div class="tit1">文章分类</div>
+<div class="allla">
+<div class="alll"><a href="http://blog.chinaunix.net/uid/20564848/frmd/-1.html">全部博文<b>(2180)</b></a></div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3707.html" title="audio﹑bluetoot和video">audio﹑bluetoot和video(206)</a></div>
+<div style="display:none;" id="DIV_3707" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3725.html" title="wifi和wpa_supplicant">wifi和wpa_supplicant(29)</a></div>
+<div style="display:none;" id="DIV_3725" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3745.html" title="insight">insight(0)</a></div>
+<div style="display:none;" id="DIV_3745" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3728.html" title="nand和yaffs2、jffs2等">nand和yaffs2、jffs2等(27)</a></div>
+<div style="display:none;" id="DIV_3728" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3706.html" title="arm开发">arm开发(87)</a></div>
+<div style="display:none;" id="DIV_3706" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3744.html" title="mips开发">mips开发(10)</a></div>
+<div style="display:none;" id="DIV_3744" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3743.html" title="php">php(9)</a></div>
+<div style="display:none;" id="DIV_3743" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3708.html" title="fedora/readhat">fedora/readhat(24)</a></div>
+<div style="display:none;" id="DIV_3708" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3742.html" title="安全﹑认证﹑黑客">安全﹑认证﹑黑客(30)</a></div>
+<div style="display:none;" id="DIV_3742" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3741.html" title="操作系统（PC和嵌入式）">操作系统（PC和嵌入式）(8)</a></div>
+<div style="display:none;" id="DIV_3741" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3727.html" title="sd接口">sd接口(9)</a></div>
+<div style="display:none;" id="DIV_3727" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3738.html" title="GSM/GPRS无线通信">GSM/GPRS无线通信(8)</a></div>
+<div style="display:none;" id="DIV_3738" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3724.html" title="tty串口﹑hid鼠标键盘和usb盘相关">tty串口﹑hid鼠标键盘和usb盘相关(95)</a></div>
+<div style="display:none;" id="DIV_3724" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3703.html" title="软硬件tcpip﹑unix通信应用工具等">软硬件tcpip﹑unix通信应用工具等(77)</a></div>
+<div style="display:none;" id="DIV_3703" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3726.html" title="PCB电路板制作和场强等模拟电路知识">PCB电路板制作和场强等模拟电路知识(44)</a></div>
+<div style="display:none;" id="DIV_3726" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3740.html" title="产品">产品(5)</a></div>
+<div style="display:none;" id="DIV_3740" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3739.html" title="cs8900">cs8900(2)</a></div>
+<div style="display:none;" id="DIV_3739" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3737.html" title="DMA">DMA(6)</a></div>
+<div style="display:none;" id="DIV_3737" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3736.html" title="atom">atom(5)</a></div>
+<div style="display:none;" id="DIV_3736" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3709.html" title="android手机相关知识">android手机相关知识(96)</a></div>
+<div style="display:none;" id="DIV_3709" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3735.html" title="经济">经济(9)</a></div>
+<div style="display:none;" id="DIV_3735" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3734.html" title="pci">pci(17)</a></div>
+<div style="display:none;" id="DIV_3734" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3733.html" title="wine">wine(7)</a></div>
+<div style="display:none;" id="DIV_3733" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3732.html" title="wiki">wiki(9)</a></div>
+<div style="display:none;" id="DIV_3732" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3691.html" title="linux开发﹑内核交叉编译﹑arm移植">linux开发﹑内核交叉编译﹑arm移植(216)</a></div>
+<div style="display:none;" id="DIV_3691" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3697.html" title="算法、心得和多领域技术原理">算法、心得和多领域技术原理(133)</a></div>
+<div style="display:none;" id="DIV_3697" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3731.html" title="菜谱">菜谱(12)</a></div>
+<div style="display:none;" id="DIV_3731" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3730.html" title="linux应用程序开发和工具使用等">linux应用程序开发和工具使用等(112)</a></div>
+<div style="display:none;" id="DIV_3730" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3716.html" title="minigui﹑ucgui等GUI相关">minigui﹑ucgui等GUI相关(68)</a></div>
+<div style="display:none;" id="DIV_3716" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3694.html" title="ecos和redboot开发">ecos和redboot开发(18)</a></div>
+<div style="display:none;" id="DIV_3694" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3729.html" title="busybox">busybox(19)</a></div>
+<div style="display:none;" id="DIV_3729" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3717.html" title="Makefile﹑GCC和GDB编译相关">Makefile﹑GCC和GDB编译相关(54)</a></div>
+<div style="display:none;" id="DIV_3717" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3723.html" title="firmware">firmware(3)</a></div>
+<div style="display:none;" id="DIV_3723" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3722.html" title="logcat">logcat(1)</a></div>
+<div style="display:none;" id="DIV_3722" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3721.html" title="binder">binder(7)</a></div>
+<div style="display:none;" id="DIV_3721" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3720.html" title="adb">adb(7)</a></div>
+<div style="display:none;" id="DIV_3720" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3719.html" title="syslogd">syslogd(2)</a></div>
+<div style="display:none;" id="DIV_3719" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3718.html" title="hald">hald(3)</a></div>
+<div style="display:none;" id="DIV_3718" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3711.html" title="shell">shell(56)</a></div>
+<div style="display:none;" id="DIV_3711" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3715.html" title="dbus">dbus(15)</a></div>
+<div style="display:none;" id="DIV_3715" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3714.html" title="windows">windows(59)</a></div>
+<div style="display:none;" id="DIV_3714" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3705.html" title="ubuntu">ubuntu(248)</a></div>
+<div style="display:none;" id="DIV_3705" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3693.html" title="ucos-ii开发">ucos-ii开发(10)</a></div>
+<div style="display:none;" id="DIV_3693" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3692.html" title="wince开发">wince开发(26)</a></div>
+<div style="display:none;" id="DIV_3692" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3702.html" title="freertos">freertos(8)</a></div>
+<div style="display:none;" id="DIV_3702" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3696.html" title="ddk驱动开发">ddk驱动开发(2)</a></div>
+<div style="display:none;" id="DIV_3696" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3704.html" title="51单片机">51单片机(2)</a></div>
+<div style="display:none;" id="DIV_3704" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3710.html" title="python">python(24)</a></div>
+<div style="display:none;" id="DIV_3710" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3695.html" title="delphi">delphi(45)</a></div>
+<div style="display:none;" id="DIV_3695" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3713.html" title="C++和C">C++和C(18)</a></div>
+<div style="display:none;" id="DIV_3713" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3712.html" title="java">java(6)</a></div>
+<div style="display:none;" id="DIV_3712" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3700.html" title="日记">日记(71)</a></div>
+<div style="display:none;" id="DIV_3700" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3698.html" title="文摘">文摘(28)</a></div>
+<div style="display:none;" id="DIV_3698" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3701.html" title="影视">影视(17)</a></div>
+<div style="display:none;" id="DIV_3701" class="alll3">
+</div>
+<div class="alll1"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/list3.gif"><a href="http://blog.chinaunix.net/uid/20564848/frmd/3699.html" title="生活其他">生活其他(69)</a></div>
+<div style="display:none;" id="DIV_3699" class="alll3">
+</div>
+<div class="alll"><a href="http://blog.chinaunix.net/uid/20564848/frmd/0.html">未分类博文(2)</a></div>
+</div>
+</div>
+<script>
+function opDIV(id){
+if(document.getElementById('DIV_'+id).style.display=='none'){
+document.getElementById('DIV_'+id).style.display='block';
+document.getElementById(id).src="/image/list4.gif";
+}else{
+document.getElementById('DIV_'+id).style.display='none';
+document.getElementById(id).src="/image/list41.gif";
+}
+}
+</script>
+
+
+<!-- 订阅我的博客 -->
+<div class="bor1 mt10" id="rss">
+<div class="tit1">订阅我的博客</div>
+<ul class="list3">
+<li><a href="http://blog.chinaunix.net/rss.php?uid=20564848"><img alt="订阅" src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/feedsky.gif" width="49" height="16"></a></li>
+<li><a target="_blank" href="http://www.xianguo.com/subscribe.php?url=http://home.chinaunix.com/rss.php?uid=20564848"><img border="0" alt="订阅到鲜果" src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/d2.png"></a></li>
+<li><a target="_blank" href="http://www.zhuaxia.com/add_channel.php?url=http://home.chinaunix.com/rss.php?uid=20564848"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/d3.png" width="103" height="16" border="0" alt="订阅到抓虾"></a></li>
+<li><a target="_blank" href="http://fusion.google.com/add?feedurl=http://home.chinaunix.com/rss.php?uid=20564848"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/d4.png" width="103" height="16" border="0" alt="订阅到Google"></a></li>
+</ul>
+</div>
+
+
+<!-- 好友 -->
+
+<!-- 最近来访 -->
+</div>
+<div class="r2 l4" id="blog_center" style="position:relative">
+<!-- 博文 -->
+<div class="bor1 mt10">
+<div class="tit5"><span>字体大小：<a href="javascript:;" onclick="doZoom(&#39;16&#39;);" id="font_16">大</a> <a href="javascript:;" onclick="doZoom(&#39;14&#39;);" id="font_14" style="font-weight: bold; ">中</a> <a href="javascript:;" onclick="doZoom(&#39;12&#39;);" id="font_12">小</a></span>博文</div>
+<div class="text">
+<div class="tit6">
+<a href="javascript:;">浅析android下native层binder的部分具体实现</a> 
+(2008-12-11 16:57)
+	
+</div>
+<div class="tit7">
+分类： <a href="http://blog.chinaunix.net/space.php?uid=20564848&do=blog&frmd=0&classid=3721&view=me">binder</a>
+</div>
+<br>
+<br>
+<div id="detail" class="detail" style="line-height: 1.3;"><p>
+		</p><table style="border-collapse: collapse;" bgcolor="#f1f1f1" border="1" bordercolor="#999999" cellpadding="0" cellspacing="0" width="95%"><tbody><tr><td><p style="margin: 5px; line-height: 150%;"><code><span style="color: rgb(0, 0, 0);">浅析android下native层binder的部分具体实现<br>
+<br>
+在defaultServiceManager<span style="color: rgb(0, 0, 204);">(</span><span style="color: rgb(0, 0, 204);">)</span>方法中：<span style="color: rgb(0, 0, 204);">[</span>luther<span style="color: rgb(0, 0, 204);">.</span>gliethttp<span style="color: rgb(0, 0, 204);">]</span><br>
+<span style="color: rgb(0, 0, 204);">=</span><span style="color: rgb(0, 0, 204);">=</span><span style="color: rgb(0, 0, 204);">&gt;</span>defaultServiceManager<br>
+<span style="color: rgb(0, 0, 204);">=</span><span style="color: rgb(0, 0, 204);">=</span><span style="color: rgb(0, 0, 204);">&gt;</span><br>
+sp<span style="color: rgb(0, 0, 204);">&lt;</span>IServiceManager<span style="color: rgb(0, 0, 204);">&gt;</span> gDefaultServiceManager<span style="color: rgb(0, 0, 204);">;</span>的m_ptr指向new BpServiceManager<span style="color: rgb(0, 0, 204);">(</span>obj<span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">;</span>因为<span style="color: rgb(0, 0, 204);">=</span>这个操作符被sp类模板重载<br>
+这个obj就是ProcessState<span style="color: rgb(0, 0, 204);">:</span><span style="color: rgb(0, 0, 204);">:</span>self<span style="color: rgb(0, 0, 204);">(</span><span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>getContextObject<span style="color: rgb(0, 0, 204);">(</span><span style="color: rgb(255, 0, 0);">NULL</span><span style="color: rgb(0, 0, 204);">)</span>返回的gProcess<span style="color: rgb(0, 0, 204);">.</span><br>
+sp<span style="color: rgb(0, 0, 204);">&lt;</span>ProcessState<span style="color: rgb(0, 0, 204);">&gt;</span> gProcess<span style="color: rgb(0, 0, 204);">;</span>的m_ptr指向new BpBinder<span style="color: rgb(0, 0, 204);">(</span>handle<span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">;</span><span style="color: rgb(0, 0, 204);">[</span>ProcessState<span style="color: rgb(0, 0, 204);">:</span><span style="color: rgb(0, 0, 204);">:</span>self<span style="color: rgb(0, 0, 204);">(</span><span style="color: rgb(0, 0, 204);">)</span>函数返回<span style="color: rgb(0, 0, 204);">]</span>因为<span style="color: rgb(0, 0, 204);">=</span>这个操作符被sp类模板重载<br>
+看看BpServiceManager构造函数：<br>
+&nbsp;&nbsp;&nbsp;&nbsp;BpServiceManager<span style="color: rgb(0, 0, 204);">(</span><span style="color: rgb(0, 0, 255);">const</span> sp<span style="color: rgb(0, 0, 204);">&lt;</span>IBinder<span style="color: rgb(0, 0, 204);">&gt;</span><span style="color: rgb(0, 0, 204);">&amp;</span> impl<span style="color: rgb(0, 0, 204);">)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 204);">:</span> BpInterface<span style="color: rgb(0, 0, 204);">&lt;</span>IServiceManager<span style="color: rgb(0, 0, 204);">&gt;</span><span style="color: rgb(0, 0, 204);">(</span>impl<span style="color: rgb(0, 0, 204);">)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 204);">{</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 204);">}</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">template</span><span style="color: rgb(0, 0, 204);">&lt;</span><span style="color: rgb(0, 0, 255);">typename</span> INTERFACE<span style="color: rgb(0, 0, 204);">&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">inline</span> BpInterface<span style="color: rgb(0, 0, 204);">&lt;</span>INTERFACE<span style="color: rgb(0, 0, 204);">&gt;</span><span style="color: rgb(0, 0, 204);">:</span><span style="color: rgb(0, 0, 204);">:</span>BpInterface<span style="color: rgb(0, 0, 204);">(</span><span style="color: rgb(0, 0, 255);">const</span> sp<span style="color: rgb(0, 0, 204);">&lt;</span>IBinder<span style="color: rgb(0, 0, 204);">&gt;</span><span style="color: rgb(0, 0, 204);">&amp;</span> remote<span style="color: rgb(0, 0, 204);">)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 204);">:</span> BpRefBase<span style="color: rgb(0, 0, 204);">(</span>remote<span style="color: rgb(0, 0, 204);">)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 204);">{</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 204);">}</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;BpRefBase<span style="color: rgb(0, 0, 204);">:</span><span style="color: rgb(0, 0, 204);">:</span>BpRefBase<span style="color: rgb(0, 0, 204);">(</span><span style="color: rgb(0, 0, 255);">const</span> sp<span style="color: rgb(0, 0, 204);">&lt;</span>IBinder<span style="color: rgb(0, 0, 204);">&gt;</span><span style="color: rgb(0, 0, 204);">&amp;</span> o<span style="color: rgb(0, 0, 204);">)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 204);">:</span> mRemote<span style="color: rgb(0, 0, 204);">(</span>o<span style="color: rgb(0, 0, 204);">.</span>get<span style="color: rgb(0, 0, 204);">(</span><span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">,</span> mRefs<span style="color: rgb(0, 0, 204);">(</span><span style="color: rgb(255, 0, 0);">NULL</span><span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">,</span> mState<span style="color: rgb(0, 0, 204);">(</span>0<span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(255, 153, 0);">//这里o.get()就是gProcess.get(),返回gProcess指向new BpBinder(handle);的m_ptr<br>
+</span>&nbsp;&nbsp;&nbsp; <span style="color: rgb(0, 0, 204);">{</span><span style="color: rgb(255, 153, 0);">//mRemote在类IBinder中的定义：IBinder* const mRemote;[luther.gliethttp]<br>
+</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; extendObjectLifetime<span style="color: rgb(0, 0, 204);">(</span>OBJECT_LIFETIME_WEAK<span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">;</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">if</span> <span style="color: rgb(0, 0, 204);">(</span>mRemote<span style="color: rgb(0, 0, 204);">)</span> <span style="color: rgb(0, 0, 204);">{</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mRemote<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>incStrong<span style="color: rgb(0, 0, 204);">(</span><span style="color: rgb(0, 0, 255);">this</span><span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">;</span> <span style="color: rgb(255, 153, 0);">// Removed on first IncStrong().<br>
+</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mRefs <span style="color: rgb(0, 0, 204);">=</span> mRemote<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>createWeak<span style="color: rgb(0, 0, 204);">(</span><span style="color: rgb(0, 0, 255);">this</span><span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">;</span> <span style="color: rgb(255, 153, 0);">// Held for our entire lifetime.<br>
+</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color: rgb(0, 0, 204);">}</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 204);">}</span><br>
+<br>
+remote<span style="color: rgb(0, 0, 204);">(</span><span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>transact<span style="color: rgb(0, 0, 204);">(</span>ADD_SERVICE_TRANSACTION<span style="color: rgb(0, 0, 204);">,</span> data<span style="color: rgb(0, 0, 204);">,</span> <span style="color: rgb(0, 0, 204);">&amp;</span>reply<span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">;</span><br>
+这里的remote来自inline IBinder<span style="color: rgb(0, 0, 204);">*</span> remote<span style="color: rgb(0, 0, 204);">(</span><span style="color: rgb(0, 0, 204);">)</span> <span style="color: rgb(0, 0, 204);">{</span> <span style="color: rgb(0, 0, 255);">return</span> mRemote<span style="color: rgb(0, 0, 204);">;</span> <span style="color: rgb(0, 0, 204);">}</span><br>
+因为mRemote为IBinder类的指针<span style="color: rgb(0, 0, 204);">,</span><span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>操作符没有被重载<span style="color: rgb(0, 0, 204);">,</span>所以就是调用BpBinder<span style="color: rgb(0, 0, 204);">:</span><span style="color: rgb(0, 0, 204);">:</span>transact方法<span style="color: rgb(0, 0, 204);">[</span>luther<span style="color: rgb(0, 0, 204);">.</span>gliethttp<span style="color: rgb(0, 0, 204);">]</span><br>
+status_t BpBinder<span style="color: rgb(0, 0, 204);">:</span><span style="color: rgb(0, 0, 204);">:</span>transact<span style="color: rgb(0, 0, 204);">(</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(255, 0, 0);">uint32_t</span> code<span style="color: rgb(0, 0, 204);">,</span> <span style="color: rgb(0, 0, 255);">const</span> Parcel<span style="color: rgb(0, 0, 204);">&amp;</span> data<span style="color: rgb(0, 0, 204);">,</span> Parcel<span style="color: rgb(0, 0, 204);">*</span> reply<span style="color: rgb(0, 0, 204);">,</span> <span style="color: rgb(255, 0, 0);">uint32_t</span> flags<span style="color: rgb(0, 0, 204);">)</span><br>
+<span style="color: rgb(0, 0, 204);">{</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(255, 153, 0);">// Once a binder has died, it will never come back to life.</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">if</span> <span style="color: rgb(0, 0, 204);">(</span>mAlive<span style="color: rgb(0, 0, 204);">)</span> <span style="color: rgb(0, 0, 204);">{</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;status_t status <span style="color: rgb(0, 0, 204);">=</span> IPCThreadState<span style="color: rgb(0, 0, 204);">:</span><span style="color: rgb(0, 0, 204);">:</span>self<span style="color: rgb(0, 0, 204);">(</span><span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>transact<span style="color: rgb(0, 0, 204);">(</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mHandle<span style="color: rgb(0, 0, 204);">,</span> code<span style="color: rgb(0, 0, 204);">,</span> data<span style="color: rgb(0, 0, 204);">,</span> reply<span style="color: rgb(0, 0, 204);">,</span> flags<span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">if</span> <span style="color: rgb(0, 0, 204);">(</span>status <span style="color: rgb(0, 0, 204);">=</span><span style="color: rgb(0, 0, 204);">=</span> DEAD_OBJECT<span style="color: rgb(0, 0, 204);">)</span> mAlive <span style="color: rgb(0, 0, 204);">=</span> 0<span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">return</span> status<span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 204);">}</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">return</span> DEAD_OBJECT<span style="color: rgb(0, 0, 204);">;</span><br>
+<span style="color: rgb(0, 0, 204);">}</span><br>
+<br>
+<br>
+status_t flatten_binder<span style="color: rgb(0, 0, 204);">(</span><span style="color: rgb(0, 0, 255);">const</span> sp<span style="color: rgb(0, 0, 204);">&lt;</span>ProcessState<span style="color: rgb(0, 0, 204);">&gt;</span><span style="color: rgb(0, 0, 204);">&amp;</span> proc<span style="color: rgb(0, 0, 204);">,</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">const</span> sp<span style="color: rgb(0, 0, 204);">&lt;</span>IBinder<span style="color: rgb(0, 0, 204);">&gt;</span><span style="color: rgb(0, 0, 204);">&amp;</span> binder<span style="color: rgb(0, 0, 204);">,</span> Parcel<span style="color: rgb(0, 0, 204);">*</span> out<span style="color: rgb(0, 0, 204);">)</span><br>
+<span style="color: rgb(0, 0, 204);">{</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;flat_binder_object obj<span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;obj<span style="color: rgb(0, 0, 204);">.</span>flags <span style="color: rgb(0, 0, 204);">=</span> 0x7f <span style="color: rgb(0, 0, 204);">|</span> FLAT_BINDER_FLAG_ACCEPTS_FDS<span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">if</span> <span style="color: rgb(0, 0, 204);">(</span>binder <span style="color: rgb(0, 0, 204);">!</span><span style="color: rgb(0, 0, 204);">=</span> <span style="color: rgb(255, 0, 0);">NULL</span><span style="color: rgb(0, 0, 204);">)</span> <span style="color: rgb(0, 0, 204);">{</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;IBinder <span style="color: rgb(0, 0, 204);">*</span>local <span style="color: rgb(0, 0, 204);">=</span> binder<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>localBinder<span style="color: rgb(0, 0, 204);">(</span><span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">;</span><br>
+<span style="color: rgb(255, 153, 0);">//对于BBinder* BBinder::localBinder()</span><br>
+<span style="color: rgb(255, 153, 0);">//{<br>
+</span><span style="color: rgb(255, 153, 0);">// return this;<br>
+</span><span style="color: rgb(255, 153, 0);">//}<br>
+</span><span style="color: rgb(255, 153, 0);">//对于BBinder* IBinder::localBinder()<br>
+</span><span style="color: rgb(255, 153, 0);">//{<br>
+</span><span style="color: rgb(255, 153, 0);">// return NULL;<br>
+</span><span style="color: rgb(255, 153, 0);">//}<br>
+</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color: rgb(0, 0, 255);">if</span> <span style="color: rgb(0, 0, 204);">(</span><span style="color: rgb(0, 0, 204);">!</span>local<span style="color: rgb(0, 0, 204);">)</span> <span style="color: rgb(0, 0, 204);">{</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BpBinder <span style="color: rgb(0, 0, 204);">*</span>proxy <span style="color: rgb(0, 0, 204);">=</span> binder<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>remoteBinder<span style="color: rgb(0, 0, 204);">(</span><span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">if</span> <span style="color: rgb(0, 0, 204);">(</span>proxy <span style="color: rgb(0, 0, 204);">=</span><span style="color: rgb(0, 0, 204);">=</span> <span style="color: rgb(255, 0, 0);">NULL</span><span style="color: rgb(0, 0, 204);">)</span> <span style="color: rgb(0, 0, 204);">{</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LOGE<span style="color: rgb(0, 0, 204);">(</span><span style="color: rgb(255, 0, 255);">"null proxy"</span><span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 204);">}</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">const</span> <span style="color: rgb(255, 0, 0);">int32_t</span> handle <span style="color: rgb(0, 0, 204);">=</span> proxy <span style="color: rgb(0, 0, 204);">?</span> proxy<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>handle<span style="color: rgb(0, 0, 204);">(</span><span style="color: rgb(0, 0, 204);">)</span> <span style="color: rgb(0, 0, 204);">:</span> 0<span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;obj<span style="color: rgb(0, 0, 204);">.</span>type <span style="color: rgb(0, 0, 204);">=</span> BINDER_TYPE_HANDLE<span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;obj<span style="color: rgb(0, 0, 204);">.</span>handle <span style="color: rgb(0, 0, 204);">=</span> handle<span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;obj<span style="color: rgb(0, 0, 204);">.</span>cookie <span style="color: rgb(0, 0, 204);">=</span> <span style="color: rgb(255, 0, 0);">NULL</span><span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 204);">}</span> <span style="color: rgb(0, 0, 255);">else</span> <span style="color: rgb(0, 0, 204);">{</span><span style="color: rgb(255, 153, 0);">//对于IServiceManager::addService将执行到这里<br>
+</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; obj<span style="color: rgb(0, 0, 204);">.</span>type <span style="color: rgb(0, 0, 204);">=</span> BINDER_TYPE_BINDER<span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;obj<span style="color: rgb(0, 0, 204);">.</span>binder <span style="color: rgb(0, 0, 204);">=</span> local<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>getWeakRefs<span style="color: rgb(0, 0, 204);">(</span><span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">;</span><span style="color: rgb(255, 153, 0);">//作为红黑节点树的唯一id标号<br>
+</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; obj<span style="color: rgb(0, 0, 204);">.</span>cookie <span style="color: rgb(0, 0, 204);">=</span> local<span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 204);">}</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 204);">}</span> <span style="color: rgb(0, 0, 255);">else</span> <span style="color: rgb(0, 0, 204);">{</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;obj<span style="color: rgb(0, 0, 204);">.</span>type <span style="color: rgb(0, 0, 204);">=</span> BINDER_TYPE_BINDER<span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;obj<span style="color: rgb(0, 0, 204);">.</span>binder <span style="color: rgb(0, 0, 204);">=</span> <span style="color: rgb(255, 0, 0);">NULL</span><span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;obj<span style="color: rgb(0, 0, 204);">.</span>cookie <span style="color: rgb(0, 0, 204);">=</span> <span style="color: rgb(255, 0, 0);">NULL</span><span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 204);">}</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">return</span> finish_flatten_binder<span style="color: rgb(0, 0, 204);">(</span>binder<span style="color: rgb(0, 0, 204);">,</span> obj<span style="color: rgb(0, 0, 204);">,</span> out<span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">;</span><br>
+<span style="color: rgb(0, 0, 204);">}</span><br>
+<br>
+commands<span style="color: rgb(0, 0, 204);">/</span>binder<span style="color: rgb(0, 0, 204);">/</span>service_manager<span style="color: rgb(0, 0, 204);">.</span>c<br>
+<span style="color: rgb(0, 0, 204);">=</span><span style="color: rgb(0, 0, 204);">&gt;</span>svcmgr_handler<br>
+<span style="color: rgb(0, 0, 204);">=</span><span style="color: rgb(0, 0, 204);">&gt;</span>do_add_service<br>
+commands<span style="color: rgb(0, 0, 204);">/</span>binder<span style="color: rgb(0, 0, 204);">/</span>service_manager<span style="color: rgb(0, 0, 204);">.</span>c<br>
+<span style="color: rgb(0, 0, 204);">=</span><span style="color: rgb(0, 0, 204);">=</span><span style="color: rgb(0, 0, 204);">&gt;</span>main<br>
+<span style="color: rgb(0, 0, 204);">=</span><span style="color: rgb(0, 0, 204);">=</span><span style="color: rgb(0, 0, 204);">&gt;</span>bs <span style="color: rgb(0, 0, 204);">=</span> binder_open<span style="color: rgb(0, 0, 204);">(</span>128<span style="color: rgb(0, 0, 204);">*</span>1024<span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">;</span><br>
+<span style="color: rgb(255, 153, 0);">//proc-&gt;tsk = current;<br>
+</span><span style="color: rgb(255, 153, 0);">//filp-&gt;private_data = proc;<br>
+</span><span style="color: rgb(0, 0, 204);">=</span><span style="color: rgb(0, 0, 204);">=</span><span style="color: rgb(0, 0, 204);">&gt;</span>binder_become_context_manager<span style="color: rgb(0, 0, 204);">(</span>bs<span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">;</span><span style="color: rgb(255, 153, 0);">//将bs作为context_manager管理binder,发送ioctl(bs-&gt;fd, BINDER_SET_CONTEXT_MGR, 0);<br>
+</span><span style="color: rgb(255, 153, 0);">//这样binder驱动的binder_context_mgr_node就是该bs了<br>
+</span><span style="color: rgb(0, 0, 204);">=</span><span style="color: rgb(0, 0, 204);">=</span><span style="color: rgb(0, 0, 204);">&gt;</span>binder_loop<span style="color: rgb(0, 0, 204);">(</span>bs<span style="color: rgb(0, 0, 204);">,</span> svcmgr_handler<span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">;</span><span style="color: rgb(255, 153, 0);">//回调函数svcmgr_handler,用来处理消息<br>
+</span><span style="color: rgb(0, 0, 255);">void</span> binder_loop<span style="color: rgb(0, 0, 204);">(</span><span style="color: rgb(0, 0, 255);">struct</span> binder_state <span style="color: rgb(0, 0, 204);">*</span>bs<span style="color: rgb(0, 0, 204);">,</span> binder_handler func<span style="color: rgb(0, 0, 204);">)</span><br>
+<span style="color: rgb(0, 0, 204);">{</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 204);">.</span><span style="color: rgb(0, 0, 204);">.</span><span style="color: rgb(0, 0, 204);">.</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;readbuf<span style="color: rgb(0, 0, 204);">[</span>0<span style="color: rgb(0, 0, 204);">]</span> <span style="color: rgb(0, 0, 204);">=</span> BC_ENTER_LOOPER<span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;binder_write<span style="color: rgb(0, 0, 204);">(</span>bs<span style="color: rgb(0, 0, 204);">,</span> readbuf<span style="color: rgb(0, 0, 204);">,</span> <span style="color: rgb(0, 0, 255);">sizeof</span><span style="color: rgb(0, 0, 204);">(</span><span style="color: rgb(0, 0, 255);">unsigned</span><span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">;</span><br>
+<span style="color: rgb(255, 153, 0);">//thread-&gt;looper |= BINDER_LOOPER_STATE_ENTERED;<br>
+</span><span style="color: rgb(255, 153, 0);">//struct binder_thread *thread = binder_get_thread()会查找该proc自己是否已经在binder_thread,<br>
+</span><span style="color: rgb(255, 153, 0);">//rb_link_node(&amp;thread-&gt;rb_node, parent, p);<br>
+</span><span style="color: rgb(255, 153, 0);">//rb_insert_color(&amp;thread-&gt;rb_node, &amp;proc-&gt;threads);将该current[就是proc打开者自己]绑定到binder_thread,然后插入到proc管理的红黑树中.<br>
+</span><span style="color: rgb(255, 153, 0);">//proc管理的红黑树的索引依据为pid数值：thread-&gt;pid = current-&gt;pid;<br>
+</span><span style="color: rgb(255, 153, 0);">/*<br>
+&nbsp;*struct binder_stats {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;int br[_IOC_NR(BR_FAILED_REPLY) + 1];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;int bc[_IOC_NR(BC_DEAD_BINDER_DONE) + 1];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;int obj_created[BINDER_STAT_COUNT];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;int obj_deleted[BINDER_STAT_COUNT];<br>
+};<br>
+<br>
+static struct binder_stats binder_stats;<br>
+&nbsp;* */</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">for</span> <span style="color: rgb(0, 0, 204);">(</span><span style="color: rgb(0, 0, 204);">;</span><span style="color: rgb(0, 0, 204);">;</span><span style="color: rgb(0, 0, 204);">)</span> <span style="color: rgb(0, 0, 204);">{</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 204);">.</span><span style="color: rgb(0, 0, 204);">.</span><span style="color: rgb(0, 0, 204);">.</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bwr<span style="color: rgb(0, 0, 204);">.</span>read_size <span style="color: rgb(0, 0, 204);">=</span> <span style="color: rgb(0, 0, 255);">sizeof</span><span style="color: rgb(0, 0, 204);">(</span>readbuf<span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bwr<span style="color: rgb(0, 0, 204);">.</span>read_consumed <span style="color: rgb(0, 0, 204);">=</span> 0<span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bwr<span style="color: rgb(0, 0, 204);">.</span>read_buffer <span style="color: rgb(0, 0, 204);">=</span> <span style="color: rgb(0, 0, 204);">(</span><span style="color: rgb(0, 0, 255);">unsigned</span><span style="color: rgb(0, 0, 204);">)</span> readbuf<span style="color: rgb(0, 0, 204);">;</span><br>
+<span style="color: rgb(255, 153, 0);">//wait_for_proc_work = thread-&gt;transaction_stack == NULL &amp;&amp; list_empty(&amp;thread-&gt;todo);<br>
+</span><span style="color: rgb(255, 153, 0);">//没有todo的咚咚<br>
+</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; res <span style="color: rgb(0, 0, 204);">=</span> ioctl<span style="color: rgb(0, 0, 204);">(</span>bs<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>fd<span style="color: rgb(0, 0, 204);">,</span> BINDER_WRITE_READ<span style="color: rgb(0, 0, 204);">,</span> <span style="color: rgb(0, 0, 204);">&amp;</span>bwr<span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">;</span><br>
+<span style="color: rgb(255, 153, 0);">//首先binder推入4字节的BR_NOOP控制头<br>
+</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color: rgb(0, 0, 204);">.</span><span style="color: rgb(0, 0, 204);">.</span><span style="color: rgb(0, 0, 204);">.</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;res <span style="color: rgb(0, 0, 204);">=</span> binder_parse<span style="color: rgb(0, 0, 204);">(</span>bs<span style="color: rgb(0, 0, 204);">,</span> 0<span style="color: rgb(0, 0, 204);">,</span> readbuf<span style="color: rgb(0, 0, 204);">,</span> bwr<span style="color: rgb(0, 0, 204);">.</span>read_consumed<span style="color: rgb(0, 0, 204);">,</span> func<span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 204);">.</span><span style="color: rgb(0, 0, 204);">.</span><span style="color: rgb(0, 0, 204);">.</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 204);">}</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 204);">.</span><span style="color: rgb(0, 0, 204);">.</span><span style="color: rgb(0, 0, 204);">.</span><br>
+<span style="color: rgb(0, 0, 204);">}</span><br>
+<br>
+<br>
+driver中<br>
+device_initcall<span style="color: rgb(0, 0, 204);">(</span>binder_init<span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">;</span><br>
+<span style="color: rgb(0, 0, 204);">=</span><span style="color: rgb(0, 0, 204);">&gt;</span>binder_init<br>
+<span style="color: rgb(0, 0, 204);">=</span><span style="color: rgb(0, 0, 204);">&gt;</span>创建<span style="color: rgb(0, 0, 204);">/</span>proc<span style="color: rgb(0, 0, 204);">/</span>binder根目录<br>
+<span style="color: rgb(0, 0, 204);">=</span><span style="color: rgb(0, 0, 204);">&gt;</span>创建<span style="color: rgb(0, 0, 204);">/</span>proc<span style="color: rgb(0, 0, 204);">/</span>binder<span style="color: rgb(0, 0, 204);">/</span>proc目录<br>
+<span style="color: rgb(0, 0, 204);">=</span><span style="color: rgb(0, 0, 204);">&gt;</span>misc_register<span style="color: rgb(0, 0, 204);">(</span><span style="color: rgb(0, 0, 204);">&amp;</span>binder_miscdev<span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">;</span>注册<span style="color: rgb(0, 0, 204);">/</span>dev<span style="color: rgb(0, 0, 204);">/</span>binder字符设备文件<br>
+<span style="color: rgb(0, 0, 204);">=</span><span style="color: rgb(0, 0, 204);">&gt;</span>该<span style="color: rgb(0, 0, 204);">/</span>dev<span style="color: rgb(0, 0, 204);">/</span>binder节点由init进程在handle_device_fd<span style="color: rgb(0, 0, 204);">(</span>device_fd<span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">;</span><span style="color: rgb(0, 0, 204);">=</span><span style="color: rgb(0, 0, 204);">=</span><span style="color: rgb(0, 0, 204);">&gt;</span>handle_device_event<span style="color: rgb(0, 0, 204);">(</span><span style="color: rgb(0, 0, 204);">&amp;</span>uevent<span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">;</span>中uevent<span style="color: rgb(0, 0, 204);">-</span>netlink处理之后<span style="color: rgb(0, 0, 204);">,</span><span style="color: rgb(255, 0, 255);">"/dev/"</span>目录下创建<span style="color: rgb(0, 0, 204);">.</span><br>
+<span style="color: rgb(0, 0, 204);">=</span><span style="color: rgb(0, 0, 204);">&gt;</span>创建只读文件<span style="color: rgb(255, 0, 255);">"state"</span>、<span style="color: rgb(255, 0, 255);">"stats"</span>、<span style="color: rgb(255, 0, 255);">"transactions"</span>、<span style="color: rgb(255, 0, 255);">"transaction_log"</span>和<span style="color: rgb(255, 0, 255);">"failed_transaction_log"</span><span style="color: rgb(0, 0, 204);">,</span><br>
+&nbsp;&nbsp;帮定读文件函数binder_read_proc_stats<br>
+这样binder驱动在内核中登记工作就完成了<span style="color: rgb(0, 0, 204);">,</span>剩下的工作就是应用程序使用这个binder进行IPC了<span style="color: rgb(0, 0, 204);">.</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">if</span> <span style="color: rgb(0, 0, 204);">(</span>tr<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>target<span style="color: rgb(0, 0, 204);">.</span>handle<span style="color: rgb(0, 0, 204);">)</span> <span style="color: rgb(0, 0, 204);">{</span><span style="color: rgb(255, 153, 0);">//目的handle<br>
+</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color: rgb(0, 0, 255);">struct</span> binder_ref <span style="color: rgb(0, 0, 204);">*</span>ref<span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ref <span style="color: rgb(0, 0, 204);">=</span> binder_get_ref<span style="color: rgb(0, 0, 204);">(</span>proc<span style="color: rgb(0, 0, 204);">,</span> tr<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>target<span style="color: rgb(0, 0, 204);">.</span>handle<span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">;</span><span style="color: rgb(255, 153, 0);">//返回目的handle的ref,该handle由后面的binder_get_ref_for_node()函数生成<br>
+</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color: rgb(0, 0, 255);">if</span> <span style="color: rgb(0, 0, 204);">(</span>ref <span style="color: rgb(0, 0, 204);">=</span><span style="color: rgb(0, 0, 204);">=</span> <span style="color: rgb(255, 0, 0);">NULL</span><span style="color: rgb(0, 0, 204);">)</span> <span style="color: rgb(0, 0, 204);">{</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;binder_user_error<span style="color: rgb(0, 0, 204);">(</span><span style="color: rgb(255, 0, 255);">"binder: %d:%d got "</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(255, 0, 255);">"transaction to invalid handle\n"</span><span style="color: rgb(0, 0, 204);">,</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;proc<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>pid<span style="color: rgb(0, 0, 204);">,</span> thread<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>pid<span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return_error <span style="color: rgb(0, 0, 204);">=</span> BR_FAILED_REPLY<span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">goto</span> err_invalid_target_handle<span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 204);">}</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;target_node <span style="color: rgb(0, 0, 204);">=</span> ref<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>node<span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 204);">}</span> <span style="color: rgb(0, 0, 255);">else</span> <span style="color: rgb(0, 0, 204);">{</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;target_node <span style="color: rgb(0, 0, 204);">=</span> binder_context_mgr_node<span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">if</span> <span style="color: rgb(0, 0, 204);">(</span>target_node <span style="color: rgb(0, 0, 204);">=</span><span style="color: rgb(0, 0, 204);">=</span> <span style="color: rgb(255, 0, 0);">NULL</span><span style="color: rgb(0, 0, 204);">)</span> <span style="color: rgb(0, 0, 204);">{</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return_error <span style="color: rgb(0, 0, 204);">=</span> BR_DEAD_REPLY<span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">goto</span> err_no_context_mgr_node<span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 204);">}</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 204);">}</span><br>
+<br>
+<span style="color: rgb(0, 0, 255);">static</span> <span style="color: rgb(0, 0, 255);">struct</span> binder_ref <span style="color: rgb(0, 0, 204);">*</span><br>
+binder_get_ref<span style="color: rgb(0, 0, 204);">(</span><span style="color: rgb(0, 0, 255);">struct</span> binder_proc <span style="color: rgb(0, 0, 204);">*</span>proc<span style="color: rgb(0, 0, 204);">,</span> <span style="color: rgb(255, 0, 0);">uint32_t</span> desc<span style="color: rgb(0, 0, 204);">)</span><br>
+<span style="color: rgb(0, 0, 204);">{</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">struct</span> rb_node <span style="color: rgb(0, 0, 204);">*</span>n <span style="color: rgb(0, 0, 204);">=</span> proc<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>refs_by_desc<span style="color: rgb(0, 0, 204);">.</span>rb_node<span style="color: rgb(0, 0, 204);">;</span><span style="color: rgb(255, 153, 0);">//是否有该desc对应的内容<br>
+</span>&nbsp;&nbsp;&nbsp; <span style="color: rgb(0, 0, 255);">struct</span> binder_ref <span style="color: rgb(0, 0, 204);">*</span>ref<span style="color: rgb(0, 0, 204);">;</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">while</span> <span style="color: rgb(0, 0, 204);">(</span>n<span style="color: rgb(0, 0, 204);">)</span> <span style="color: rgb(0, 0, 204);">{</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ref <span style="color: rgb(0, 0, 204);">=</span> rb_entry<span style="color: rgb(0, 0, 204);">(</span>n<span style="color: rgb(0, 0, 204);">,</span> <span style="color: rgb(0, 0, 255);">struct</span> binder_ref<span style="color: rgb(0, 0, 204);">,</span> rb_node_desc<span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">;</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">if</span> <span style="color: rgb(0, 0, 204);">(</span>desc <span style="color: rgb(0, 0, 204);">&lt;</span> ref<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>desc<span style="color: rgb(0, 0, 204);">)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;n <span style="color: rgb(0, 0, 204);">=</span> n<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>rb_left<span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">else</span> <span style="color: rgb(0, 0, 255);">if</span> <span style="color: rgb(0, 0, 204);">(</span>desc <span style="color: rgb(0, 0, 204);">&gt;</span> ref<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>desc<span style="color: rgb(0, 0, 204);">)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;n <span style="color: rgb(0, 0, 204);">=</span> n<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>rb_right<span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">return</span> ref<span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 204);">}</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">return</span> <span style="color: rgb(255, 0, 0);">NULL</span><span style="color: rgb(0, 0, 204);">;</span><br>
+<span style="color: rgb(0, 0, 204);">}</span><br>
+<br>
+<span style="color: rgb(0, 0, 255);">struct</span> flat_binder_object <span style="color: rgb(0, 0, 204);">{</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(255, 153, 0);">/* 8 bytes for large_flat_header. */</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">unsigned</span> <span style="color: rgb(0, 0, 255);">long</span>        type<span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">unsigned</span> <span style="color: rgb(0, 0, 255);">long</span>        flags<span style="color: rgb(0, 0, 204);">;</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(255, 153, 0);">/* 8 bytes of data. */</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">union</span> <span style="color: rgb(0, 0, 204);">{</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">void</span>        <span style="color: rgb(0, 0, 204);">*</span>binder<span style="color: rgb(0, 0, 204);">;</span>    <span style="color: rgb(255, 153, 0);">/* local object */</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">signed</span> <span style="color: rgb(0, 0, 255);">long</span>    handle<span style="color: rgb(0, 0, 204);">;</span>        <span style="color: rgb(255, 153, 0);">/* remote object */</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 204);">}</span><span style="color: rgb(0, 0, 204);">;</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(255, 153, 0);">/* extra data associated with local object */</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">void</span>            <span style="color: rgb(0, 0, 204);">*</span>cookie<span style="color: rgb(0, 0, 204);">;</span><br>
+<span style="color: rgb(0, 0, 204);">}</span><span style="color: rgb(0, 0, 204);">;</span><br>
+<span style="color: rgb(0, 0, 204);">=</span><span style="color: rgb(0, 0, 204);">=</span><span style="color: rgb(0, 0, 204);">&gt;</span>binder_transaction<br>
+<span style="color: rgb(0, 0, 204);">=</span><span style="color: rgb(0, 0, 204);">=</span><span style="color: rgb(0, 0, 204);">&gt;</span>        <span style="color: rgb(0, 0, 255);">struct</span> flat_binder_object <span style="color: rgb(0, 0, 204);">*</span>fp<span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 204);">.</span><span style="color: rgb(0, 0, 204);">.</span><span style="color: rgb(0, 0, 204);">.</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">switch</span> <span style="color: rgb(0, 0, 204);">(</span>fp<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>type<span style="color: rgb(0, 0, 204);">)</span> <span style="color: rgb(0, 0, 204);">{</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">case</span> BINDER_TYPE_BINDER<span style="color: rgb(0, 0, 204);">:</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">case</span> BINDER_TYPE_WEAK_BINDER<span style="color: rgb(0, 0, 204);">:</span> <span style="color: rgb(0, 0, 204);">{</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">struct</span> binder_ref <span style="color: rgb(0, 0, 204);">*</span>ref<span style="color: rgb(0, 0, 204);">;</span><br>
+<span style="color: rgb(255, 153, 0);">//上面obj.binder = local-&gt;getWeakRefs();//作为红黑节点树的唯一id标号,所以这里从红黑树上查找fp-&gt;binder节点[luther.gliethttp]<br>
+</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color: rgb(0, 0, 255);">struct</span> binder_node <span style="color: rgb(0, 0, 204);">*</span>node <span style="color: rgb(0, 0, 204);">=</span> binder_get_node<span style="color: rgb(0, 0, 204);">(</span>proc<span style="color: rgb(0, 0, 204);">,</span> fp<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>binder<span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">;</span><span style="color: rgb(255, 153, 0);">//如果从红黑树中没有找到,那么<br>
+</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color: rgb(0, 0, 255);">if</span> <span style="color: rgb(0, 0, 204);">(</span>node <span style="color: rgb(0, 0, 204);">=</span><span style="color: rgb(0, 0, 204);">=</span> <span style="color: rgb(255, 0, 0);">NULL</span><span style="color: rgb(0, 0, 204);">)</span> <span style="color: rgb(0, 0, 204);">{</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;node <span style="color: rgb(0, 0, 204);">=</span> binder_new_node<span style="color: rgb(0, 0, 204);">(</span>proc<span style="color: rgb(0, 0, 204);">,</span> fp<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>binder<span style="color: rgb(0, 0, 204);">,</span> fp<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>cookie<span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">;</span><span style="color: rgb(255, 153, 0);">//创建一个新的node<br>
+</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color: rgb(0, 0, 255);">if</span> <span style="color: rgb(0, 0, 204);">(</span>node <span style="color: rgb(0, 0, 204);">=</span><span style="color: rgb(0, 0, 204);">=</span> <span style="color: rgb(255, 0, 0);">NULL</span><span style="color: rgb(0, 0, 204);">)</span> <span style="color: rgb(0, 0, 204);">{</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return_error <span style="color: rgb(0, 0, 204);">=</span> BR_FAILED_REPLY<span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">goto</span> err_binder_new_node_failed<span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 204);">}</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;node<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>min_priority <span style="color: rgb(0, 0, 204);">=</span> fp<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>flags <span style="color: rgb(0, 0, 204);">&amp;</span> FLAT_BINDER_FLAG_PRIORITY_MASK<span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;node<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>accept_fds <span style="color: rgb(0, 0, 204);">=</span> <span style="color: rgb(0, 0, 204);">!</span><span style="color: rgb(0, 0, 204);">!</span><span style="color: rgb(0, 0, 204);">(</span>fp<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>flags <span style="color: rgb(0, 0, 204);">&amp;</span> FLAT_BINDER_FLAG_ACCEPTS_FDS<span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 204);">}</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">if</span> <span style="color: rgb(0, 0, 204);">(</span>fp<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>cookie <span style="color: rgb(0, 0, 204);">!</span><span style="color: rgb(0, 0, 204);">=</span> node<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>cookie<span style="color: rgb(0, 0, 204);">)</span> <span style="color: rgb(0, 0, 204);">{</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;binder_user_error<span style="color: rgb(0, 0, 204);">(</span><span style="color: rgb(255, 0, 255);">"binder: %d:%d sending u%p "</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(255, 0, 255);">"node %d, cookie mismatch %p != %p\n"</span><span style="color: rgb(0, 0, 204);">,</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;proc<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>pid<span style="color: rgb(0, 0, 204);">,</span> thread<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>pid<span style="color: rgb(0, 0, 204);">,</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fp<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>binder<span style="color: rgb(0, 0, 204);">,</span> node<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>debug_id<span style="color: rgb(0, 0, 204);">,</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fp<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>cookie<span style="color: rgb(0, 0, 204);">,</span> node<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>cookie<span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">goto</span> err_binder_get_ref_for_node_failed<span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 204);">}</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ref <span style="color: rgb(0, 0, 204);">=</span> binder_get_ref_for_node<span style="color: rgb(0, 0, 204);">(</span>target_proc<span style="color: rgb(0, 0, 204);">,</span> node<span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">;</span><span style="color: rgb(255, 153, 0);">//将新创建的node挂接到红黑树上<br>
+</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color: rgb(0, 0, 255);">if</span> <span style="color: rgb(0, 0, 204);">(</span>ref <span style="color: rgb(0, 0, 204);">=</span><span style="color: rgb(0, 0, 204);">=</span> <span style="color: rgb(255, 0, 0);">NULL</span><span style="color: rgb(0, 0, 204);">)</span> <span style="color: rgb(0, 0, 204);">{</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return_error <span style="color: rgb(0, 0, 204);">=</span> BR_FAILED_REPLY<span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">goto</span> err_binder_get_ref_for_node_failed<span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 204);">}</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">if</span> <span style="color: rgb(0, 0, 204);">(</span>fp<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>type <span style="color: rgb(0, 0, 204);">=</span><span style="color: rgb(0, 0, 204);">=</span> BINDER_TYPE_BINDER<span style="color: rgb(0, 0, 204);">)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fp<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>type <span style="color: rgb(0, 0, 204);">=</span> BINDER_TYPE_HANDLE<span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fp<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>type <span style="color: rgb(0, 0, 204);">=</span> BINDER_TYPE_WEAK_HANDLE<span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fp<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>handle <span style="color: rgb(0, 0, 204);">=</span> ref<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>desc<span style="color: rgb(0, 0, 204);">;</span><span style="color: rgb(255, 153, 0);">//获取唯一id号,作为handle用来区分service们<br>
+</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; binder_inc_ref<span style="color: rgb(0, 0, 204);">(</span>ref<span style="color: rgb(0, 0, 204);">,</span> fp<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>type <span style="color: rgb(0, 0, 204);">=</span><span style="color: rgb(0, 0, 204);">=</span> BINDER_TYPE_HANDLE<span style="color: rgb(0, 0, 204);">,</span> <span style="color: rgb(0, 0, 204);">&amp;</span>thread<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>todo<span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">if</span> <span style="color: rgb(0, 0, 204);">(</span>binder_debug_mask <span style="color: rgb(0, 0, 204);">&amp;</span> BINDER_DEBUG_TRANSACTION<span style="color: rgb(0, 0, 204);">)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printk<span style="color: rgb(0, 0, 204);">(</span>KERN_INFO <span style="color: rgb(255, 0, 255);">" node %d u%p -&gt; ref %d desc %d\n"</span><span style="color: rgb(0, 0, 204);">,</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;node<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>debug_id<span style="color: rgb(0, 0, 204);">,</span> node<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>ptr<span style="color: rgb(0, 0, 204);">,</span> ref<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>debug_id<span style="color: rgb(0, 0, 204);">,</span> ref<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>desc<span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 204);">}</span> <span style="color: rgb(0, 0, 255);">break</span><span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">case</span> BINDER_TYPE_HANDLE<span style="color: rgb(0, 0, 204);">:</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">case</span> BINDER_TYPE_WEAK_HANDLE<span style="color: rgb(0, 0, 204);">:</span> <span style="color: rgb(0, 0, 204);">{</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 204);">.</span><span style="color: rgb(0, 0, 204);">.</span><span style="color: rgb(0, 0, 204);">.</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;new_ref <span style="color: rgb(0, 0, 204);">=</span> binder_get_ref_for_node<span style="color: rgb(0, 0, 204);">(</span>target_proc<span style="color: rgb(0, 0, 204);">,</span> ref<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>node<span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 204);">.</span><span style="color: rgb(0, 0, 204);">.</span><span style="color: rgb(0, 0, 204);">.</span><br>
+<span style="color: rgb(0, 0, 204);">=</span><span style="color: rgb(0, 0, 204);">=</span><span style="color: rgb(0, 0, 204);">&gt;</span>binder_thread_write<br>
+<span style="color: rgb(0, 0, 204);">=</span><span style="color: rgb(0, 0, 204);">=</span><span style="color: rgb(0, 0, 204);">&gt;</span> <span style="color: rgb(0, 0, 255);">if</span> <span style="color: rgb(0, 0, 204);">(</span>target <span style="color: rgb(0, 0, 204);">=</span><span style="color: rgb(0, 0, 204);">=</span> 0 <span style="color: rgb(0, 0, 204);">&amp;</span><span style="color: rgb(0, 0, 204);">&amp;</span> binder_context_mgr_node <span style="color: rgb(0, 0, 204);">&amp;</span><span style="color: rgb(0, 0, 204);">&amp;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 204);">(</span>cmd <span style="color: rgb(0, 0, 204);">=</span><span style="color: rgb(0, 0, 204);">=</span> BC_INCREFS <span style="color: rgb(0, 0, 204);">|</span><span style="color: rgb(0, 0, 204);">|</span> cmd <span style="color: rgb(0, 0, 204);">=</span><span style="color: rgb(0, 0, 204);">=</span> BC_ACQUIRE<span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">)</span> <span style="color: rgb(0, 0, 204);">{</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ref <span style="color: rgb(0, 0, 204);">=</span> binder_get_ref_for_node<span style="color: rgb(0, 0, 204);">(</span>proc<span style="color: rgb(0, 0, 204);">,</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;binder_context_mgr_node<span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">;</span><br>
+<br>
+<span style="color: rgb(0, 0, 255);">static</span> <span style="color: rgb(0, 0, 255);">struct</span> binder_ref <span style="color: rgb(0, 0, 204);">*</span><br>
+binder_get_ref_for_node<span style="color: rgb(0, 0, 204);">(</span><span style="color: rgb(0, 0, 255);">struct</span> binder_proc <span style="color: rgb(0, 0, 204);">*</span>proc<span style="color: rgb(0, 0, 204);">,</span> <span style="color: rgb(0, 0, 255);">struct</span> binder_node <span style="color: rgb(0, 0, 204);">*</span>node<span style="color: rgb(0, 0, 204);">)</span><br>
+<span style="color: rgb(0, 0, 204);">{</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 204);">.</span><span style="color: rgb(0, 0, 204);">.</span><span style="color: rgb(0, 0, 204);">.</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;rb_insert_color<span style="color: rgb(0, 0, 204);">(</span><span style="color: rgb(0, 0, 204);">&amp;</span>new_ref<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>rb_node_desc<span style="color: rgb(0, 0, 204);">,</span> <span style="color: rgb(0, 0, 204);">&amp;</span>proc<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>refs_by_desc<span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;new_ref<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>desc <span style="color: rgb(0, 0, 204);">=</span> <span style="color: rgb(0, 0, 204);">(</span>node <span style="color: rgb(0, 0, 204);">=</span><span style="color: rgb(0, 0, 204);">=</span> binder_context_mgr_node<span style="color: rgb(0, 0, 204);">)</span> <span style="color: rgb(0, 0, 204);">?</span> 0 <span style="color: rgb(0, 0, 204);">:</span> 1<span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">for</span> <span style="color: rgb(0, 0, 204);">(</span>n <span style="color: rgb(0, 0, 204);">=</span> rb_first<span style="color: rgb(0, 0, 204);">(</span><span style="color: rgb(0, 0, 204);">&amp;</span>proc<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>refs_by_desc<span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">;</span> n <span style="color: rgb(0, 0, 204);">!</span><span style="color: rgb(0, 0, 204);">=</span> <span style="color: rgb(255, 0, 0);">NULL</span><span style="color: rgb(0, 0, 204);">;</span> n <span style="color: rgb(0, 0, 204);">=</span> rb_next<span style="color: rgb(0, 0, 204);">(</span>n<span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">)</span> <span style="color: rgb(0, 0, 204);">{</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ref <span style="color: rgb(0, 0, 204);">=</span> rb_entry<span style="color: rgb(0, 0, 204);">(</span>n<span style="color: rgb(0, 0, 204);">,</span> <span style="color: rgb(0, 0, 255);">struct</span> binder_ref<span style="color: rgb(0, 0, 204);">,</span> rb_node_desc<span style="color: rgb(0, 0, 204);">)</span><span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">if</span> <span style="color: rgb(0, 0, 204);">(</span>ref<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>desc <span style="color: rgb(0, 0, 204);">&gt;</span> new_ref<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>desc<span style="color: rgb(0, 0, 204);">)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 255);">break</span><span style="color: rgb(0, 0, 204);">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;new_ref<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>desc <span style="color: rgb(0, 0, 204);">=</span> ref<span style="color: rgb(0, 0, 204);">-</span><span style="color: rgb(0, 0, 204);">&gt;</span>desc <span style="color: rgb(0, 0, 204);">+</span> 1<span style="color: rgb(0, 0, 204);">;</span><span style="color: rgb(255, 153, 0);">//计算service们对应的唯一handle号[luther.gliethttp]<br>
+</span>&nbsp;&nbsp;&nbsp; <span style="color: rgb(0, 0, 204);">}</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: rgb(0, 0, 204);">.</span><span style="color: rgb(0, 0, 204);">.</span><span style="color: rgb(0, 0, 204);">.</span><br>
+<span style="color: rgb(0, 0, 204);">}</span></span></code></p></td></tr></tbody></table>
+		
+		<p></p></div>
+</div>
+
+<div class="cont6">
+<!-- 分享 -->
+<div class="fx">
+<div class="icon">										 
+<!-- JiaThis Button BEGIN -->
+<div id="ckepop">
+<a href="http://www.jiathis.com/share/" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank">分享到：</a>
+<a class="jiathis_button_tsina" title="分享到新浪微博"><span class="jiathis_txt jiathis_separator jtico jtico_tsina">新浪微博</span></a>
+<a class="jiathis_button_qzone" title="分享到QQ空间"><span class="jiathis_txt jiathis_separator jtico jtico_qzone">QQ空间</span></a>
+<a class="jiathis_button_kaixin001" title="分享到开心网"><span class="jiathis_txt jiathis_separator jtico jtico_kaixin001">开心网</span></a>
+<a class="jiathis_button_douban" title="分享到豆瓣"><span class="jiathis_txt jiathis_separator jtico jtico_douban">豆瓣</span></a>
+<a class="jiathis_button_renren" title="分享到人人网"><span class="jiathis_txt jiathis_separator jtico jtico_renren">人人网</span></a>
+<a class="jiathis_button_twitter" title="分享到Twitter"><span class="jiathis_txt jiathis_separator jtico jtico_twitter">twitter</span></a>
+<a class="jiathis_button_fb" title="分享到Facebook"><span class="jiathis_txt jiathis_separator jtico jtico_fb">fb</span></a>
+</div>
+<script type="text/javascript" src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/jia.js" charset="utf-8"></script><script type="text/javascript" src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/plugin.client.js" charset="utf-8"></script><div style="position:absolute;width:0px;height:0px;"><object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="0" height="0" id="JIATHISSWF" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab"><param name="allowScriptAccess" value="always"><param name="swLiveConnect" value="true"><param name="movie" value="http://www.jiathis.com/code/swf/m.swf"><param name="FlashVars" value="z=a"><embed name="JIATHISSWF" src="http://www.jiathis.com/code/swf/m.swf" flashvars="z=a" width="0" height="0" allowscriptaccess="always" swliveconnect="true" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer"></object></div>
+<!-- JiaThis Button END -->
+</div>
+
+<span style="cursor:pointer;">
+<a id="support">0</a>
+<br>
+<a onclick="ajaxmenu(event, this.id,0, 2000, &#39;doSupport&#39;)" id="click_blogid_73547" href="http://blog.chinaunix.net/cp.php?ac=click&op=add&clickid=4&idtype=blogid&id=73547&hash=81f16b8c9242e6fd01f56fc101318620">
+&nbsp;&nbsp;&nbsp;<b>顶</b>
+</a>
+</span>
+<div class="clear"></div>
+</div>
+
+                <div class="clear"></div>
+<style>
+.bor0223{ width:708px; margin:0 auto 20px; height:90px;}
+.bor0223_tit{ height:28px; line-height:28px; border-bottom:1px dashed #ccc; font-size:14px; font-weight:bold; padding-left:12px;}
+.list0223{ width:698px; margin:10px 0 0 12px;}
+.list0223 li{ float:left; width:174px; line-height:20px; height:20px;}
+</style><div class="bor0223"><div class="bor0223_tit">热门产品推荐</div><ul class="list0223"><li><a href="http://product.it168.com/detail/doc/443879/index.shtml" target="_blank" title="三星 盖世 S5830">三星 盖世 S5830</a></li><li><a href="http://product.it168.com/detail/doc/470229/index.shtml" target="_blank" title="酷派 8150">酷派 8150</a></li><li><a href="http://product.it168.com/detail/doc/470248/index.shtml" target="_blank" title="三星 S5830i">三星 S5830i</a></li><li><a href="http://product.it168.com/detail/doc/472147/index.shtml" target="_blank" title="迈珀 超清晰3D动态保护套">迈珀 超清晰3D动态保护套...</a></li><li><a href="http://product.it168.com/detail/doc/457164/index.shtml" target="_blank" title="苹果 iPhone6">苹果 iPhone6</a></li><li><a href="http://product.it168.com/detail/doc/453322/index.shtml" target="_blank" title="现代博恩 XB-D04">现代博恩 XB-D04</a></li><li><a href="http://product.it168.com/detail/doc/453075/index.shtml" target="_blank" title="三星 i9108">三星 i9108</a></li><li><a href="http://product.it168.com/detail/doc/449069/index.shtml" target="_blank" title="诺基亚 T7">诺基亚 T7</a></li></ul></div><!-- 阅读 -->
+
+<div class="read">
+<a href="javascript:;">阅读<b>(3316)</b></a>┊ <a href="http://blog.chinaunix.net/space.php?uid=20564848&do=blog&id=73547#comment">评论 <b>(<span id="comm_num">3</span>)</b></a>┊<a href="http://blog.chinaunix.net/cp.php?ac=favorites&op=addfavorites&blogid=73547" id="a_favorite" onclick="ajaxmenu(event, this.id, 1)">收藏(0)</a>┊<a href="http://blog.chinaunix.net/cp.php?ac=common&op=report&idtype=blogid&id=73547" id="a_report" onclick="ajaxmenu(event, this.id, 1)">举报</a>┊<a href="javascript:window.print();">打印</a>
+</div>
+
+<div class="next1">前一篇：<a href="http://blog.chinaunix.net/uid-20564848-id-73546.html">老公在床上抱怨我性欲太强烈</a></div>
+
+<!-- 评论 -->
+<div class="tit8" id="comment_dv">
+<span><a href="http://blog.chinaunix.net/uid-20564848-id-73547.html#comment">[发评论]</a></span>
+<b>评论</b>&nbsp;重要提示：警惕虚假中奖信息!
+</div>
+<div id="comment" class="comments_list">
+<div class="box_content">
+<ul class="post_list a_list justify_list" id="comment_ul">
+<a name="228999"></a>
+<li id="comment_228999_li" class="space cont7 "><div class="avatar48"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/hidden.gif" class="avatar"></div>
+<div class="title">
+chinaunix网友
+<span class="gray">2009-09-02 15:24</span>
+
+</div>
+
+<div class="detail" id="comment_228999">对于BR_TRANSACTION的分发如何处理的呢，对于service_manager发送到进程，对于其他的cameraservice等，发送到ontransact函数，内部有什么具体控制的吗，多谢了！
+</div>
+
+</li><a name="229000"></a>
+<li id="comment_229000_li" class=" cont7 "><div class="avatar48"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/hidden.gif" class="avatar"></div>
+<div class="title">
+chinaunix网友
+<span class="gray">2009-09-02 09:53</span>
+
+</div>
+
+<div class="detail" id="comment_229000">如果在Service_Manager进程中执行（其实应该是这样的），那也要调用IPCThreadState::waitForResponse，还会跑到executeCommand的BR_TRANSACTION case中去，难道是被Service_Manager进程把ReadThread的数据抢去了，这里就获取不到数据了还是怎么回事？</div>
+
+</li><a name="229001"></a>
+<li id="comment_229001_li" class=" cont7 "><div class="avatar48"><img src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/hidden.gif" class="avatar"></div>
+<div class="title">
+chinaunix网友
+<span class="gray">2009-09-01 17:08</span>
+
+</div>
+
+<div class="detail" id="comment_229001">请教个问题，谢谢！
+BServiceManager是ServiceManager的native实现类，此类new过，但是ProcessState代码中都没取出来，在IPCThreadState::executeCommand中的            
+if (tr.target.ptr) {
+                sp<bbinder> b((BBinder*)tr.cookie);
+                const status_t error = b-&gt;transact(tr.code, buffer, &amp;reply, 0);
+                if (error &lt; NO_ERROR) reply.setError(error);
+                
+            } else {
+                const status_t error = the_context_object-&gt;transact(tr.code, buffer, &amp;reply, 0);
+                if (error &lt; NO_ERROR) reply.setError(error);
+            }
+ServiceManager的BBinder实现是从哪里搞来的，貌似不太可能啊。else不可能执行，因为the_context_object都没赋过值。
+</bbinder></div>
+
+</li></ul>
+</div>
+</div>
+<div class="clear"></div>
+
+<!-- 发评论 -->
+<div class="logins">亲，您还没有登录,请<a href="http://blog.chinaunix.net/do.php?ac=wuxingzypcw213">[登录]</a>或<a href="http://blog.chinaunix.net/do.php?ac=8f442ba1e0c79cd3efcd1fd42b8aad8e">[注册]</a>后再进行评论</div>
+</div>
+</div>
+ <!-- 徽章定位1 -->
+ </div>
+
+<div class="clear"></div>
+</div>
+<script type="text/javascript">
+<!--
+var blogid = 73547;
+var bloguid = 0;
+function doSupport(){
+var x = new Ajax();
+x.get('do.php?ac=ajax&op=support&id='+blogid , function(s){
+document.getElementById('support').innerHTML = s;
+});
+}
+
+function code_hide(id){
+var code = document.getElementById(id).style.display;
+if(code == 'none'){
+document.getElementById(id).style.display = 'block';
+}else{
+document.getElementById(id).style.display = 'none';
+}
+}
+
+
+function checkComment(id){
+
+//	if(bloguid < 1 &&  ($('nim').checked == false) ){
+//		alert('请选择匿名发表评论！');
+//		return false;
+//	}
+if(trim($('seccode').value) == ''){
+alert('验证码不能为空！');
+return false;
+}
+s('comment_dv');
+ajaxpost('quickcommentform_'+id, 'comment_add');
+$('seccode').value = '';
+
+var img = '/do.php?ac=seccode&rand='+Math.random();
+$('img_seccode').src = img;
+}
+$('font_14').style.fontWeight='bold';
+function doZoom(s){
+$('font_12').style.fontWeight='normal';
+$('font_14').style.fontWeight='normal';
+$('font_16').style.fontWeight='normal';
+$('font_'+s).style.fontWeight='bold';
+s = s + 'px';
+$('detail').style.fontSize = s;
+}
+function setTop(t , id)
+{
+var x = new Ajax();
+x.get('/admin.php?ac=blog&op='+ t +'&id='+id , function(s){
+if(t == 'retop'){
+document.getElementById('top_' + id).innerHTML = "<a href=\"javascript:;\" onclick=\"setTop('top', '"+id+"');\">&nbsp;置顶首页</a>";
+}else{
+document.getElementById('top_' + id).innerHTML = "<a href=\"javascript:;\" onclick=\"setTop('retop', '"+id+"');\">&nbsp;取消置顶</a>";
+}
+});
+}
+
+var FmId = 2;
+
+function attention(uid , t){
+if(uid){
+var x = new Ajax();
+x.get('/cp.php?ac=attention&op='+ t +'&uid=' + uid , function(s){
+if(t == 'add'){
+
+var h = "<a href='javascript:;' onclick='attention(\""+ uid +"\" , \"delete\");'>取消关注</a>";
+document.getElementById('attention').innerHTML = h;
+}else{
+var h = "<a href='javascript:;' onclick='attention(\""+ uid +"\" , \"add\");'>加关注</a>";
+document.getElementById('attention').innerHTML = h;
+}
+});
+}
+}
+//-->
+</script>
+<div id="footer">
+<div class="l">
+<a href="http://www.chinaunix.net/about/index.shtml" rel="nofollow">关于我们</a> | 
+<a href="http://www.it168.com/bottomfile/it168.shtml" rel="nofollow">关于IT168</a> | 
+<a href="http://www.chinaunix.net/about/connect.html" rel="nofollow">联系方式</a> | 
+<a href="http://www.chinaunix.net/about/service.html" rel="nofollow">广告合作</a> | 
+<a href="http://blog.chinaunix.net/about/fl.html" rel="nofollow">法律声明</a> | 
+<a href="http://blog.chinaunix.net/register.php" rel="nofollow">免费注册</a> 
+<address>
+Copyright &#169; 2001-2010 ChinaUnix.net All Rights Reserved 北京皓辰网域网络信息技术有限公司. 版权所有 
+</address>
+</div>
+<div class="r">
+感谢所有关心和支持过ChinaUnix的朋友们<br>京ICP证041476号 京ICP证060528号
+</div>
+<div class="clear"></div>
+</div>
+<div id="dialogBoxShadow" style="display:none;z-index:49;"></div>
+<input id="dot" value="" type="hidden">
+<script type="text/javascript">
+
+<!--
+if($('dot').value == 'theme')  getPageSet();
+function checkHtitle(){
+var tt = $('spacetitle').value;
+if(ttlen(trim(tt)) > 48){
+alert('博客宣言不能超过48个字符！');
+return false;
+}
+ajaxpost('home_from','homeTitle');
+}
+function checkBbrief(){
+var tt = $('blog_brief').value;
+if(ttlen(trim(tt)) > 200){
+alert('个性签名不能超过200个字符！');
+return false;
+}
+ajaxpost('brief_form','blogBrief');
+}
+function homeTitle()
+{
+var spacetitle_value = $('spacetitle').value;
+if(!spacetitle_value){
+spacetitle_value = '还没有博客宣言';
+}
+var x = new Ajax();
+x.get('/do.php?ac=ajax&op=htl', function(s){
+document.getElementById('home_t').innerHTML = s
+});
+s('home_title');
+h('home_title_form');
+}
+function blogBrief()
+{
+var spacetitle_value = $('blog_brief').value;
+if(!spacetitle_value){
+spacetitle_value = '还没有个性签名';
+}
+var x = new Ajax();
+x.get('/do.php?ac=ajax&op=bbf', function(s){
+document.getElementById('blog_b').innerHTML = s
+});
+s('blog_brief');
+h('blog_brief_form');
+}
+//-->
+</script>
+<script language="javascript" src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/pv.js"></script>
+<script type="text/javascript">
+    function sendPV(){
+        var pvTrack = new PvTrack();
+        pvTrack.type = 35; // 频道类别ID
+        pvTrack.channel = 189; // 频道ID
+        pvTrack.pageType = 0;
+        pvTrack.track();
+    }
+    window.setTimeout("sendPV()", 0); 
+
+</script>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-20237423-2']);
+  _gaq.push(['_setDomainName', '.chinaunix.net']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+<div style="display:none">
+<script type="text/javascript"> 
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F0ee5e8cdc4d43389b3d1bfd76e83216b' type='text/javascript'%3E%3C/script%3E"));
+</script><script src="./浅析android下native层binder的部分具体实现_gliethttp-ChinaUnix博客_files/h.js" type="text/javascript"></script>
+</div>
+
+ 
+
+</body></html>

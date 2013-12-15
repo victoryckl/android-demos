@@ -1,0 +1,599 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0053)http://blog.csdn.net/maxleng/article/details/5504485/ -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title> Android 核心分析 之七------Service深入分析 - maxleng的专栏 - 博客频道 - CSDN.NET</title>
+
+<meta name="description" content="Service深入分析 上一章我们分析了Android IPC架构,知道了Android服务构建的一些基本理念和原理，本章我们将深入分析Android的服务。Android体系架构中三种意义上服务： Native服务 Android服务 Init空间的服务，主要是属性设置，这个ＩＰＣ是利用Ｓｏｃｋｅｔ来完成的，这个我将在另外一章来讨论。Navite服务，实际上就是指">
+<script type="text/javascript" async="" src="./Android 核心分析 之七------Service深入分析 - maxleng的专栏 - 博客频道 - CSDN.NET_files/ga.js"></script><script src="./Android 核心分析 之七------Service深入分析 - maxleng的专栏 - 博客频道 - CSDN.NET_files/jquery.js" type="text/javascript"></script>
+<script src="./Android 核心分析 之七------Service深入分析 - maxleng的专栏 - 博客频道 - CSDN.NET_files/plugins.js" type="text/javascript"></script>
+<script src="./Android 核心分析 之七------Service深入分析 - maxleng的专栏 - 博客频道 - CSDN.NET_files/common.js" type="text/javascript"></script>
+<link rel="Stylesheet" type="text/css" href="./Android 核心分析 之七------Service深入分析 - maxleng的专栏 - 博客频道 - CSDN.NET_files/style.css">
+<link id="RSSLink" title="RSS" type="application/rss+xml" rel="alternate" href="http://blog.csdn.net/maxleng/rss/list">
+<link rel="shortcut icon" href="http://blog.csdn.net/favicon.ico">
+<link type="text/css" rel="stylesheet" href="./Android 核心分析 之七------Service深入分析 - maxleng的专栏 - 博客频道 - CSDN.NET_files/default.css">
+</head>
+<body>
+<script src="./Android 核心分析 之七------Service深入分析 - maxleng的专栏 - 博客频道 - CSDN.NET_files/pub_topnav_2011.js" type="text/javascript"></script><link rel="stylesheet" type="text/css" href="./Android 核心分析 之七------Service深入分析 - maxleng的专栏 - 博客频道 - CSDN.NET_files/navtop_2011.css">
+<div class="nav_top_2011">
+<p>欢迎<em>victoryckl</em><a href="http://my.csdn.net/my/notifications" class="num" id="header_notice_num">0</a>我的：<a href="http://my.csdn.net/my/letter">收件箱<span id="header_letter_num"></span></a><a href="http://download.csdn.net/my" class="red">资源</a><a href="http://write.blog.csdn.net/" class="red">博客</a><a href="http://my.csdn.net/">空间</a><a href="http://passport.csdn.net/account/profile">设置</a>|<a href="http://passport.csdn.net/help/faq">帮助</a>|<a href="http://passport.csdn.net/account/logout">退出</a></p><ul>
+<li><a href="http://www.csdn.net/" target="_blank">CSDN首页</a></li>
+<li><a href="http://news.csdn.net/" target="_blank">资讯</a></li>
+<li><a href="http://bbs.csdn.net/" target="_blank">论坛</a></li>
+<li><a href="http://blog.csdn.net/" target="_blank">博客</a></li>
+<li><a href="http://download.csdn.net/" target="_blank">下载</a></li>
+<li><a href="http://so.csdn.net/" target="_blank">搜索</a></li>
+<li class="more"><h2 id="topnav_btnmore"><a href="javascript:void(0);">更多</a></h2>
+<ul id="topnav_hidlist">
+<li><a href="http://cto.csdn.net/" target="_blank">CTO俱乐部</a></li>
+<li><a href="http://student.csdn.net/" target="_blank">学生大本营</a></li>
+<li><a href="http://edu.csdn.net/" target="_blank">培训充电</a></li>
+<li><a href="http://mobile.csdn.net/" target="_blank">移动开发</a></li>
+<li><a href="http://sd.csdn.net/" target="_blank">软件研发</a></li>
+<li><a href="http://cloud.csdn.net/" target="_blank">云计算</a></li>
+<li><a href="http://www.programmer.com.cn/" target="_blank">程序员</a></li>
+<li><a href="http://www.iteye.com/" target="_blank">ITeye</a>&lt;&gt;
+</li><li><a href="http://tup.csdn.net/" target="_blank">TUP</a></li>
+</ul>
+</li>
+</ul>
+</div>
+
+
+<div id="container">
+<div id="header">
+    <div class="header">
+        <div id="blog_title">
+            <h1>
+                <a href="http://blog.csdn.net/maxleng">maxleng的专栏</a></h1>
+            <h2>正在研究Android</h2>
+            <div class="clear">
+            </div>
+        </div>
+        <div class="clear">
+        </div>
+    </div>
+</div>
+<div id="navigator">
+    <div class="navigator_bg">
+    </div>
+    <div class="navigator">
+        <ul>
+            <!--<li id="btnHome"><a href="/maxleng"><span><img src="http://static.blog.csdn.net/images/ico_home.gif">我的首页</span></a></li>-->
+            <li id="btnContents"><a href="http://blog.csdn.net/maxleng?viewmode=contents"><span><img src="./Android 核心分析 之七------Service深入分析 - maxleng的专栏 - 博客频道 - CSDN.NET_files/ico_list.gif">目录视图</span></a></li>
+            <li id="btnView"><a href="http://blog.csdn.net/maxleng?viewmode=list"><span><img src="./Android 核心分析 之七------Service深入分析 - maxleng的专栏 - 博客频道 - CSDN.NET_files/ico_summary.gif">摘要视图</span></a></li>
+            <li id="btnRss"><a href="http://blog.csdn.net/maxleng/rss/list"><span><img src="./Android 核心分析 之七------Service深入分析 - maxleng的专栏 - 博客频道 - CSDN.NET_files/ico_rss.gif">订阅</span></a></li>
+</ul>
+    </div>
+</div>
+<script type="text/javascript">
+    var username = "maxleng";
+    var blog_address = "http://blog.csdn.net/maxleng";
+    var static_host = "http://static.blog.csdn.net";
+    var currentUserName = $.cookie("UserName");
+</script>
+        
+<div id="body">
+<div id="main">
+<div class="main">
+<div class="notice"> 
+
+<a href="http://blog.csdn.net/blogdevteam/article/details/7468291" target="_blank"><font color="red">4月18日22:00至4月19日2:00网站服务暂停公告</font></a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="http://blog.csdn.net/blogdevteam/article/details/7415936" target="_blank"><font color="red">博客频道4月技术图书有奖试读火爆开启</font></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="http://www.mobileasiaexpo.cn/?MAECN=CSDN2" target="_blank"><font color="blue">移动业界领袖会议·上海·6.20</font></a>
+<br>
+
+
+<a href="http://event.blog.csdn.net/TopColumn/awardlist.aspx" target="_blank"><font color="red">CSDN十大风云博客专栏评选结果公布！</font></a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="http://topic.csdn.net/u/20120416/10/9123faba-8474-4f2a-a0cf-a1b7d0fe5913.html" target="_blank"><font color="red">下载频道分享季1：分享经典，领取积分！</font></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="http://event.blog.csdn.net/BlogSkin/Vote.aspx" target="_blank"><font color="red">CSDN博客皮肤评选活动火爆开启！</font></a>
+</div><script type="text/javascript" src="./Android 核心分析 之七------Service深入分析 - maxleng的专栏 - 博客频道 - CSDN.NET_files/ad.js"></script>
+
+<div id="article_details" class="details">
+    <div class="article_title">
+    <span class="ico ico_type_Original"></span>
+    <h3>
+        <span class="link_title"><a href="http://blog.csdn.net/maxleng/article/details/5504485">
+         Android 核心分析 之七------Service深入分析
+        </a></span>
+    </h3>
+</div>
+
+        
+    <div class="article_manage">
+    <span class="link_postdate">2010-04-19 22:26</span>
+    <span class="link_view" title="阅读次数">46157人阅读</span>
+    <span class="link_comments" title="评论次数"><a href="http://blog.csdn.net/maxleng/article/details/5504485/#comments">评论</a>(63)</span>
+    <span class="link_collect"><a href="javascript:void(0);" onclick="javascript:collectArticle(&#39; Android 核心分析 之七------Service深入分析&#39;,&#39;5504485&#39;);return false;" title="收藏">收藏</a></span>
+    <span class="link_report"><a href="http://blog.csdn.net/maxleng/article/details/5504485/#report" onclick="javascript:report(5504485,2);return false;" title="举报">举报</a></span>
+    
+</div>
+
+    
+<div id="article_content" class="article_content">
+    <h1 style="text-align: center; "><span style="font-family: mceinline;"><br>Service深入分析</span></h1>
+<p>&nbsp;</p>
+<p class="p0"><span style="font-family: mceinline;">上一章我们分析了</span><span><span style="font-family: mceinline;">Android&nbsp;IPC</span></span><span><span style="font-family: mceinline;">架构</span></span><span><span style="font-family: mceinline;">,</span></span><span><span style="font-family: mceinline;">知道了</span></span><span><span style="font-family: mceinline;">Android</span></span><span><span style="font-family: mceinline;">服务构建的一些基本理念和原理，本章我们将深入分析</span></span><span><span style="font-family: mceinline;">Android</span></span><span><span style="font-family: mceinline;">的服务。</span></span><span><span style="font-family: mceinline;">Android</span></span><span><span style="font-family: mceinline;">体系架构中三种意义上服务：</span></span><span style="font-family: mceinline;"></span></p>
+<ul>
+<li><span style="font-family: mceinline;">&nbsp;Native</span><span><span style="font-family: mceinline;">服务</span></span></li>
+<li><span style="font-family: mceinline;">&nbsp;Android</span><span><span style="font-family: mceinline;">服务</span></span></li>
+<li><span style="font-family: mceinline;">&nbsp;Init</span><span><span style="font-family: mceinline;">空间的服务，主要是属性设置，这个ＩＰＣ是利用Ｓｏｃｋｅｔ来完成的，这个我将在另外一章来讨论。</span></span></li>
+</ul>
+<p class="p0"><span style="font-family: mceinline;">Navite</span><span><span style="font-family: mceinline;">服务，实际上就是指完全在</span></span><span><span style="font-family: mceinline;">C++</span></span><span><span style="font-family: mceinline;">空间完成的服务，主要是指系统一开始初始化，通过</span></span><span><span style="font-family: mceinline;">Init.rc</span></span><span><span style="font-family: mceinline;">脚本起来的服务，例如</span></span><span><span style="font-family: mceinline;">Service&nbsp;Manger&nbsp;service,Zygote&nbsp;</span></span><span style="font-family: mceinline;">service,Media&nbsp;service&nbsp;,&nbsp;ril_demon&nbsp;service</span><span><span style="font-family: mceinline;">等。</span></span><span style="font-family: mceinline;"></span></p>
+<p class="p0">	<span style="font-family: mceinline;">Android</span><span><span style="font-family: mceinline;">服务是指在</span></span><span><span style="font-family: mceinline;">JVM</span></span><span><span style="font-family: mceinline;">空间完成的服务，虽然也要使用</span></span><span><span style="font-family: mceinline;">Navite</span></span><span><span style="font-family: mceinline;">上的框架，但是服务主体存在于</span></span><span><span style="font-family: mceinline;">Android</span></span><span><span style="font-family: mceinline;">空间。</span></span><span><span style="font-family: mceinline;">Android</span></span><span><span style="font-family: mceinline;">是二阶段初始（</span></span><span><span style="font-family: mceinline;">Init2</span></span><span><span style="font-family: mceinline;">）初始化时建立的服务。</span></span><span style="font-family: mceinline;"></span></p>
+<h3 style="text-align: center; "><span style="font-family: mceinline;">1&nbsp;Service</span><span><span style="font-family: mceinline;">本质结构</span></span><span style="font-family: mceinline;"></span></h3>
+<p class="p0"><span style="font-family: mceinline;">我们还是从</span><span><span style="font-family: mceinline;">Service</span></span><span><span style="font-family: mceinline;">的根本意义分析入手，服务的本质就是响应客户端请求。要提供服务，就必须建立接收请求，处理请求，应答客服端的框架。我想在</span></span><span><span style="font-family: mceinline;">Android&nbsp;Service</span></span><span><span style="font-family: mceinline;">设计者也会无时不刻把这个服务本质框图挂在脑海中。从程序的角度，服务一定要存在一个闭合循环框架</span></span><span style="font-family: mceinline;">和请求处理框架</span></p>
+<p>&nbsp;</p>
+<p><span style="font-family: mceinline;"><br></span></p>
+<p style="text-align: center;"><span style="font-family: mceinline;"><img src="./Android 核心分析 之七------Service深入分析 - maxleng的专栏 - 博客频道 - CSDN.NET_files/0_1271687107cHCQ.gif" alt=""></span></p>
+<p><span style="font-family: mceinline;">
+</span></p><p class="p0">分析清楚服务框就必须弄清楚以下的机制及其构成。</p>
+<p class="p0">（<span>1</span><span>）闭合循环结构放置在哪里？</span></p>
+<p class="p0">（<span>2</span><span>）处理请求是如何分发和管理？</span></p>
+<p class="p0">（<span>3</span><span>）处理框架是如何建立的？</span></p>
+<p class="p0">（<span>4</span><span>）概念框架是如何建立的？</span></p>
+<p></p>
+<p><span style="font-family: mceinline;">
+</span></p><h3 style="text-align: center;">2&nbsp;Service<span style="font-family: 宋体;">基本框架分析</span></h3>
+<p class="p0">&nbsp;&nbsp; &nbsp; Android<span style="font-family: 宋体;">设计中，</span><span style="font-family: &#39;Times New Roman&#39;;">Native&nbsp;Service</span><span style="font-family: 宋体;">和</span><span style="font-family: &#39;Times New Roman&#39;;">Android&nbsp;Service</span><span style="font-family: 宋体;">采用了同一个闭合循环框架。这个闭合循环框架放置在</span><span style="font-family: &#39;Times New Roman&#39;;">Native</span><span style="font-family: 宋体;">的</span><span style="font-family: &#39;Times New Roman&#39;;">C++</span><span style="font-family: 宋体;">空间中，</span><span style="font-family: &#39;Times New Roman&#39;;">,ProcessState@ProcessState.cpp&nbsp;</span><span style="font-family: 宋体;">和</span><a href="mailto:IPCThreadState@IPCThreadState.cpp"><span class="15">IPCThreadState@IPCThreadState.cpp</span></a>两个类完成了全部工作。</p>
+<p class="p0">&nbsp;</p>
+<p></p>
+<p style="text-align: center;"><span style="font-family: mceinline;"><img src="./Android 核心分析 之七------Service深入分析 - maxleng的专栏 - 博客频道 - CSDN.NET_files/0_1271687161PB3l.gif" alt=""></span></p>
+<p><span style="font-family: mceinline;"><span style="font-family: Verdana, Arial, Helvetica, sans-serif;">
+</span></span></p><p class="p0"><span style="font-family: mceinline;">在服务框架中，</span><span><span style="font-family: mceinline;">ProcessState</span></span><span><span style="font-family: mceinline;">是公用的部分，这个公用部分最主要的框架就是闭合循环框架和接收到从</span></span><span><span style="font-family: mceinline;">Binder</span></span><span><span style="font-family: mceinline;">来的请求后的处理框架。我们将服务框架用</span></span><span><span style="font-family: mceinline;">ProcessSate</span></span><span><span style="font-family: mceinline;">来表示</span></span><span><span style="font-family: mceinline;">,</span></span><span><span style="font-family: mceinline;">简言之：</span></span><span style="font-family: mceinline;"></span></p>
+<p class="p0"><span style="font-family: mceinline;">（1）&nbsp;addservice</span></p>
+<p class="p0"><span style="font-family: mceinline;">（2）&nbsp;建立闭合循环处理框架。</span></p>
+<p class="p0"><span style="font-family: mceinline;"></span></p>
+<p class="p0"><span style="font-family: mceinline;">int&nbsp;main(int&nbsp;argc,&nbsp;char**&nbsp;argv)</span></p>
+<p class="p0"><span style="font-family: mceinline;">{</span></p>
+<p class="p0"><span style="font-family: mceinline;">sp&lt;ProcessState&gt;&nbsp;proc(ProcessState::self());</span></p>
+<p class="p0"><span style="font-family: mceinline;">addService(String16("xxx0"),&nbsp;new&nbsp;xxx0Service());</span></p>
+<p class="p0"><span style="font-family: mceinline;">addService(String16("xxx1"),&nbsp;new&nbsp;xxx1Service());</span></p>
+<p class="p0"><span style="font-family: mceinline;">…</span></p>
+<p class="p0"><span style="font-family: mceinline;">ProcessState::self()-&gt;startThreadPool();</span></p>
+<p class="p0"><span style="font-family: mceinline;">IPCThreadState::self()-&gt;joinThreadPool();//</span><span><span style="font-family: mceinline;">闭合循环框架</span></span><span style="font-family: mceinline;"></span></p>
+<p class="p0"><span style="font-family: mceinline;">}</span></p>
+<p class="p0"><span style="font-family: mceinline;"></span></p>
+<p></p>
+<p><span style="font-family: mceinline;"><br></span></p>
+<p style="text-align: center;"><span style="font-family: mceinline;"><img src="./Android 核心分析 之七------Service深入分析 - maxleng的专栏 - 博客频道 - CSDN.NET_files/0_1271687173UY5M.gif" alt=""></span></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><span style="font-family: mceinline;">
+</span></p><h4>2.1&nbsp;Native&nbsp;Service&nbsp;</h4>
+<p class="p0">Native&nbsp;Service<span>是在系统</span><span>Init</span><span>阶段通过</span><span>Init.rc</span><span>脚本建立的服务。</span></p>
+<p class="p0">首先来看看一个例子<span>mediaserver@main_mediaserver.cpp</span><span>的建立过程。</span></p>
+<p class="p0">&nbsp;</p>
+<p class="p0">int&nbsp;main(int&nbsp;argc,&nbsp;char**&nbsp;argv)</p>
+<p class="p0">{</p>
+<p class="p0">&nbsp;&nbsp;&nbsp;&nbsp;sp&lt;ProcessState&gt;&nbsp;proc(ProcessState::self());</p>
+<p class="p0">&nbsp;&nbsp;&nbsp;&nbsp;sp&lt;IServiceManager&gt;&nbsp;sm&nbsp;=&nbsp;defaultServiceManager();</p>
+<p class="p0">&nbsp;&nbsp;&nbsp;&nbsp;LOGI("ServiceManager:&nbsp;%p",&nbsp;sm.get());</p>
+<p class="p0">&nbsp;&nbsp;&nbsp;&nbsp;AudioFlinger::instantiate();</p>
+<p class="p0">&nbsp;&nbsp;&nbsp;&nbsp;MediaPlayerService::instantiate();</p>
+<p class="p0">&nbsp;&nbsp;&nbsp;&nbsp;CameraService::instantiate();</p>
+<p class="p0">&nbsp;&nbsp;&nbsp;&nbsp;AudioPolicyService::instantiate();</p>
+<p class="p0">&nbsp;&nbsp;&nbsp;&nbsp;ProcessState::self()-&gt;startThreadPool();</p>
+<p class="p0">&nbsp;&nbsp;&nbsp;&nbsp;IPCThreadState::self()-&gt;joinThreadPool();</p>
+<p class="p0">}</p>
+<p class="p0">&nbsp;</p>
+<p class="p0">&nbsp;</p>
+<p class="p0">我们将代码向下展开了一层，更能看到事物的本质。</p>
+<p class="p0">int&nbsp;main(int&nbsp;argc,&nbsp;char**&nbsp;argv)</p>
+<p class="p0">{</p>
+<p class="p0">sp&lt;ProcessState&gt;&nbsp;proc(ProcessState::self());</p>
+<p class="p0">sp&lt;IServiceManager&gt;&nbsp;sm&nbsp;=&nbsp;defaultServiceManager();</p>
+<p class="p0">defaultServiceManager()-&gt;addService(String16("media.audio_flinger"),&nbsp;new&nbsp;AudioFlinger());</p>
+<p class="p0">…</p>
+<p class="p0">ProcessState::self()-&gt;startThreadPool();</p>
+<p class="p0">IPCThreadState::self()-&gt;joinThreadPool();</p>
+<p class="p0">}</p>
+<p class="p0">&nbsp;</p>
+<p class="p0">（<span>1</span><span>）服务进程建立了</span>ProcessState对象，并将给对象登记在进程的上下文中。</p>
+<p class="p0">（<span>2</span><span>）建立一个新</span>AudioFlinger对象，并将对象登记<span>Service&nbsp;Manager&nbsp;Service</span><span>中。</span></p>
+<p class="p0">（<span>3</span><span>）开始就收请求，处理请求，应答这个循环闭合框架。</span></p>
+<p class="p0">&nbsp;</p>
+<h4>2.2&nbsp;Android&nbsp;Service</h4>
+<p class="p0">Androids&nbsp;service是系统二阶段（<span>Init2</span><span>）</span>初始化时建立的服务。</p>
+<p class="p0">Android的所有服务循环框架都是建立SystemServer@(SystemServer.java<span>）</span>上。在SystemServer.java中看不到循环结构，只是可以看到建立了init2的实现函数，建立了一大堆服务，并AddService到service&nbsp;Manager。</p>
+<p class="p0">main()&nbsp;@&nbsp;com/android/server/SystemServer&nbsp;</p>
+<p class="p0">{</p>
+<p class="p0">	init1();</p>
+<p class="p0">}</p>
+<p class="p0">Init1()<span>是在</span><span>Native</span><span>空间实现的（</span><span>com_andoird_server_systemServer.cpp</span><span>）。我们一看这个函数就知道了，原来这个闭合循环处理框架在这里：</span></p>
+<p class="p0">init1-&gt;system_init()&nbsp;@System_init.cpp</p>
+<p class="p0">&nbsp;</p>
+<p class="p0">在<span>system_init()</span><span>我们看到了这个久违的循环闭合管理框架。</span></p>
+<p class="p0">{</p>
+<p class="p0">Call&nbsp;"com/android/server/SystemServer",&nbsp;"init2"</p>
+<p class="p0">	…..&nbsp;</p>
+<p class="p0">ProcessState::self()-&gt;startThreadPool();</p>
+<p class="p0">&nbsp;&nbsp;&nbsp;&nbsp;IPCThreadState::self()-&gt;joinThreadPool();</p>
+<p class="p0">}</p>
+<p class="p0">&nbsp;</p>
+<p class="p0">Init2()@SystemServer.java<span>中建立了</span><span>Android</span><span>中所有要用到的服务：</span></p>
+<p class="p0">Entropy&nbsp;Service</p>
+<p class="p0">Power&nbsp;Manager</p>
+<p class="p0">Activity&nbsp;Manager</p>
+<p class="p0">Telephony&nbsp;Registry</p>
+<p class="p0">Package&nbsp;Manager</p>
+<p class="p0">Account&nbsp;Manager</p>
+<p class="p0">Content&nbsp;Manager</p>
+<p class="p0">System&nbsp;Content&nbsp;Providers</p>
+<p class="p0">Battery&nbsp;Service</p>
+<p class="p0">Hardware&nbsp;Service</p>
+<p class="p0">Alarm&nbsp;Manager</p>
+<p class="p0">Init&nbsp;Watchdog</p>
+<p class="p0">Sensor&nbsp;Service</p>
+<p class="p0">Window&nbsp;Manager</p>
+<p class="p0">Bluetooth&nbsp;Service</p>
+<p class="p0">statusbar</p>
+<p class="p0">Clipboard&nbsp;Service</p>
+<p class="p0">Input&nbsp;Method&nbsp;Service</p>
+<p class="p0">NetStat&nbsp;Service</p>
+<p class="p0">Connectivity&nbsp;Service</p>
+<p class="p0">Accessibility&nbsp;Manager</p>
+<p class="p0">Notification&nbsp;Manager</p>
+<p class="p0">Mount&nbsp;Service</p>
+<p class="p0">Device&nbsp;Storage&nbsp;Monitor</p>
+<p class="p0">Location&nbsp;Manager</p>
+<p class="p0">Search&nbsp;Service</p>
+<p class="p0">Checkin&nbsp;Service</p>
+<p class="p0">Wallpaper&nbsp;Service</p>
+<p class="p0">Audio&nbsp;Service</p>
+<p class="p0">Headset&nbsp;Observer</p>
+<p class="p0">Backup&nbsp;Service</p>
+<p class="p0">AppWidget&nbsp;Service</p>
+<h3 style="text-align: center;">3&nbsp;&nbsp;ProcessState<span>和</span><span>IPCThreadState</span></h3>
+<p class="p0">&nbsp;</p>
+<p class="p0">从宏观来讲，<span>PocessState</span><span>及其</span><span>IPCThreadState</span><span>处于</span><span>IPC</span><span>与内核打交道包装层。前面的章节已经提到，下面我将更详细的分析。有关</span><span>IPC</span><span>的</span><span>c++</span><span>空间的实现都是从</span><span>ProcessState</span><span>这个对象完成的。</span></p>
+<p></p>
+<p><span style="font-family: mceinline;"><img src="./Android 核心分析 之七------Service深入分析 - maxleng的专栏 - 博客频道 - CSDN.NET_files/0_1271687186gRre.gif" alt=""></span></p>
+<p><span style="font-family: mceinline;"><br></span></p>
+<p><span style="font-family: mceinline;">
+</span></p><p class="p0">我们可以得出如下的结论：不管<span>JVM</span><span>的</span><span>Binder</span><span>做了多么复杂的操作，最终还是需要利用</span><span>ProcessState</span>	这个<span>c++</span><span>空间的对象把数据传递给</span><span>Binder&nbsp;Driver</span><span>，接收数据也是通过</span><span>ProcessState</span><span>这个对象完成，</span><span>ProcessState</span><span>是所有</span><span>Binder&nbsp;IPC</span><span>必经的通道。</span></p>
+<p class="p0">&nbsp;</p>
+<p></p>
+<p><span style="font-family: mceinline;"><br></span></p>
+<p style="text-align: center;"><span style="font-size: large;"><img src="./Android 核心分析 之七------Service深入分析 - maxleng的专栏 - 博客频道 - CSDN.NET_files/0_1271687196D35l.gif" alt=""></span></p>
+<p style="text-align: center;"><span style="font-size: large;">
+</span></p><p class="p0">&nbsp;</p>
+<p class="p0" style="text-align: left;">ProcessState放置在全局变量<span>gProcess</span><span>中，每个进程只有一个</span><span>ProcessState</span><span>对象，负责打开</span><span>Binder</span><span>设备驱动，建立线程池等。而</span><span>IPCThreadState</span><span>每个线程有一个，</span><span>IPCThreadState</span><span>实例登记在</span>Linux线程程的上下文附属数据中，主要负责<span>Binder</span><span>数据读取，写入和请求处理框架</span>。IPCThreadSate<span>在构造的时候，获取进程的</span><span>ProcessSate</span><span>并记录在自己的成员变量</span><span>mProcess</span><span>中</span><span>,</span><span>通过</span><span>mProcess</span><span>可以获取到</span><span>Binder</span><span>的句柄。</span></p>
+<p class="p0" style="text-align: left;">&nbsp;</p>
+<h4 style="text-align: left;">3.1&nbsp;ProcessState<span>的生命周期</span></h4>
+<p class="p0" style="text-align: left;">	&nbsp;&nbsp; &nbsp; &nbsp;既然<span>ProcessState</span><span>是</span><span>Binder</span><span>通讯的基础，那么</span><span>Process</span><span>必须在</span><span>Binder</span><span>通讯之前建立。客户端，服务端都必须建立。由于现在重点讨论服务端，所以重心放置在服务端。在</span><span>Android</span><span>体系中有</span><span>c++</span><span>空间的服务，</span><span>JVM</span><span>空间的服务，这两类服务在本质上相同的，只是形式上不同，由于他们都是建立在ＰｒｏｃｅｓｓＳｔａｔｅ这个基础上，所以在形式上不同就仅仅表现在对</span><span>OnTransact</span><span>的回调处理的不同。</span></p>
+<p class="p0" style="text-align: left;">&nbsp;</p>
+<h4 style="text-align: left;">Native&nbsp;Service&nbsp;</h4>
+<p class="p0" style="text-align: left;">我们直接可以看到使用sp&lt;ProcessState&gt;&nbsp;proc(ProcessState::self())，建立建立<span>ProcessState</span><span>，一旦调用</span><span>ProcessState</span><span>就建立了，并且这个</span><span>self</span><span>将</span><span>ProcessSate</span><span>登记在</span>全局变量中。</p>
+<p class="p0" style="text-align: left;">&nbsp;</p>
+<p class="p0" style="text-align: left;">&nbsp;</p>
+<p class="p0" style="text-align: left;">Android&nbsp;Service</p>
+<p class="p0" style="text-align: left;">建立<span>Android&nbsp;Service</span><span>服务</span><span>system_init&nbsp;@System_init.cpp</span><span>中我们可以看到相同的结构。有一点不同的是所有的</span><span>Android&nbsp;Service</span><span>都运行在一个进程中：</span><span>systemsever</span><span>进程。</span></p>
+<p class="p0" style="text-align: left;">&nbsp;</p>
+<h4 style="text-align: left;">3.2&nbsp;Binder&nbsp;Driver<span>包装</span>&nbsp;@IPCThreadState</h4>
+<p class="p0" style="text-align: left;">&nbsp;&nbsp; &nbsp; &nbsp;ProcessSate<span>构造的时候</span>，使用<span>open_binder</span><span>打开</span>/driver/binder，并将句柄记录在<span>mDriverFD，在<span>ProcessState</span><span>中并不使用这个句柄，真正使用这个</span><span>Binder</span><span>设备句柄的是</span><span>IPCThreadState</span><span>，所有关于</span><span>Binder</span><span>的操作放置在</span><span>IPCThreadState</span><span>中：</span></span></p>
+<p class="p0" style="text-align: left;">&nbsp;</p>
+<p class="p0" style="text-align: left;">(1)读取<span>/</span><span>写入：</span><span>talkWithDriver</span><span>（）</span><span>@IPCThreadState</span><span>对</span><span>ioctl(mProcess-&gt;mDriverFD,&nbsp;BINDER_WRITE_READ,&nbsp;&amp;bwr)</span><span>进行包装。</span></p>
+<p class="p0" style="text-align: left;">(2)<span>请求处理：</span><span>executeCommand(...)@&nbsp;IPCThreadState</span></p>
+<p class="p0" style="text-align: left;">(3)<span>循环结构：</span><span>joinThreadPool()</span></p>
+<p class="p0" style="text-align: left;">joinThreadPool()</p>
+<p class="p0" style="text-align: left;">{</p>
+<p class="p0" style="text-align: left;"><span style="white-space: pre;">	</span>While(1){</p>
+<p class="p0" style="text-align: left;"><span style="white-space: pre;">	</span>talkWithDriver(...)</p>
+<p class="p0" style="text-align: left;"><span style="white-space: pre;">	</span>...</p>
+<p class="p0" style="text-align: left;"><span style="white-space: pre;">	</span>executeCommand(...)</p>
+<p class="p0" style="text-align: left;"><span style="white-space: pre;">	</span>}</p>
+<p class="p0" style="text-align: left;">}</p>
+<p></p>
+</div>
+<div class="share_buttons" id="sharePanel"><span>分享到：</span> <a name="sina" class="share_sina" title="分享到新浪微博"></a><a name="qq" class="share_qq" title="分享到腾讯微博"></a></div>
+
+<div class="article_next_prev">
+        <li class="prev_article">
+            <span>上一篇：</span><a href="http://blog.csdn.net/maxleng/article/details/5490770">Android 核心分析 之六 -----IPC框架分析 Binder，Service，Service manager</a></li>
+        <li class="next_article">
+            <span>下一篇：</span><a href="http://blog.csdn.net/maxleng/article/details/5508372">Android 核心分析 之八------Android 启动过程详解</a></li>
+</div>
+
+
+</div>
+<div id="ad_cen"><iframe id="ad_frm_0" frameborder="0" scrolling="no" style="border-top-width: 0px; border-right-width: 0px; border-bottom-width: 0px; border-left-width: 0px; overflow-x: hidden; overflow-y: hidden; width: 732px; height: 95px; " src="./Android 核心分析 之七------Service深入分析 - maxleng的专栏 - 博客频道 - CSDN.NET_files/ad(2).htm"></iframe></div>
+<script type="text/javascript">
+    new Ad(4, 'ad_cen');
+</script>
+<div id="comment_title" class="panel_head">查看评论<a name="comments"></a></div>
+<div id="comment_list"></div>
+<div id="comment_bar"></div>
+<div id="comment_form"><a name="commentbox"></a><a name="reply"></a><a name="quote"></a><form action="http://blog.csdn.net/maxleng/comment/submit?id=5504485" method="post"><div class="commentform"><div class="panel_head">发表评论</div><ul><li class="left">用 户 名：</li><li class="right">victoryckl</li></ul><ul><li class="left">评论内容：</li><li class="right" style="position:relative;"><div id="ubbtools"><a href="http://blog.csdn.net/maxleng/article/details/5504485/#insertcode" code="code"><img src="./Android 核心分析 之七------Service深入分析 - maxleng的专栏 - 博客频道 - CSDN.NET_files/code.gif" border="0" alt="插入代码" title="插入代码"></a></div><div id="lang_list" style="display:none; position:absolute;top:25px; left:0px;"><a href="http://blog.csdn.net/maxleng/article/details/5504485/#html">HTML/XML</a><a href="http://blog.csdn.net/maxleng/article/details/5504485/#javascript">JavaScript</a><a href="http://blog.csdn.net/maxleng/article/details/5504485/#css">CSS</a><a href="http://blog.csdn.net/maxleng/article/details/5504485/#php">PHP</a><a href="http://blog.csdn.net/maxleng/article/details/5504485/#csharp">C#</a><a href="http://blog.csdn.net/maxleng/article/details/5504485/#cpp">C++</a><a href="http://blog.csdn.net/maxleng/article/details/5504485/#java">Java</a><a href="http://blog.csdn.net/maxleng/article/details/5504485/#python">Python</a><a href="http://blog.csdn.net/maxleng/article/details/5504485/#ruby">Ruby</a><a href="http://blog.csdn.net/maxleng/article/details/5504485/#vb">Visual Basic</a><a href="http://blog.csdn.net/maxleng/article/details/5504485/#delphi">Delphi</a><a href="http://blog.csdn.net/maxleng/article/details/5504485/#sql">SQL</a><a href="http://blog.csdn.net/maxleng/article/details/5504485/#plain">其它</a></div><textarea class="comment_content" name="comment_content" id="comment_content" style="width: 400px; height: 200px;"></textarea></li></ul><ul><input type="hidden" id="comment_replyId" name="comment_replyId"><input type="hidden" id="comment_userId" name="comment_userId" value="521203"><input type="hidden" id="commentId" name="commentId" value=""><input type="submit" class="comment_btn" value="提交">&nbsp;&nbsp;<span id="tip_comment" style="color: Red; display: none;"></span></ul></div></form></div>
+<div class="announce">* 以上用户言论只代表其个人观点，不代表CSDN网站的观点或立场<a name="reply"></a><a name="quote"></a></div>
+<script type="text/javascript">
+    var fileName = '5504485';
+    var commentscount = 63;
+    var islock = false
+</script>
+<script type="text/javascript" src="./Android 核心分析 之七------Service深入分析 - maxleng的专栏 - 博客频道 - CSDN.NET_files/comment.js"></script>
+<div id="ad_bot"><iframe id="ad_frm_1" frameborder="0" scrolling="no" style="border-top-width: 0px; border-right-width: 0px; border-bottom-width: 0px; border-left-width: 0px; overflow-x: hidden; overflow-y: hidden; width: 732px; height: 170px; " src="./Android 核心分析 之七------Service深入分析 - maxleng的专栏 - 博客频道 - CSDN.NET_files/ad(3).htm"></iframe></div>
+<script type="text/javascript">
+    new Ad(5, 'ad_bot');
+</script>
+<div id="report_dialog"></div>
+
+
+<div class="clear"></div>
+</div>
+</div>
+<div id="side">
+    <div class="side">
+<div id="panel_Profile" class="panel">
+    <ul class="panel_head"><span>个人资料</span></ul>
+    <ul class="panel_body profile">
+        <div id="blog_userface">
+            <a href="http://my.csdn.net/maxleng" target="_blank">
+            <img src="./Android 核心分析 之七------Service深入分析 - maxleng的专栏 - 博客频道 - CSDN.NET_files/1_maxleng.jpg" title="访问我的空间" style="max-width:90%">
+            </a>
+            <br>
+            <span><a href="http://my.csdn.net/maxleng" target="_blank">maxleng</a></span>
+        </div>
+<div class="interact">
+<!--<a href="#" class="attented" title="已关注"></a>-->
+<a href="http://blog.csdn.net/maxleng/article/details/5504485/#" class="attent" id="span_add_follow" title="[加关注]"></a>
+<a href="http://my.csdn.net/my/letter/send/maxleng" class="letter" title="[发私信]"></a>
+</div>
+        <div id="blog_medal">
+        <div id="bms_box"><a href="http://medal.blog.csdn.net/allmedal.aspx" target="_blank"><img src="./Android 核心分析 之七------Service深入分析 - maxleng的专栏 - 博客频道 - CSDN.NET_files/columnstar_s.gif" onmouseover="m_over_m(this,0)" onmouseout="m_out_m()" alt=""></a></div></div>
+        <ul id="blog_rank">
+            <li>访问：<span>769584次</span></li>
+            <li>积分：<span>4191分</span></li>
+            <li>排名：<span>第715名</span></li>
+        </ul>
+        <ul id="blog_statistics">
+            <li>原创：<span>31篇</span></li>
+            <li>转载：<span>0篇</span></li>
+            <li>译文：<span>0篇</span></li>
+            <li>评论：<span>939条</span></li>
+        </ul>
+    </ul>
+</div>
+
+<script type="text/javascript">
+var _blogger='maxleng';
+$(document).ready(function () {
+    $('#span_add_follow').click(function () {
+        var url = "http://my.csdn.net/index.php/follow/do_follow?jsonpcallback=?";
+        $.getJSON(url, { "username": _blogger }, function (data) {
+            if (data.succ == 1) {
+                alert('关注成功！');
+                $('#span_add_follow').attr('class', 'attented').click(function () { return false; });
+            } else {
+                alert(data.msg);
+            }
+        });
+    });
+    if (getUN().toLowerCase() == _blogger.toLowerCase()) {
+        $('.interact').hide();
+    }
+});
+function getUN() {
+    var m = document.cookie.match(new RegExp("(^| )UserName=([^;]*)(;|$)"));
+    if (m) return m[2];
+    else return '';
+}
+</script>
+
+<div class="panel" id="panel_Search">
+    <ul class="panel_head"><span>文章搜索</span></ul>
+    <ul class="panel_body">
+        <form id="frmSearch" action="http://so.csdn.net/search" class="form_search" target="_blank">
+        <span><input id="inputSearch" type="text" class="blogsearch" title="请输入关键字"></span>
+        <input id="btnSubmit" type="submit" value="搜索" title="search in blog">
+        <input type="hidden" name="q" id="inputQ">
+        <input type="hidden" name="t" value="blog">
+        <a id="btnSearchBlog" target="_blank"></a>
+        </form>
+    </ul>
+</div><div id="panel_Category" class="panel">
+    <ul class="panel_head"><span>博客专栏</span></ul>
+    <ul class="panel_body" id="sp_column">
+    <table cellpadding="0" cellspacing="0"><tbody><tr>
+    <td style="padding:10px 10px 0 0;">
+    <a href="http://blog.csdn.net/column/details/androidcore.html" target="_blank"><img src="./Android 核心分析 之七------Service深入分析 - maxleng的专栏 - 博客频道 - CSDN.NET_files/20111124134411858.jpg" style="width:75px;height:75px;"></a>
+    </td>
+    <td style="padding:10px 0; vertical-align:top;">
+    <a href="http://blog.csdn.net/column/details/androidcore.html" target="_blank">Android核心分析</a>
+    <p>文章数：28篇</p>
+    <span>阅读量：748262</span>
+    </td>
+    </tr></tbody></table>
+    </ul>
+</div><div id="panel_Category" class="panel">
+    <ul class="panel_head"><span>文章分类</span></ul>
+    <ul class="panel_body">
+        <li>
+        <a href="http://blog.csdn.net/maxleng/article/category/677334">技术</a><span>(0)</span>
+        
+        </li>
+        <li>
+        <a href="http://blog.csdn.net/maxleng/article/category/677336">生活</a><span>(0)</span>
+        
+        </li>
+        <li>
+        <a href="http://blog.csdn.net/maxleng/article/category/677335">管理</a><span>(1)</span>
+        
+        </li>
+    </ul>
+</div><div id="panel_Archive" class="panel">
+    <ul class="panel_head"><span>文章存档</span></ul>
+    <ul class="panel_body">
+        <div id="archive_list">
+        <!--归档统计-->
+        <li><a href="http://blog.csdn.net/maxleng/article/month/2010/07">2010年07月</a>(3)</li><li><a href="http://blog.csdn.net/maxleng/article/month/2010/06">2010年06月</a>(6)</li><li><a href="http://blog.csdn.net/maxleng/article/month/2010/05">2010年05月</a>(13)</li><li><a href="http://blog.csdn.net/maxleng/article/month/2010/04">2010年04月</a>(9)</li>
+        </div>
+    </ul>
+</div>
+<div id="hotarticls" class="panel">
+    <ul class="panel_head"><span>阅读排行</span></ul>
+    <ul class="panel_body">
+        <li>
+            <a href="http://blog.csdn.net/maxleng/article/details/5490770" title="Android 核心分析 之六 -----IPC框架分析 Binder，Service，Service manager">Android 核心分析 之六 ----...</a> (104288)
+        </li>
+        <li>
+            <a href="http://blog.csdn.net/maxleng/article/details/5508372" title="Android 核心分析 之八------Android 启动过程详解">Android 核心分析 之八-----...</a> (51564)
+        </li>
+        <li>
+            <a href="http://blog.csdn.net/maxleng/article/details/5504485" title=" Android 核心分析 之七------Service深入分析"> Android 核心分析 之七----...</a> (46156)
+        </li>
+        <li>
+            <a href="http://blog.csdn.net/maxleng/article/details/5671271" title="Android核心分析（26）-----Android GDI之SurfaceFlinger">Android核心分析（26）-----...</a> (35233)
+        </li>
+        <li>
+            <a href="http://blog.csdn.net/maxleng/article/details/5471557" title="Android核心分析 之一--------分析方法论探讨之设计意图">Android核心分析 之一------...</a> (34601)
+        </li>
+        <li>
+            <a href="http://blog.csdn.net/maxleng/article/details/5621345" title="Android核心分析（21）----Android应用框架之AndroidApplication">Android核心分析（21）----A...</a> (30772)
+        </li>
+        <li>
+            <a href="http://blog.csdn.net/maxleng/article/details/5490713" title="Android 核心分析 之五 -----基本空间划分">Android 核心分析 之五 ----...</a> (27527)
+        </li>
+        <li>
+            <a href="http://blog.csdn.net/maxleng/article/details/5508488" title="Android核心分析 之九-------Zygote Service">Android核心分析 之九------...</a> (26758)
+        </li>
+        <li>
+            <a href="http://blog.csdn.net/maxleng/article/details/5472988" title="Android核心分析 之二 -------方法论探讨之概念空间篇 ">Android核心分析 之二 -----...</a> (25773)
+        </li>
+        <li>
+            <a href="http://blog.csdn.net/maxleng/article/details/5593759" title="Android核心分析（18）-----Android电话系统之RIL-Java">Android核心分析（18）-----...</a> (25404)
+        </li>
+    </ul>
+</div>
+<div id="hotarticls" class="panel">
+    <ul class="panel_head"><span>评论排行</span></ul>
+    <ul class="panel_body">
+        <li>
+            <a href="http://blog.csdn.net/maxleng/article/details/5471557" title="Android核心分析 之一--------分析方法论探讨之设计意图">Android核心分析 之一------...</a> (79)
+        </li>
+        <li>
+            <a href="http://blog.csdn.net/maxleng/article/details/5765088" title="一个程序员眼中的团队原型思考(3)---- 个体的孤独和团队的力量">一个程序员眼中的团队原型思考(3)---...</a> (71)
+        </li>
+        <li>
+            <a href="http://blog.csdn.net/maxleng/article/details/5490770" title="Android 核心分析 之六 -----IPC框架分析 Binder，Service，Service manager">Android 核心分析 之六 ----...</a> (68)
+        </li>
+        <li>
+            <a href="http://blog.csdn.net/maxleng/article/details/5504485" title=" Android 核心分析 之七------Service深入分析"> Android 核心分析 之七----...</a> (63)
+        </li>
+        <li>
+            <a href="http://blog.csdn.net/maxleng/article/details/5765047" title="一个程序员眼中的团队原型思考（1）-个体的孤独和团队的力量">一个程序员眼中的团队原型思考（1）-个体...</a> (57)
+        </li>
+        <li>
+            <a href="http://blog.csdn.net/maxleng/article/details/5671377" title="Android核心分析（28）-----Android GDI之Surface&amp;Canvas">Android核心分析（28）-----...</a> (41)
+        </li>
+        <li>
+            <a href="http://blog.csdn.net/maxleng/article/details/5508372" title="Android 核心分析 之八------Android 启动过程详解">Android 核心分析 之八-----...</a> (39)
+        </li>
+        <li>
+            <a href="http://blog.csdn.net/maxleng/article/details/5576637" title="Android核心分析（17） ------电话系统之rilD">Android核心分析（17） ----...</a> (37)
+        </li>
+        <li>
+            <a href="http://blog.csdn.net/maxleng/article/details/5472988" title="Android核心分析 之二 -------方法论探讨之概念空间篇 ">Android核心分析 之二 -----...</a> (34)
+        </li>
+        <li>
+            <a href="http://blog.csdn.net/maxleng/article/details/5621345" title="Android核心分析（21）----Android应用框架之AndroidApplication">Android核心分析（21）----A...</a> (34)
+        </li>
+    </ul>
+</div>
+<div id="homepageArticles" class="panel">
+    <ul class="panel_head"><span>推荐文章</span></ul>
+    <ul class="panel_body" id="ad_commend"><iframe id="ad_frm_2" frameborder="0" scrolling="no" style="border-top-width: 0px; border-right-width: 0px; border-bottom-width: 0px; border-left-width: 0px; overflow-x: hidden; overflow-y: hidden; width: 182px; height: 218px; " src="./Android 核心分析 之七------Service深入分析 - maxleng的专栏 - 博客频道 - CSDN.NET_files/ad.htm"></iframe></ul>
+</div>
+<script type="text/javascript" src="./Android 核心分析 之七------Service深入分析 - maxleng的专栏 - 博客频道 - CSDN.NET_files/ad.js"></script>
+<script type="text/javascript">
+    new Ad(12, 'ad_commend');
+</script><div id="newcomments" class="panel">
+<ul class="panel_head"><span>最新评论</span></ul>
+<ul class="panel_body">
+    <li>
+    <a href="http://blog.csdn.net/maxleng/article/details/5471557#comments">Android核心分析 之一--------分析方法论探讨之设计意图</a>
+    <p style="margin:0px;">mobaini:
+谢谢楼主，我正好需要写一片关于ios研究的文章。我发现把楼主的文章中所有的android改为ios，...
+    </p>
+    </li>
+    <li>
+    <a href="http://blog.csdn.net/maxleng/article/details/5593759#comments">Android核心分析（18）-----Android电话系统之RIL-Java</a>
+    <p style="margin:0px;">head_body:
+写的很好。谢谢！
+    </p>
+    </li>
+    <li>
+    <a href="http://blog.csdn.net/maxleng/article/details/5670970#comments">Android核心分析（25）------Android GDI之共享缓冲区机制</a>
+    <p style="margin:0px;">dajijidanaizi:
+Hi,整个系统中只有一个SharedClient对象,请问应该怎样理解：(1)是系统中只有一个Sha...
+    </p>
+    </li>
+    <li>
+    <a href="http://blog.csdn.net/maxleng/article/details/5552976#comments">Android核心分析 之十一-------Android GWES之消息系统</a>
+    <p style="margin:0px;">zuoluo032:
+这个有点范，加个例子就好了
+    </p>
+    </li>
+    <li>
+    <a href="http://blog.csdn.net/maxleng/article/details/5471557#comments">Android核心分析 之一--------分析方法论探讨之设计意图</a>
+    <p style="margin:0px;">longfeey:
+@wwweducn:同感，每次读源码，读着读着，就跑偏了！
+    </p>
+    </li>
+    <li>
+    <a href="http://blog.csdn.net/maxleng/article/details/5671375#comments">Android核心分析（27）-----Android GDI 之SurfaceFlinger之动态结构示意图</a>
+    <p style="margin:0px;">longfeey:
+太N了，我看了好几周代码了，都迷迷糊糊的，没有搞明白！
+    </p>
+    </li>
+    <li>
+    <a href="http://blog.csdn.net/maxleng/article/details/5557758#comments">Android 核心分析(13) -----Android GWES之Android窗口管理</a>
+    <p style="margin:0px;">fronterZ:
+从代码里面看 WindowManagerImpl使用ViewRoot与别处进行交互呢？？这里的Win...
+    </p>
+    </li>
+    <li>
+    <a href="http://blog.csdn.net/maxleng/article/details/5618698#comments">Android核心分析（20)----Android应用程序框架之无边界设计意图</a>
+    <p style="margin:0px;">hp_2008:
+一切源于哲学，哲学指导一切
+    </p>
+    </li>
+    <li>
+    <a href="http://blog.csdn.net/maxleng/article/details/5621345#comments">Android核心分析（21）----Android应用框架之AndroidApplication</a>
+    <p style="margin:0px;">fronterZ:
+讲的不是蛮清楚...
+    </p>
+    </li>
+    <li>
+    <a href="http://blog.csdn.net/maxleng/article/details/5504485#comments"> Android 核心分析 之七------Service深入分析</a>
+    <p style="margin:0px;">weihan1314:
+up and down
+    </p>
+    </li>
+</ul>
+</div>
+    </div>
+    <div class="clear">
+    </div>
+</div>
+
+<div class="clear"></div>
+</div>
+<script type="text/javascript" src="./Android 核心分析 之七------Service深入分析 - maxleng的专栏 - 博客频道 - CSDN.NET_files/shCore-src.js"></script>
+<script type="text/javascript" src="./Android 核心分析 之七------Service深入分析 - maxleng的专栏 - 博客频道 - CSDN.NET_files/ZeroClipboard.js"></script>
+<script type="text/javascript" src="./Android 核心分析 之七------Service深入分析 - maxleng的专栏 - 博客频道 - CSDN.NET_files/article_code.js"></script>
+
+<script type="text/javascript" src="./Android 核心分析 之七------Service深入分析 - maxleng的专栏 - 博客频道 - CSDN.NET_files/show.js"></script>
+<script type="text/javascript" src="./Android 核心分析 之七------Service深入分析 - maxleng的专栏 - 博客频道 - CSDN.NET_files/showblogmedal.ashx"></script>
+<script type="text/javascript">document.write("<img src=http://counter.csdn.net/pv.aspx?id=24 border=0 width=0 height=0>");</script><img src="./Android 核心分析 之七------Service深入分析 - maxleng的专栏 - 博客频道 - CSDN.NET_files/pv.aspx" border="0" width="0" height="0">
+<script type="text/javascript" src="./Android 核心分析 之七------Service深入分析 - maxleng的专栏 - 博客频道 - CSDN.NET_files/counter.js"></script><script type="text/javascript" charset="UTF-8" src="./Android 核心分析 之七------Service深入分析 - maxleng的专栏 - 博客频道 - CSDN.NET_files/msg.popup.js"></script><img src="./Android 核心分析 之七------Service深入分析 - maxleng的专栏 - 博客频道 - CSDN.NET_files/visitlog.php" width="1" height="1" border="0" alt="">
+<script type="text/javascript" src="./Android 核心分析 之七------Service深入分析 - maxleng的专栏 - 博客频道 - CSDN.NET_files/publib_footer.js"></script><link rel="stylesheet" type="text/css" href="./Android 核心分析 之七------Service深入分析 - maxleng的专栏 - 博客频道 - CSDN.NET_files/pub_footerstyle.css"><div class="pub_footerall"><dl><dt></dt> <dd><a href="http://www.csdn.net/company/about.html" target="_blank">公司简介</a>|<a href="http://www.csdn.net/company/recruit.html" target="_blank">招贤纳士</a>|<a href="http://www.csdn.net/company/marketing.html" target="_blank">广告服务</a>|<a href="http://www.csdn.net/company/account.html" target="_blank">银行汇款帐号</a>|<a href="http://www.csdn.net/company/contact.html" target="_blank">联系方式</a>|<a href="http://www.csdn.net/company/statement.html" target="_blank">版权声明</a>|<a href="http://www.csdn.net/company/layer.html" target="_blank">法律顾问</a>|<a href="mailto:webmaster@csdn.net">问题报告</a></dd><dd>北京创新乐知信息技术有限公司 版权所有,&nbsp;京&nbsp;ICP&nbsp;证&nbsp;070598&nbsp;号</dd><dd>世纪乐知(北京)网络技术有限公司 提供技术支持</dd><dd>江苏乐知网络技术有限公司 提供商务支持</dd><dd><img src="./Android 核心分析 之七------Service深入分析 - maxleng的专栏 - 博客频道 - CSDN.NET_files/pic_email.gif" alt="" title=""> Email:webmaster@csdn.net</dd><dd>Copyright © 1999-2012, CSDN.NET, All Rights Reserved</dd><dd><a href="http://www.hd315.gov.cn/beian/view.asp?bianhao=010202001032100010" target="_blank"><img src="./Android 核心分析 之七------Service深入分析 - maxleng的专栏 - 博客频道 - CSDN.NET_files/gongshang_logos.gif" alt="GongshangLogo" title=""></a></dd></dl></div>
+
+
+<script type="text/javascript" src="./Android 核心分析 之七------Service深入分析 - maxleng的专栏 - 博客频道 - CSDN.NET_files/ad(1).js"></script>
+
+
+</div>
+
+</body></html>
