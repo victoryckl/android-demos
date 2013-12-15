@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">文件管理器</string>
+    <string name="up_one_level">..(返回上一级目录)</string>
+    <string name="current_dir">.(刷新)</string>
+    
+	<string name="please_copy">请先进行复制或剪切！</string>
+	<string name="paste_hint">粘贴提示</string>
+    
+    <string name="no_rights">没有权限</string>
+    <string name="rename_failed">重命名失败</string>
+    <string name="select_option">请选择你要进行的操作</string>
+    <string name="rename">重命名</string>
+    <string name="cover_it">文件名重复，是否要覆盖？</string>
+    
+    <string name="delete">删除</string>
+    <string name="sure_delete">确定删除</string>
+    <string name="delete_ok">删除成功</string>
+    <string name="delete_error">删除失败</string>
+    
+    <string name="input_folder_name">请输入新建文件夹的名称！</string>
+    <string name="folder_name">文件夹名称...</string>
+    <string name="new_folder">新建文件夹</string>
+    <string name="new_folder_ok">新建文件夹成功</string>
+    <string name="new_folder_error">新建文件夹失败</string>
+    <string name="folder_exist">文件夹已经存在</string>
+    
+    <string name="paste">粘贴</string>
+    <string name="root">根目录</string>
+    <string name="up">上一级</string>
+</resources>
+
