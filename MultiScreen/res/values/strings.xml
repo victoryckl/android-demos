@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">MultiScreen</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    
+    <string name="string_dir">res/values</string>
+
+    <string name="explain">相关概念\n
+\n分辨率：整个屏幕的像素数目，为了表示方便一般用屏幕的像素宽度（水平像素数目）乘以像素高度表示，形如1280x720，反之分辨率为1280x720的屏幕，像素宽度不一定为1280
+\n屏幕密度：表示单位面积内的像素个数，通常用dpi为单位，即每英寸多少个像素点
+\npx：长度单位，以具体像素为单位
+\ndp：长度单位，与具体屏幕密度无关，显示的时候根据具体平台屏幕密度的不同最终转换为相应的像素长度，具体转换规则是: 1dp = （目标屏幕密度/标准密度）*px,标准密度为160dpi，例如，1dp长度在密度为160dpi的平台表示一个像素的长度，而在240dpi的平台则表示1.5个像素的长度
+\n
+\n屏幕尺寸：屏幕的大小，通常用屏幕对角线的长度表示
+\n
+\n        Android界面适配机制
+\nUI界面在不同平台的适配受屏幕尺寸和屏幕密度影响，Android适配机制就是在资源后面添加对这两种因素的限定，通过不同的限定区分不同的平台资源，Android在使用资源的时候会优先选择满足本平台限定的资源，再找最接近条件的，再找默认（即不加限定），通过选择适合当前平台的资源来完成不同平台的适配。
+\n
+\n屏幕尺寸分为：small,normal,large,xlarge分别表示小，中，大，超大屏
+\n屏幕密度分为：ldpi,mdpi,hdpi,xhdpi，它们的标准值分别是：120dpi，160dpi，240dpi，320dpi
+\n以上划分均表示的是一个范围：
+\n在资源目录后面加上上面的限定就能为资源指定特定的适用平台，如下所示
+\n表示大屏，中密度布局会选择上面那个main.xml，超大屏，中密度会选择下面那个main.xml
+\n在实际开发过程中屏幕尺寸不够直观，android将其转换为分辨率表示，根据屏幕具体分辨率可选择相应的限定符
+\n小结：通过加上上述限定可以实现一个apk适配几种主流的屏幕尺寸和屏幕密度，这种限定方式比较适用于对外发布应用，不知道终端具体参数的情况，但是不能做到精确适配，对于屏幕尺寸和密度相差不大的两种平台不能很好的区分。
+\n为了解决上述问题，自Android3.2开始，引入了精确适配，理论上可以适配任意像素宽度，高度，屏幕密度的平台，需用以下方式添加限定符
+\n其中w1280dp表示屏幕宽度为1280dp，h752dp表示屏幕高度为752dp，160dpi表示屏幕密度，其中屏幕宽，高必须以dp为单位，在知道屏幕像素宽高度的情况下可以通过公式：1dp = （目标屏幕密度/标准密度）*px 转换成dp单位。
+\n例如：某平台屏幕宽，高分别为1920px，720px，屏幕密度为240dpi
+\n适配该平台的限定为：
+\n或者
+\n根据公式1dp=（240/160）px=1.5px,宽度，高度转为dp单位分别是1280dp和480dp.
+\n1. 首先是建立多个layout文件夹(drawable也一样)。
+\n在res目录下建立多个layout文件夹，文件夹名称为layout-800x480等。需要适应那种分辨率就写成什么。
+\n
+注意：
+\na. 较大的数字要写在前面：比如layout-854x480而不能写layout-480x854.
+\nb. 两个数字之前是小写字母x，而不是乘号。
+\nc. 在不能的layout下调整layout 的长宽等各种设置。以适应不同的分辨率。
+\nd. 最后需要在AndroidManifest.xml里面添加下面一段，没有这一段自适应就不能实现：
+\n&lt;/manifest>
+\n&lt;supports-screens android:largeScreens="true"
+\n       android:normalScreens="true" android:anyDensity="true"
+\n       android:smallScreens="true"/>
+\n&lt;/manifest> 
+\n
+\n<b>Android自适应不同分辨率或不同屏幕大小的layout布局(横屏|竖屏)</b>
+\n一：不同的layout 
+\n Android手机屏幕大小不一，有480x320, 640x360, 800x480.怎样才能让App自动适应不同的屏幕呢？ 
+ 其实很简单，只需要在res目录下创建不同的layout文件夹，比如layout-640x360,layout-800x480,所有的layout文件在编译之后都会写入R.java里，而系统会根据屏幕的大小自己选择合适的layout进行使用。 
+\n 二：hdpi、mdpi、ldpi 
+\n在之前的版本中，只有一个drawable，而2.1版本中有drawable-mdpi、drawable-ldpi、drawable-hdpi三个，这三个主要是为了支持多分辨率。 
+\n 　　drawable- hdpi、drawable- mdpi、drawable-ldpi的区别： 
+\n 　　(1)drawable-hdpi里面存放高分辨率的图片,如WVGA (480x800),FWVGA (480x854) 
+\n　　(2)drawable-mdpi里面存放中等分辨率的图片,如HVGA (320x480) 
+\n　　(3)drawable-ldpi里面存放低分辨率的图片,如QVGA (240x320) 
+\n　　系统会根据机器的分辨率来分别到这几个文件夹里面去找对应的图片。
+\n 更正：应该是对应不同density 的图片 
+\n 　　在开发程序时为了兼容不同平台不同屏幕，建议各自文件夹根据需求均存放不同版本图片。
+\n[i]备注：三者的解析度不一样，就像你把电脑的分辨率调低，图片会变大一样，反之分辨率高，图片缩小。 [/i] 
+\n屏幕方向： 
+\n 横屏竖屏自动切换： 
+\n 可以在res目录下建立layout-port-800x600和layout-land两个目录，里面分别放置竖屏和横屏两种布局文件，这样在手机屏幕方向变化的时候系统会自动调用相应的布局文件，避免一种布局文件无法满足两种屏幕显示的问题。 
+\n 不同分辨率横屏竖屏自动切换： 
+\n 以800x600为例 
+\n可以在res目录下建立layout-port-800x600和layout-land-800x600两个目录 
+\n 不切换： 
+\n 以下步骤是网上流传的，不过我自己之前是通过图形化界面实现这个配置，算是殊途同归，有空我会把图片贴上来。 
+\n 还要说明一点：每个activity都有这个属性screenOrientation，每个activity都需要设置，可以设置为竖屏（portrait），也可以设置为无重力感应（nosensor）。 
+\n 要让程序界面保持一个方向，不随手机方向转动而变化的处理办法： 
+\n在AndroidManifest.xml里面配置一下就可以了。加入这一行android:screenOrientation="landscape"。 
+\n 例如（landscape是横向，portrait是纵向）： 
+\n &lt;?xml version="1.0" encoding="utf-8"?> 
+\n &lt;manifest xmlns:android="http://schemas.android.com/apk/res/android" 
+\n  package="com.ray.linkit" 
+\n  android:versionCode="1" 
+\n  android:versionName="1.0"> 
+\n  &lt;application android:icon="@drawable/icon" android:label="@string/app_name"> 
+\n  &lt;activity android:name=".Main" 
+\n  android:label="@string/app_name" 
+\n  android:screenOrientation="portrait"> 
+\n  &lt;intent-filter> 
+\n  &lt;action android:name="android.intent.action.MAIN" /> 
+\n  &lt;category android:name="android.intent.category.LAUNCHER" /> 
+\n  &lt;/intent-filter> 
+\n  &lt;/activity> 
+\n  &lt;activity android:name=".GamePlay" 
+\n  android:screenOrientation="portrait"/> 
+\n  &lt;activity android:name=".OptionView" 
+\n  android:screenOrientation="portrait"/> 
+\n  &lt;/application> 
+\n  &lt;uses-sdk android:minSdkVersion="3" /> 
+\n  &lt;/manifest> 
+\n
+\n另外，android中每次屏幕的切换动会重启Activity，所以应该在Activity销毁前保存当前活动的状态，在Activity再次Create的时候载入配置，那样，进行中的游戏就不会自动重启了！ 
+\n
+\n 有的程序适合从竖屏切换到横屏，或者反过来，这个时候怎么办呢？可以在配置Activity的地方进行如下的配置android:screenOrientation="portrait"。这样就可以保证是竖屏总是竖屏了，或者landscape横向。 
+\n 而有的程序是适合横竖屏切换的。如何处理呢？首先要在配置Activity的时候进行如下的配置：android:configChanges="keyboardHidden|orientation"，另外需要重写Activity的 onConfigurationChanged方法。实现方式如下，不需要做太多的内容： 
+\n
+\n@Override 
+\n public void onConfigurationChanged(Configuration newConfig) { 
+\n super.onConfigurationChanged(newConfig); 
+\n if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) { 
+\n // land do nothing is ok 
+\n } else if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) { 
+\n // port do nothing is ok 
+\n } 
+\n }
+\n
+\n写一个支持多分辨的程序，基于1.6开发的，建立了三个资源文件夹drawable-hdpi drawable-mdpi drawable-ldpi，里面分别存放72*72 48*48 36*36的icon图标文件。当我在G1（1.5的系统）上测试时，图标应该自适应为48*48才对啊，但实际显示的是36*36。怎么才能让其自适应 48*48的icon图标呢
+\n
+</string>
+</resources>
