@@ -1,8 +1,10 @@
 package com.example.multiscreen;
 
 import android.app.Activity;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.widget.TextView;
 
@@ -24,6 +26,10 @@ public class MultiScreenActivity extends Activity {
 		mDisplayMetrics = new DisplayMetrics();
 		getWindowManager().getDefaultDisplay().getMetrics(mDisplayMetrics);
 		
+		int sw = mDisplayMetrics.widthPixels < mDisplayMetrics.heightPixels ?
+				mDisplayMetrics.widthPixels:mDisplayMetrics.heightPixels;
+		float swdp = sw/mDisplayMetrics.density;
+		
 		mTvDeviceInfo = (TextView)findViewById(R.id.tv_device_info);
 		mTvDeviceInfo.setText("device info"
 				+"\ndensity:"
@@ -31,7 +37,8 @@ public class MultiScreenActivity extends Activity {
 				+"\nwidthPixels:"
 				+"\nheightPixels:"
 				+"\nxdpi:"
-				+"\nydpi:");
+				+"\nydpi:"
+				+"\nsw dp:");
 		mTvDeviceInfoValues = (TextView)findViewById(R.id.tv_device_info_values);
 		mTvDeviceInfoValues.setText(""
 				+"\n" + mDisplayMetrics.density
@@ -39,7 +46,19 @@ public class MultiScreenActivity extends Activity {
 				+"\n" + mDisplayMetrics.widthPixels
 				+"\n" + mDisplayMetrics.heightPixels
 				+"\n" + mDisplayMetrics.xdpi
-				+"\n" + mDisplayMetrics.ydpi );
+				+"\n" + mDisplayMetrics.ydpi
+				+"\n" + swdp);
+
+		Log.i(TAG, "Build.MANUFACTURER: " + Build.MANUFACTURER);
+		Log.i(TAG, "Build.MODEL: " + Build.MODEL);
+		Log.i(TAG, ""
+				+"\ndensity: " + mDisplayMetrics.density
+				+"\ndensityDpi: " + mDisplayMetrics.densityDpi
+				+"\nwidthPixels: " + mDisplayMetrics.widthPixels
+				+"\nheightPixels: " + mDisplayMetrics.heightPixels
+				+"\nxdpi: " + mDisplayMetrics.xdpi
+				+"\nydpi: " + mDisplayMetrics.ydpi
+				+"\nsw dp: " + swdp);
 	}
 
 	@Override
