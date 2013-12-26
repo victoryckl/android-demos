@@ -8,7 +8,6 @@ import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -30,26 +29,7 @@ public class WebViewPlayVedioActivity extends Activity {
 	private static final String TAG = WebViewPlayVedioActivity.class.getSimpleName();
 	private WebView mWebView;
 	private EditText mEtPath;
-	private FrameLayout mFrameLayout;
-	private MyChromeClient mWebChromeClient;
-	private WebChromeClient.CustomViewCallback mCustomViewCallback;
-    protected FrameLayout mCustomViewContainer;
-    protected FrameLayout mFullscreenContainer;
-	private View mCustomView;
-    private int mOriginalOrientation;
-    private Activity mActivity;
-    
-    protected static final FrameLayout.LayoutParams COVER_SCREEN_PARAMS =
-            new FrameLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT);
 
-    protected static final FrameLayout.LayoutParams COVER_SCREEN_GRAVITY_CENTER =
-            new FrameLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            Gravity.CENTER);
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -65,15 +45,96 @@ public class WebViewPlayVedioActivity extends Activity {
 		findViewById(R.id.btn_play).setOnClickListener(mBtnClickListener);
 		mEtPath = (EditText)findViewById(R.id.et_html_path);
 		
-		mFrameLayout = (FrameLayout)findViewById(R.id.framelayout);
 		mWebView = (WebView)findViewById(R.id.wv_webview);
 		settings(mWebView);
+		playVedio();
 		if(savedInstanceState != null){
 			mWebView.restoreState(savedInstanceState);
 		}
-		playVedio();
 	}
 	
+	private OnClickListener mBtnClickListener = new OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			switch (v.getId()) {
+			case R.id.btn_choose_html:
+				chooseFile();
+				break;
+			case R.id.btn_play:
+				playVedio();
+				break;
+			default:
+				break;
+			}
+		}
+	};
+	
+	private void playVedio() {
+		String path = getPath();
+		if (path != null) {
+			mWebView.loadUrl(path);
+		}
+	}
+	
+	private String getPath() {
+		String path = null;
+
+		path = mEtPath.getText().toString();
+		if (path == null || path.length() <= 0) {
+			Toast.makeText(getApplicationContext(), "请选择文件", Toast.LENGTH_SHORT).show();
+			path = null;
+		} else {
+			Log.i(TAG, "getPath(): " + path);
+		}
+		
+		return path;
+	}
+	
+	private static final int FILE_SELECT_CODE = 0;
+	private void chooseFile() {
+		Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+		intent.setType("*/*");
+		intent.addCategory(Intent.CATEGORY_OPENABLE);
+		try {
+			startActivityForResult(Intent.createChooser(intent, "请选择多html文件"), FILE_SELECT_CODE);
+		} catch (android.content.ActivityNotFoundException ex) {
+			Toast.makeText(getApplicationContext(), "亲，木有文件管理器-_-!", Toast.LENGTH_SHORT).show();
+		}
+	}
+	
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (resultCode != Activity.RESULT_OK) {
+			Log.e(TAG, "onActivityResult() error, resultCode: " + resultCode);
+			super.onActivityResult(requestCode, resultCode, data);
+			return;
+		}
+		if (requestCode == FILE_SELECT_CODE) {
+			Uri uri = data.getData();
+			Log.i(TAG, "------->" + uri.getPath());
+			mEtPath.setText(uri.getPath());
+		}
+		super.onActivityResult(requestCode, resultCode, data);
+	}
+	
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+	}
+	
+	//---------------------
+	private MyChromeClient mWebChromeClient;
+	private WebChromeClient.CustomViewCallback mCustomViewCallback;
+	private FrameLayout mFullscreenContainer;
+	private View mCustomView;
+	private int mOriginalOrientation;
+	private Activity mActivity;
+	
+	private static final FrameLayout.LayoutParams COVER_SCREEN_PARAMS =
+			new FrameLayout.LayoutParams(
+					ViewGroup.LayoutParams.MATCH_PARENT,
+					ViewGroup.LayoutParams.MATCH_PARENT);
+
 	public void settings(WebView webView) {
 		final String USER_AGENT_STRING = webView.getSettings().getUserAgentString() + " Rong/2.0";
 
@@ -84,30 +145,17 @@ public class WebViewPlayVedioActivity extends Activity {
 		s.setSupportZoom(false);
 		s.setPluginState(WebSettings.PluginState.ON);
 		s.setLoadWithOverviewMode(true);
-		
-		webView.setBackgroundColor(android.R.color.holo_green_light);
-		webView.setWebViewClient(new MyWebviewCient());
+		s.setCacheMode(WebSettings.LOAD_NO_CACHE);
+		s.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
 		
 		mWebChromeClient = new MyChromeClient();
 		webView.setWebChromeClient(mWebChromeClient);
-		webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-		webView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
-
+		webView.setWebViewClient(new MyWebviewCient());
+		webView.setBackgroundColor(android.R.color.holo_green_light);
 		webView.setHorizontalScrollBarEnabled(false);
 		webView.setVerticalScrollBarEnabled(false);	
 	}
 
-	static class FullscreenHolder extends FrameLayout {
-		public FullscreenHolder(Context ctx) {
-			super(ctx);
-			setBackgroundColor(ctx.getResources().getColor(android.R.color.black));
-		}
-		@Override
-		public boolean onTouchEvent(MotionEvent evt) {
-			return true;
-		}
-	}
-	
 	@Override
 	public void onBackPressed() {
 		if(mCustomView == null){
@@ -122,6 +170,28 @@ public class WebViewPlayVedioActivity extends Activity {
 	protected void onSaveInstanceState(Bundle outState) {
 		mWebView.saveState(outState);
 	}
+	
+    public void setFullscreen(boolean enabled) {
+        Window win = mActivity.getWindow();
+        WindowManager.LayoutParams winParams = win.getAttributes();
+        final int bits = WindowManager.LayoutParams.FLAG_FULLSCREEN;
+        if (enabled) {
+            winParams.flags |=  bits;
+        } else {
+            winParams.flags &= ~bits;
+            if (mCustomView != null) {
+                mCustomView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+            }
+            else {
+                mActivity.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+            }
+        }
+        win.setAttributes(winParams);
+    }
+	
+    public boolean isCustomViewShowing() {
+        return mCustomView != null;
+    }
 	
 	public class MyWebviewCient extends WebViewClient{
 		@Override
@@ -185,94 +255,14 @@ public class WebViewPlayVedioActivity extends Activity {
 		}
 	}
 	
-    public void setFullscreen(boolean enabled) {
-        Window win = mActivity.getWindow();
-        WindowManager.LayoutParams winParams = win.getAttributes();
-        final int bits = WindowManager.LayoutParams.FLAG_FULLSCREEN;
-        if (enabled) {
-            winParams.flags |=  bits;
-        } else {
-            winParams.flags &= ~bits;
-            if (mCustomView != null) {
-                mCustomView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
-            }
-            else {
-                mActivity.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
-            }
-        }
-        win.setAttributes(winParams);
-    }
-	
-    public boolean isCustomViewShowing() {
-        return mCustomView != null;
-    }
-    
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-    }
-    
-	private OnClickListener mBtnClickListener = new OnClickListener() {
+	static class FullscreenHolder extends FrameLayout {
+		public FullscreenHolder(Context ctx) {
+			super(ctx);
+			setBackgroundColor(ctx.getResources().getColor(android.R.color.black));
+		}
 		@Override
-		public void onClick(View v) {
-			switch (v.getId()) {
-			case R.id.btn_choose_html:
-				chooseFile();
-				break;
-			case R.id.btn_play:
-				playVedio();
-				break;
-			default:
-				break;
-			}
+		public boolean onTouchEvent(MotionEvent evt) {
+			return true;
 		}
-	};
-	
-	private void playVedio() {
-		String path = getPath();
-		if (path != null) {
-			mWebView.loadUrl(path);
-		}
-	}
-	
-	private String getPath() {
-		String path = null;
-
-		path = mEtPath.getText().toString();
-		if (path == null || path.length() <= 0) {
-			Toast.makeText(getApplicationContext(), "请选择文件", Toast.LENGTH_SHORT).show();
-			path = null;
-		} else {
-			Log.i(TAG, "getPath(): " + path);
-		}
-		
-		return path;
-	}
-	
-	private static final int FILE_SELECT_CODE = 0;
-	private void chooseFile() {
-		Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-		intent.setType("*/*");
-		intent.addCategory(Intent.CATEGORY_OPENABLE);
-		try {
-			startActivityForResult(Intent.createChooser(intent, "请选择多html文件"), FILE_SELECT_CODE);
-		} catch (android.content.ActivityNotFoundException ex) {
-			Toast.makeText(getApplicationContext(), "亲，木有文件管理器-_-!", Toast.LENGTH_SHORT).show();
-		}
-	}
-	
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (resultCode != Activity.RESULT_OK) {
-			Log.e(TAG, "onActivityResult() error, resultCode: " + resultCode);
-			super.onActivityResult(requestCode, resultCode, data);
-			return;
-		}
-		if (requestCode == FILE_SELECT_CODE) {
-			Uri uri = data.getData();
-			Log.i(TAG, "------->" + uri.getPath());
-			mEtPath.setText(uri.getPath());
-		}
-		super.onActivityResult(requestCode, resultCode, data);
 	}
 }

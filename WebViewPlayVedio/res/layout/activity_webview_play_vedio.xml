@@ -1,46 +1,41 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/framelayout"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
-    <LinearLayout 
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-	    <LinearLayout 
-	        android:orientation="horizontal"
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content">
-	        <Button 
-	            android:id="@+id/btn_choose_html"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:text="选择html"
-	            android:textSize="24sp"/>
-	        <EditText 
-	            android:id="@+id/et_html_path"
-	            android:layout_weight="1"
-	            android:layout_width="0dp"
-	            android:layout_height="wrap_content"
-	            android:text="file:///sdcard/v.html"
-	            android:textSize="20sp"/>
-	    </LinearLayout>
-	    <LinearLayout 
-	        android:orientation="horizontal"
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content">
-	        <Button 
-	            android:id="@+id/btn_play"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:text="播       放"
-	            android:textSize="24sp"/>
-	    </LinearLayout>
-    </LinearLayout>
-    <WebView 
-        android:id="@+id/wv_webview"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="100dp"
-        android:background="@android:color/holo_orange_light"/>
-</FrameLayout>
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/btn_choose_html"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="选择html"
+            android:textSize="24sp" />
+
+        <EditText
+            android:id="@+id/et_html_path"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="file:///sdcard/v.html"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_play"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="播       放"
+        android:textSize="24sp" />
+
+    <WebView
+        android:id="@+id/wv_webview"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@android:color/holo_orange_light" />
+
+</LinearLayout>
