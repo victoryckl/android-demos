@@ -1,9 +1,13 @@
 package com.example.webviewplayvedio;
 
+import com.example.utils.RotateManager;
+import com.example.utils.RotateManager.OnChangeListener;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
@@ -29,11 +33,13 @@ public class WebViewPlayVedioActivity extends Activity {
 	private static final String TAG = WebViewPlayVedioActivity.class.getSimpleName();
 	private WebView mWebView;
 	private EditText mEtPath;
+	private RotateManager mRotateMgr;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_webview_play_vedio);
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR);
 		
 		init(savedInstanceState);
 	}
@@ -51,6 +57,9 @@ public class WebViewPlayVedioActivity extends Activity {
 		if(savedInstanceState != null){
 			mWebView.restoreState(savedInstanceState);
 		}
+		
+		mRotateMgr = new RotateManager(this);
+		mRotateMgr.setOnChangeListener(mChangeListener);
 	}
 	
 	private OnClickListener mBtnClickListener = new OnClickListener() {
@@ -118,8 +127,22 @@ public class WebViewPlayVedioActivity extends Activity {
 	}
 	
 	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
+	protected void onResume() {
+		mRotateMgr.resume();
+		super.onResume();
+	}
+	
+	@Override
+	protected void onPause() {
+		mRotateMgr.pause();
+		super.onPause();
+	}
+	
+	@Override
+	protected void onDestroy() {
+		mRotateMgr.destroy();
+		mRotateMgr = null;
+		super.onDestroy();
 	}
 	
 	//---------------------
@@ -203,6 +226,7 @@ public class WebViewPlayVedioActivity extends Activity {
         @Override
         public void onShowCustomView(View view,
                 WebChromeClient.CustomViewCallback callback) {
+        	Log.i(TAG, "onShowCustomView()");
         	if (mActivity != null) {
         		onShowCustomView(view, mActivity.getRequestedOrientation(), callback);
         	}
@@ -216,7 +240,7 @@ public class WebViewPlayVedioActivity extends Activity {
 	            callback.onCustomViewHidden();
 	            return;
 	        }
-
+	        
 	        mOriginalOrientation = mActivity.getRequestedOrientation();
 	        FrameLayout decor = (FrameLayout) mActivity.getWindow().getDecorView();
 	        mFullscreenContainer = new FullscreenHolder(mActivity);
@@ -226,11 +250,14 @@ public class WebViewPlayVedioActivity extends Activity {
 	        setFullscreen(true);
 	        mWebView.setVisibility(View.INVISIBLE);
 	        mCustomViewCallback = callback;
-	        mActivity.setRequestedOrientation(requestedOrientation);
+//	        mActivity.setRequestedOrientation(requestedOrientation);
+	        mRotateMgr.landscape();
 	    }
 	    
 	    @Override
 	    public void onHideCustomView() {
+	    	Log.i(TAG, "onHideCustomView()");
+	    	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 	        mWebView.setVisibility(View.VISIBLE);
 	        if (mCustomView == null)
 	            return;
@@ -241,7 +268,8 @@ public class WebViewPlayVedioActivity extends Activity {
 	        mCustomView = null;
 	        mCustomViewCallback.onCustomViewHidden();
 	        // Show the content view.
-	        mActivity.setRequestedOrientation(mOriginalOrientation);
+//	        mActivity.setRequestedOrientation(mOriginalOrientation);
+	        mRotateMgr.portrait();
 	    }
 		
 		@Override
@@ -254,11 +282,26 @@ public class WebViewPlayVedioActivity extends Activity {
 	static class FullscreenHolder extends FrameLayout {
 		public FullscreenHolder(Context ctx) {
 			super(ctx);
+			Log.i(TAG, "FullscreenHolder()");
 			setBackgroundColor(ctx.getResources().getColor(android.R.color.black));
 		}
 		@Override
 		public boolean onTouchEvent(MotionEvent evt) {
+			Log.i(TAG, "onTouchEvent()");
 			return true;
 		}
 	}
+	
+    private OnChangeListener mChangeListener = new OnChangeListener() {
+		@Override
+		public void onChange(int orientation) {
+			if (orientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+			 || orientation == ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE
+			 || orientation == ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE) {
+				//TODO: 切换为全屏播放
+			} else {
+				//TODO: 切换为非全屏播放
+			}
+		}
+	};
 }
