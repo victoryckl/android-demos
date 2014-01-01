@@ -1,7 +1,5 @@
 package com.example.utils;
 
-import javax.crypto.Mac;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
@@ -84,7 +82,7 @@ public class RotateManager {
 
 		@Override
 		public void onOrientationChanged(int rotation) {
-			Log.i(TAG, "rotation: " + rotation);
+//			Log.i(TAG, "rotation: " + rotation);
 			// 水平放置   
 			if (rotation == -1) {
 				return;

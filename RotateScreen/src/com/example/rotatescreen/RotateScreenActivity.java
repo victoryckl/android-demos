@@ -1,22 +1,15 @@
 package com.example.rotatescreen;
 
+import android.app.Activity;
+import android.content.pm.ActivityInfo;
+import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.TextView;
+
 import com.example.utils.RotateManager;
 import com.example.utils.RotateManager.OnChangeListener;
 import com.example.utils.SToast;
-
-import android.app.Activity;
-import android.app.SearchManager.OnCancelListener;
-import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
-import android.hardware.SensorManager;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.OrientationEventListener;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
 
 public class RotateScreenActivity extends Activity {
 
