@@ -136,12 +136,9 @@ public class WebViewPlayVedioActivity extends Activity {
 					ViewGroup.LayoutParams.MATCH_PARENT);
 
 	public void settings(WebView webView) {
-		final String USER_AGENT_STRING = webView.getSettings().getUserAgentString() + " Rong/2.0";
-
 		WebSettings s = webView.getSettings();
 		s.setJavaScriptCanOpenWindowsAutomatically(true);
 		s.setTextZoom(100);
-		s.setUserAgentString( USER_AGENT_STRING );
 		s.setSupportZoom(false);
 		s.setPluginState(WebSettings.PluginState.ON);
 		s.setLoadWithOverviewMode(true);
@@ -151,7 +148,6 @@ public class WebViewPlayVedioActivity extends Activity {
 		mWebChromeClient = new MyChromeClient();
 		webView.setWebChromeClient(mWebChromeClient);
 		webView.setWebViewClient(new MyWebviewCient());
-		webView.setBackgroundColor(android.R.color.holo_green_light);
 		webView.setHorizontalScrollBarEnabled(false);
 		webView.setVerticalScrollBarEnabled(false);	
 	}
