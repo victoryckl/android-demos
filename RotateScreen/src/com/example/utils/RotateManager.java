@@ -24,8 +24,9 @@ public class RotateManager {
 	private State mState = State.Default;
 	private enum State {
 		Default,
-		/** 外部请求 */
+		/** 外部请求横屏  */
 		AskForLand, 
+		/** 外部请求竖屏  */
 		AskForPort;
 	}
 	
