@@ -34,6 +34,14 @@ public class RotateManager {
 		startListener();
 	}
 	
+	public void destroy() {
+		mState = State.Default;
+		mRotateListener.disable();
+		mRotateListener = null;
+		mChangeListener = null;
+		mActivity = null;
+	}
+	
 	public void landscape() {
 		mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
 		mState = State.AskForLand;
@@ -42,6 +50,22 @@ public class RotateManager {
 	public void portrait() {
 		mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
 		mState = State.AskForPort;
+	}
+	
+	public OnChangeListener mChangeListener;
+	public interface OnChangeListener {
+		void onChange(int orientation);
+	}
+	public void setOnChangeListener(OnChangeListener listener) {
+		mChangeListener = listener;
+	}
+	
+	public void resume() {
+		mRotateListener.enable();
+	}
+	
+	public void pause() {
+		mRotateListener.disable();
 	}
 	
 	// 四个方向
@@ -84,6 +108,9 @@ public class RotateManager {
 				} else {
 					mState = State.Default;
 					mActivity.setRequestedOrientation(orientation);
+					if (mChangeListener != null) {
+						mChangeListener.onChange(orientation);
+					}
 				}
 			}
 			//机器旋转到竖屏的方向        
@@ -93,6 +120,9 @@ public class RotateManager {
 				} else {
 					mState = State.Default;
 					mActivity.setRequestedOrientation(orientation);
+					if (mChangeListener != null) {
+						mChangeListener.onChange(orientation);
+					}
 				}
 			}
 		}
@@ -103,11 +133,4 @@ public class RotateManager {
 		mRotateListener = new RotateListener(mActivity);
 		mRotateListener.enable();
     }
-	
-	public void destroy() {
-		mState = State.Default;
-		mRotateListener.disable();
-		mRotateListener = null;
-		mActivity = null;
-	}
 }
