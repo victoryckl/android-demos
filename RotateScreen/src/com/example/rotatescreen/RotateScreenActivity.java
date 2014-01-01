@@ -59,5 +59,6 @@ public class RotateScreenActivity extends Activity {
     protected void onDestroy() {
     	mRotateMgr.destroy();
     	mRotateMgr = null;
+    	super.onDestroy();
     };
 }
