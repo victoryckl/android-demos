@@ -51,6 +51,12 @@ public class RotateManager {
 		mState = State.AskForPort;
 	}
 	
+	public void setOrientation(int orientation) {
+		if (orientation != mActivity.getRequestedOrientation()) {
+			mActivity.setRequestedOrientation(orientation);
+		}
+	}
+	
 	public OnChangeListener mChangeListener;
 	public interface OnChangeListener {
 		void onChange(int orientation);
@@ -105,11 +111,7 @@ public class RotateManager {
 				if (mState == State.AskForPort) {
 					return;
 				} else {
-					mState = State.Default;
-					mActivity.setRequestedOrientation(orientation);
-					if (mChangeListener != null) {
-						mChangeListener.onChange(orientation);
-					}
+					setOrientationInter(orientation);
 				}
 			}
 			//机器旋转到竖屏的方向        
@@ -117,12 +119,18 @@ public class RotateManager {
 				if (mState == State.AskForLand) {
 					return;
 				} else {
-					mState = State.Default;
-					mActivity.setRequestedOrientation(orientation);
-					if (mChangeListener != null) {
-						mChangeListener.onChange(orientation);
-					}
+					setOrientationInter(orientation);
 				}
+			}
+		}
+	}
+	
+	private void setOrientationInter(int orientation) {
+		mState = State.Default;
+		if (orientation != mActivity.getRequestedOrientation()) {
+			mActivity.setRequestedOrientation(orientation);
+			if (mChangeListener != null) {
+				mChangeListener.onChange(orientation);
 			}
 		}
 	}
