@@ -1,0 +1,96 @@
+some code
+--------------------------------------
+https://github.com/sindresorhus/screenfull.js
+https://github.com/johndyer/mediaelement
+https://github.com/neovov/Fullscreen-API-Polyfill
+http://johndyer.name/native-fullscreen-javascript-api-plus-jquery-plugin/
+
+---------------------------------------------------
+http://www.thecssninja.com/javascript/fullscreen
+
+In preparation for a talk I’m doing at Web Directions South I needed to be able to put video into fullscreen mode from within my HTML based slides. In order to do this I imagined I would of needed to use flash but thankfully Webkit nightly, Chrome dev and Firefox nightly have added the ability to put HTML5 videos, and other elements, into fullscreen mode using javascript. The FullScreen API now updated to point to official editor draft, thanks Hans!.
+
+Fullscreen, finally
+
+HTML5 video has come a long way but still lacks consistent codec support and the ability to go fullscreen, until now of course.
+
+View a live demo Download the source files
+As you can see I’ve created a very simple demo showing HTML5 video in full screen, make sure you’re using Chrome dev, webkit or firefox nightly. In Firefox you’ll need to enable it in about:config, search for “full-screen-api.enabled” and set it to true. Webkit nightly will require the “–enable-fullscreen-api” flag when launching. Chrome dev has it enabled by default.
+
+API differences
+
+If you poked around the source you’ll notice that Webkit uses slightly different method to trigger fullscreen. Turns out webkit only uses a different API for videos but uses the same as firefox for all other elements. Mozilla initially created a draft spec for fullscreen elements but Webkit decided to change the name slightly, for the better I think.
+
+var video = document.getElementById("video");
+ 
+// Mozilla
+video.mozRequestFullScreen();
+ 
+// Webkit for video elements only
+video.webkitEnterFullScreen();
+As with entering fullscreen you can also cancel it. Using the cancelFullScreen method will exit any element currently in fullscreen mode.
+
+// Mozilla
+video.mozCancelFullScreen();
+ 
+// Webkit
+video.webkitCancelFullScreen();
+Fullscreen CSS, DOM properties and events
+
+Along with the ability to force a video into fullscreen there is also some CSS pseudo-classes and DOM properties.
+
+video:-webkit-full-screen     { max-height: 100%; }
+video:-moz-full-screen        { max-height: 100%; }
+The FullScreen API adds one notable pseudo-class that lets you change the element when it’s in fullscreen mode. A good example is if you had a max-height set on your video element and you triggered fullscreen mode you can then reset the max-height to be 100%.
+
+If you want to do something when the browser is in full screen mode the document object gets the fullScreen property. This is slightly different in webkit compared to mozilla.
+
+// Mozilla
+document.mozFullscreen;
+ 
+// Webkit
+document.webkitIsFullscreen;
+As you can see mozilla doesn’t include the Is in the property like webkit does. So we have this boolean property on the document how do we know when to check it? Well luckily the API also includes an event that triggers called [moz/webkit]fullscreenchange.
+
+video.addEventListener("mozfullscreenchange",function(){
+    console.log(document.mozFullScreen);
+}, false);
+
+video.addEventListener("webkitfullscreenchange",function(){
+    console.log(document.webkitIsFullScreen);
+}, false);
+The event will trigger whenever fullscreen mode changes so you can then check the document fullScreen property if it’s currently in or out of fullscreen mode. The event is currently prefixed in both Webkit and Firefox.
+
+Some quirks
+
+API differences aside the mozilla spec highly recommends that hitting the Esc key will exit the browser from fullscreen, unfortunately Chrome doesn’t adhere to this (see bug) (Bug has been fixed for linux/windows still needs a fix for mac). If you’re on OSX Lion it will put the browser into full screen mode so to exit you have to hit Cmd+Shift+F on windows F11.
+
+API changes are almost guaranteed. There is already a webkit bug which mentions changing to “Fullscreen” rather than “FullScreen” but for now both are enabled.
+
+UPDATE: There is an official editor draft of the spec and looks like Mozilla’s implementation will be the final one. The API is slighty changing to make FullScreen lowercase in all API calls except where it isn’t the first word e.g. requestFullscreen.
+
+Much more than just video
+
+I only wanted to cover video elements in this article but the API allows fullscreen on almost any element, this functionality is much more limited in Webkit. Webkit uses webkitRequestFullscreen for all other elements. Using the allowfullscreen attribute on iframes for example will allow youtube or vimeo to put their iframe embeds into fullscreen mode. Firefox works with more elements in their nightly build e.g. if you add the mozallowfullscreen attribute to the iframe you can put it into fullscreen mode.
+
+There is also some security restrictions around key events and characters allowed.
+
+Further reading
+
+Mozilla has a full on demo showing all the support currently in nightly builds, see blog post too.
+Make sure to read over the editor draft spec.
+Apple developer docs mentions support for some of the events and properties.
+Check out MEjs which recently added support for the fullscreen APIs
+Short URL: http://cssn.in/ja/035
+ 
+Post filed under: javascript.
+
+Skip to comment form.
+
+     John Dyer says:
+October 10, 2011 at 10:12 pm
+Thanks for the great writeup!
+
+On webkit, there are actually two different fullscreen methods. video.webkitEnterFullScreen(); (in your example) was introduced for iOS and Safari 5 and only works on videos, while video.webkitRequestFullScreen(); is for any element including [div] and [iframe] and was introduced in Safari 5.1.
+
+I have both webkit methods working on http://mediaelementjs.com/ and I’ll get Firefox working in a few days. Thanks again for the demo.
