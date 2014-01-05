@@ -1,0 +1,169 @@
+https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Using_full_screen_mode?redirectlocale=en-US&redirectslug=Web%2FGuide%2FDOM%2FUsing_full_screen_mode
+
+The fullscreen API provides an easy way for web content to be presented using the user's entire screen. This article provides information about using this API.
+
+Note: This API is early in the standardization process. Although both Gecko and Google Chrome have implementations, they are not currently mutually-compatible, and neither implements the current draft of the specification. For that reason, at least in Firefox, it isn't enabled by default in Firefox 9, but is in Firefox 10. Because the specification is currently an extremely early draft, this documentation is subject to be entirely wrong, and is very preliminary. Once the specification has settled down a bit, the documentation will be cleaned up to be more browser-agnostic.
+
+The API lets you easily direct the browser to make an element and its children, if any, occupy the fullscreen, eliminating all browser user interface and other applications from the screen for the duration.
+
+Activating fullscreen mode
+
+Given an element that you'd like to present in fullscreen mode (such as a <video>, for example), you can present it in fullscreen mode by simply calling its requestFullscreen() method; this method is implemented in Gecko as element.mozRequestFullScreen(), in Trident as element.msRequestFullscreen() and in WebKit as element.webkitRequestFullscreen().
+
+
+Note: The specification uses the label, "Fullscreen" as in "requestFullscreen" or "fullscreenEnabled" - without a capital 's'. The implementation described here and other prefixed implementations may use a capital 'S'.
+
+Let's consider this <video> element:
+<video controls id="myvideo">
+  <source src="somevideo.webm"></source>
+  <source src="somevideo.mp4"></source>
+</video>
+
+We can put that video into fullscreen mode with script like this:
+var elem = document.getElementById("myvideo");
+if (elem.requestFullscreen) {
+  elem.requestFullscreen();
+} else if (elem.msRequestFullscreen) {
+  elem.msRequestFullscreen();
+} else if (elem.mozRequestFullScreen) {
+  elem.mozRequestFullScreen();
+} else if (elem.webkitRequestFullscreen) {
+  elem.webkitRequestFullscreen();
+}
+
+
+Presentation differences
+
+It's worth noting a key difference here between the Gecko and WebKit implementations at this time: Gecko automatically adds CSS rules to the element to stretch it to fill the screen: "width: 100%; height: 100%". WebKit doesn't do this; instead, it centers the fullscreen element at the same size in a screen that's otherwise black. To get the same fullscreen behavior in WebKit, you need to add your own "width: 100%; height: 100%;" CSS rules to the element yourself:
+:-webkit-full-screen #myvideo {
+  width: 100%;
+  height: 100%;
+}
+
+On the other hand, if you're trying to emulate WebKit's behavior on Gecko, you need to place the element you want to present inside another element, which you'll make fullscreen instead, and use CSS rules to adjust the inner element to match the appearance you want.
+
+Notification
+
+When fullscreen mode is successfully engaged, the document which contains the document receives a mozfullscreenchange event. When fullscreen mode is exited, the document again receives a  mozfullscreenchange event. Note that the mozfullscreenchange event doesn't provide any information itself as to whether the document is entering or exiting fullscreen mode, but if the document has a non null mozFullScreenElement, you know you're in fullscreen mode.
+
+When a fullscreen request fails
+
+It's not guaranteed that you'll be able to switch into fullscreen mode. For example, <iframe> elements have the mozallowfullscreen attribute (webkitallowfullscreen, etc) in order to opt-in to allowing their content to be displayed in fullscreen mode. In addition, certain kinds of content, such as windowed plug-ins, cannot be presented in fullscreen mode. Attempting to put an element which can't be displayed in fullscreen mode (or the parent or descendant of such an element) won't work. Instead, the element which requested fullscreen will receive a mozfullscreenerror event. When a fullscreen request fails Firefox will log an error message to the Web Console explaining why the request failed.
+
+Getting out of full screen mode
+
+The user always has the ability to exit fullscreen mode of their own accord; see Things your users want to know. You can also do so programmatically by calling the exitFullscreen() method; this is implemented in Gecko as mozCancelFullScreen(), WebKit as webkitExitFullscreen(), and Trident as msExitFullscreen().
+
+Other information
+
+The document provides some additional information that can be useful when developing fullscreen web applications:
+fullscreenElementThe fullscreenElement attribute tells you the element that's currently being displayed fullscreen. If this is non-null, the document is in fullscreen mode. If this is null, the document is not in fullscreen mode.fullscreenEnabledThe fullscreenEnabled attribute tells you whether or not the document is currently in a state that would allow fullscreen mode to be requested.
+Things your users want to know
+
+You'll want to be sure to let your users know that they can press the ESC key (or F11) to exit fullscreen mode.
+
+In addition, navigating to another page, changing tabs, or switching to another application (using, for example, Alt-Tab) while in fullscreen mode exits fullscreen mode as well.
+
+Example
+
+In this example, a video is presented in a web page. Pressing the Return or Enter key lets the user toggle between windowed and fullscreen presentation of the video.
+
+View Live Examples
+
+Watching for the Enter key
+
+When the page is loaded, this code is run to set up an event listener to watch for the 'enter' key.
+document.addEventListener("keydown", function(e) {
+  if (e.keyCode == 13) {
+    toggleFullScreen();
+  }
+}, false);
+
+
+Toggling fullscreen mode
+
+This code is called when the user hits the Enter key, as seen above.
+function toggleFullScreen() {
+  if (!document.fullscreenElement &&    // alternative standard method
+      !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement ) {  // current working methods
+    if (document.documentElement.requestFullscreen) {
+      document.documentElement.requestFullscreen();
+    } else if (document.documentElement.msRequestFullscreen) {
+      document.documentElement.msRequestFullscreen();
+    } else if (document.documentElement.mozRequestFullScreen) {
+      document.documentElement.mozRequestFullScreen();
+    } else if (document.documentElement.webkitRequestFullscreen) {
+      document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+    }
+  } else {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.msExitFullscreen) {
+      document.msExitFullscreen();
+    } else if (document.mozCancelFullScreen) {
+      document.mozCancelFullScreen();
+    } else if (document.webkitExitFullscreen) {
+      document.webkitExitFullscreen();
+    }
+  }
+}
+
+
+This starts by looking at the value of the fullscreenElement attribute on the document (checking it prefixed with both moz, ms, and webkit). If it's null, the document is currently in windowed mode, so we need to switch to fullscreen mode. Switching to fullscreen mode is done by calling either element.mozRequestFullScreen() msRequestFullscreen()or webkitRequestFullscreen(), depending on which is available.
+
+If fullscreen mode is already active (fullscreenElement is non-null), we call document.mozCancelFullScreen(), msExitFullscreen or webkitExitFullscreen(), again depending on which browser is in use.
+
+Browser compatibility
+
+Although  Gecko , Trident, and WebKit implement a draft of this API, there are some subtle differences. This document doesn't necessarily try to call them all into focus. The article will be revised as the spec and implementations fall closer into alignment with one another.
+
+
+ Desktop
+ Mobile
+  
+Feature
+
+Android
+
+Chrome
+
+Firefox Mobile (Gecko)
+
+IE Mobile
+
+Opera Mobile
+
+Safari Mobile
+
+Basic support ? 28 -webkit 9.0 (9.0)-moz ? ? ? 
+fullscreenEnabled ? 28 -webkit 10.0 (10.0) moz ? ? ? 
+
+
+Gecko notes
+
+Although this API was introduced in Gecko 9.0 (Firefox 9.0 / Thunderbird 9.0 / SeaMonkey 2.6), it's not enabled by default in that release. To enable it, set the full-screen-api.enabled preference to true. The API is enabled by default in Gecko 10.0 (Firefox 10.0 / Thunderbird 10.0 / SeaMonkey 2.7). In Gecko all the API is spelt "fullScreen".
+
+Specification
+
+Fullscreen API
+
+Non-standard methods
+
+These are some of the methods that browsers implemented before the standard was drafted. Having the standard methods described above it's better to avoid using the following ones:
+•window.fullScreen (Firefox)
+•HTMLMediaElement.webkitDisplayingFullscreen
+•HTMLMediaElement.webkitEnterFullscreen
+•HTMLMediaElement.webkitExitFullscreen
+•HTMLMediaElement.webkitSupportsFullscreen
+
+See also
+•element.mozRequestFullScreen()
+•element.mozCancelFullScreen()
+•document.mozFullScreen
+•document.mozFullScreenElement
+•document.mozFullScreenEnabled
+•:-moz-full-screen
+•:-moz-full-screen-ancestor
+•allowfullscreen
+•Blog post: Firefox's HTML full-screen API enabled in Nightly builds
+
