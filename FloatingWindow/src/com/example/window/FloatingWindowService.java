@@ -3,8 +3,7 @@ package com.example.window;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.utils.Metrics;
-
+import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
 import android.app.Service;
@@ -23,6 +22,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 
+@SuppressLint("ResourceAsColor")
 public class FloatingWindowService extends Service {
 
 	public static final String OPERATION = "operation";
@@ -60,16 +60,17 @@ public class FloatingWindowService extends Service {
 	@Override
 	public void onStart(Intent intent, int startId) {
 		super.onStart(intent, startId);
-
-		int operation = intent.getIntExtra(OPERATION, OPERATION_SHOW);
-		switch (operation) {
-		case OPERATION_SHOW:
-			mHandler.removeMessages(HANDLE_CHECK_ACTIVITY);
-			mHandler.sendEmptyMessage(HANDLE_CHECK_ACTIVITY);
-			break;
-		case OPERATION_HIDE:
-			mHandler.removeMessages(HANDLE_CHECK_ACTIVITY);
-			break;
+		if (intent != null) {
+			int operation = intent.getIntExtra(OPERATION, OPERATION_SHOW);
+			switch (operation) {
+			case OPERATION_SHOW:
+				mHandler.removeMessages(HANDLE_CHECK_ACTIVITY);
+				mHandler.sendEmptyMessage(HANDLE_CHECK_ACTIVITY);
+				break;
+			case OPERATION_HIDE:
+				mHandler.removeMessages(HANDLE_CHECK_ACTIVITY);
+				break;
+			}
 		}
 	}
 
@@ -104,7 +105,7 @@ public class FloatingWindowService extends Service {
 	private void createFloatView() {
 		btn_floatView = new Button(getApplicationContext());
 		btn_floatView.setText("$_$");
-		btn_floatView.setBackgroundResource(R.drawable.ic_launcher);
+		btn_floatView.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
 
 		wm = (WindowManager) getApplicationContext().getSystemService(
 				Context.WINDOW_SERVICE);
@@ -129,8 +130,8 @@ public class FloatingWindowService extends Service {
 		 */
 
 		// 设置悬浮窗的长得宽
-		params.width = Metrics.dp2px(70);
-		params.height = Metrics.dp2px(70);
+		params.width = getResources().getDimensionPixelSize(R.dimen.float_width);
+		params.height = getResources().getDimensionPixelSize(R.dimen.float_height);
 
 		// 设置悬浮窗的Touch监听
 		btn_floatView.setOnTouchListener(new OnTouchListener() {
