@@ -3,6 +3,8 @@ package com.example.window;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.utils.Metrics;
+
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
 import android.app.Service;
@@ -102,7 +104,7 @@ public class FloatingWindowService extends Service {
 	private void createFloatView() {
 		btn_floatView = new Button(getApplicationContext());
 		btn_floatView.setText("$_$");
-//		btn_floatView.setBackgroundResource(R.drawable.ic_launcher);
+		btn_floatView.setBackgroundResource(R.drawable.ic_launcher);
 
 		wm = (WindowManager) getApplicationContext().getSystemService(
 				Context.WINDOW_SERVICE);
@@ -127,8 +129,8 @@ public class FloatingWindowService extends Service {
 		 */
 
 		// 设置悬浮窗的长得宽
-		params.width = 100;
-		params.height = 100;
+		params.width = Metrics.dp2px(70);
+		params.height = Metrics.dp2px(70);
 
 		// 设置悬浮窗的Touch监听
 		btn_floatView.setOnTouchListener(new OnTouchListener() {
