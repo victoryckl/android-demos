@@ -1,0 +1,107 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>html5 -fullscreen-api</title>
+<style>
+*{ margin:0; padding:0}
+img{ display:block; margin:0 auto}
+.imgContainer:-webkit-full-screen {
+	width:100%; height:100%; background:#060; overflow:hidden; background:#000; text-align:center;
+	position:fixed;
+	left:0; top:0;
+	display:table-cell;
+	bottom:0; right:0;
+}
+.imgContainer:-moz-full-screen  {
+	width:100%; height:100%; background:#060;overflow:hidden; background:#000; text-align:center;
+	position:fixed;
+	left:0; top:0;
+	bottom:0; right:0;
+	display:table-cell;
+	vertical-align:middle
+}
+.imgContainer:-webkit-full-screen  img{
+	max-width:100%;  display:inline-block; vertical-align:middle ;cursor:url("zoomOut.cur"), auto;
+}
+.imgContainer:-moz-full-screen  img{
+	max-width:100%; display:inline-block; vertical-align:middle;cursor:url("zoomOut.cur"), auto;
+}
+</style>
+<script type="text/javascript">
+(function(){
+    var fullScreenApi={
+        supportsFullScren:false,
+        isFullScreen: function() { return false; },
+        requestFullScreen: function() {},
+        cancelFullScreen: function() {},
+        prefix:''
+    }
+	browserPrefixes = 'webkit moz o ms khtml'.split(' ');
+	if(typeof document.cancelFullScreen!='undefined'){
+		fullScreenApi.supportsFullScren=true
+    }
+    else{
+        for (var i = 0, il = browserPrefixes.length; i < il; i++ ) {
+			fullScreenApi.prefix = browserPrefixes[i];
+			if (typeof document[fullScreenApi.prefix + 'CancelFullScreen' ] != 'undefined' ) {
+				fullScreenApi.supportsFullScreen = true;
+				break;
+			}
+        }
+    }
+    //如果浏览支持全屏
+    if(fullScreenApi.supportsFullScreen){
+		fullScreenApi.fullScreenEventName = fullScreenApi.prefix + 'fullscreenchange';
+        fullScreenApi.isFullScreen=function(){
+			switch (this.prefix){
+				case '':
+					return document.fullScreen
+				case 'webkit':
+					return document.webkitIsFullScreen
+				default:
+					return document[this.prefix+'FullScreen']
+			}
+		}
+		fullScreenApi.requestFullScreen=function(el){
+			return (this.prefix === '') ? el.requestFullScreen() : el[this.prefix + 'RequestFullScreen']();
+        }
+        fullScreenApi.cancelFullScreen=function(el){
+			return (this.prefix === '') ? el.cancelFullScreen() : el[this.prefix + 'CancelFullScreen']();
+        }
+    }
+    window.fullScreenApi = fullScreenApi;
+})();
+</script>
+</head>
+<body>
+<h1 align="center"></h1>
+<div class="imgContainer">
+<a href="javascript:void(0)">
+	<img src="./1.jpg"></a>
+</div>
+<div class="imgContainer">
+<a href="javascript:void(0)">
+	<img src="2.jpg"></a>
+</div>
+<script type="text/javascript">
+window.onload=function(){
+	if (window.fullScreenApi.supportsFullScreen) {
+		var imgContainer=document.getElementsByTagName('div');
+		var imgsLen=imgContainer.length;
+		for(var i=0; i<imgsLen;i++){
+			imgContainer[i].addEventListener('click',function(){
+				if (!fullScreenApi.isFullScreen()) {
+					this.style.lineHeight=window.screen.height+'px';
+					window.fullScreenApi.requestFullScreen(this)
+				}
+				else {
+					window.fullScreenApi.cancelFullScreen(document)
+				}
+			},true)
+		}
+	}
+}
+</script>
+</body>
+</html>
