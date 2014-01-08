@@ -71,9 +71,12 @@ public class ProtectWindowService extends Service {
 
 	private void showWindow(String type) {
 		if (!isAdded) {
-			wm.addView(mWindow, params);
-			play(type);
-			isAdded = true;
+			if (play(type)) {
+				wm.addView(mWindow, params);
+				isAdded = true;
+			} else {
+				hideWindow();
+			}
 		}
 	}
 	
@@ -85,19 +88,22 @@ public class ProtectWindowService extends Service {
 		}
 	}
 
-	private void play(String type) {
-		String path = PathManager.getPath(type);
+	private boolean play(String type) {
+		boolean ret = false;
+		String path = PathManager.getRawPath(getApplicationContext(), type);
 		if (path == null) {
-			return;
+			return ret;
 		}
 		Log.i(TAG, "path: "+ path);
 		File f = new File(path);
-		if (f.exists()) {
+//		if (f.exists()) {//assets file
 			Uri uri = Uri.parse(path);
 			mVideoView.setVideoURI(uri);  
 			mVideoView.start();  
 			mVideoView.requestFocus();
-		}
+			ret = true;//OK
+//		}
+		return ret;
 	}
 	
 	private void stop() {
