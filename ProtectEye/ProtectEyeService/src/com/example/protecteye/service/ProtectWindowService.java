@@ -34,6 +34,7 @@ public class ProtectWindowService extends Service {
 	private ViewGroup mWindow;
 	private VideoView mVideoView;
 	private String mType;
+	private Button mClose;
 	
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -55,11 +56,12 @@ public class ProtectWindowService extends Service {
 	public void onStart(Intent intent, int startId) {
 		super.onStart(intent, startId);
 		if (intent != null) {
-			String operation = intent.getStringExtra(Common.OPERATION);
 			mType = intent.getStringExtra(Common.TYPE);
 			if (mType == null || mType.isEmpty()) {
 				mType = Common.Type.TYPE2;
 			}
+	
+			String operation = intent.getStringExtra(Common.OPERATION);
 			if (operation.equals(Common.Operation.SHOW)) {
 				showWindow(mType);
 			}
@@ -115,15 +117,8 @@ public class ProtectWindowService extends Service {
 				R.layout.protect_window_layout, null);
 		
 		initParams();
+		initClose();
 		initVideoView();
-		
-		Button btnClose = (Button) mWindow.findViewById(R.id.btn_close);
-		btnClose.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				hideWindow();
-			}
-		});
 	}
 	
 	private void initParams() {
@@ -156,6 +151,16 @@ public class ProtectWindowService extends Service {
 		params.height = ViewGroup.LayoutParams.MATCH_PARENT;
 	}
 
+	private void initClose() {
+		mClose = (Button) mWindow.findViewById(R.id.btn_close);
+		mClose.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				hideWindow();
+			}
+		});
+	}
+	
 	private void initVideoView() {
 		mVideoView = (VideoView)mWindow.findViewById(R.id.vv_videoview);
 		mVideoView.setOnCompletionListener(mVideoViewListener);
