@@ -1,32 +1,44 @@
 package com.example.protecteye.service;
 
+import java.io.File;
+
 import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.PixelFormat;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
+import android.media.MediaPlayer.OnErrorListener;
+import android.net.Uri;
 import android.os.IBinder;
-import android.view.MotionEvent;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.webkit.WebSettings;
-import android.webkit.WebView;
 import android.webkit.WebSettings.PluginState;
+import android.webkit.WebView;
 import android.widget.Button;
-import android.widget.Toast;
+import android.widget.VideoView;
 
 import com.example.utils.Common;
+import com.example.utils.Common.Type;
+import com.example.utils.PathManager;
 
 @SuppressLint("NewApi")
 public class ProtectWindowService extends Service {
 
-	private boolean isAdded = false; // 是否已增加悬浮窗
+	private static final String TAG = ProtectWindowService.class.getSimpleName();
+	private boolean isAdded = false;
 	private static WindowManager wm;
 	private static WindowManager.LayoutParams params;
-
+	
+	private ViewGroup mWindow;
+	private VideoView mVideoView;
+	private String mType;
+	
 	@Override
 	public IBinder onBind(Intent intent) {
 		return null;
@@ -35,7 +47,6 @@ public class ProtectWindowService extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-
 		createFloatView();
 	}
 
@@ -48,42 +59,61 @@ public class ProtectWindowService extends Service {
 	public void onStart(Intent intent, int startId) {
 		super.onStart(intent, startId);
 		if (intent != null) {
-			int operation = intent.getIntExtra(Common.OPERATION, Common.OPERATION_SHOW);
-			switch (operation) {
-			case Common.OPERATION_SHOW:
-				showWindow();
-				break;
-			case Common.OPERATION_HIDE:
+			String operation = intent.getStringExtra(Common.OPERATION);
+			mType = intent.getStringExtra(Common.TYPE);
+			if (mType == null || mType.isEmpty()) {
+				mType = Common.Type.AVI1024;
+			}
+			if (operation.equals(Common.Operation.SHOW)) {
+				showWindow(mType);
+			}
+			else if (operation.equals(Common.Operation.HIDE)) {
 				hideWindow();
-				break;
 			}
 		}
 	}
 
-	private void showWindow() {
+	private void showWindow(String type) {
 		if (!isAdded) {
 			wm.addView(mWindow, params);
+			play(type);
 			isAdded = true;
 		}
 	}
 	
 	private void hideWindow() {
 		if (isAdded) {
+			stop();
 			wm.removeView(mWindow);
 			isAdded = false;
 		}
 	}
 
-	private ViewGroup mWindow;
-	/**
-	 * 创建悬浮窗
-	 */
+	private void play(String type) {
+		String path = PathManager.getPath(type);
+		if (path == null) {
+			return;
+		}
+		Log.i(TAG, "path: "+ path);
+		File f = new File(path);
+		if (f.exists()) {
+			Uri uri = Uri.parse(path);
+			mVideoView.setVideoURI(uri);  
+			mVideoView.start();  
+			mVideoView.requestFocus();
+		}
+	}
+	
+	private void stop() {
+		mVideoView.stopPlayback();
+	}
+	
 	private void createFloatView() {
 		mWindow = (ViewGroup) View.inflate(getApplicationContext(),
 				R.layout.protect_window_layout, null);
 		
-		WebView webView = (WebView) mWindow.findViewById(R.id.wv_webview);
-		webSettings(webView);
+		initParams();
+		initVideoView();
 		
 		Button btnClose = (Button) mWindow.findViewById(R.id.btn_close);
 		btnClose.setOnClickListener(new OnClickListener() {
@@ -92,13 +122,18 @@ public class ProtectWindowService extends Service {
 				hideWindow();
 			}
 		});
-
+	}
+	
+	private void initParams() {
 		wm = (WindowManager) getApplicationContext().getSystemService(
 				Context.WINDOW_SERVICE);
 		params = new WindowManager.LayoutParams();
 
 		// 设置window type
-		params.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
+		params.type = WindowManager.LayoutParams.TYPE_SYSTEM_ERROR;
+//		params.type = WindowManager.LayoutParams.TYPE_SYSTEM_ERROR;
+//		params.type = WindowManager.LayoutParams.TYPE_KEYGUARD;
+//		params.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
 		/*
 		 * 如果设置为params.type = WindowManager.LayoutParams.TYPE_PHONE; 那么优先级会降低一些,
 		 * 即拉下通知栏不可见
@@ -118,19 +153,28 @@ public class ProtectWindowService extends Service {
 		// 设置悬浮窗的长得宽
 		params.width = ViewGroup.LayoutParams.MATCH_PARENT;
 		params.height = ViewGroup.LayoutParams.MATCH_PARENT;
+	}
 
-		wm.addView(mWindow, params);
-		isAdded = true;
-		webView.loadUrl("file:///android_asset/v.html");
+	private void initVideoView() {
+		mVideoView = (VideoView)mWindow.findViewById(R.id.vv_videoview);
+		mVideoView.setOnCompletionListener(mVideoViewListener);
+		mVideoView.setOnErrorListener(mVideoViewListener);
 	}
 	
-	private void webSettings(WebView view) {
-		WebSettings s = view.getSettings();
+	private VideoViewListener mVideoViewListener = new VideoViewListener();
+	private class VideoViewListener 
+		implements OnCompletionListener, OnErrorListener {
 		
-		s.setJavaScriptEnabled(true);
-		s.setPluginState(PluginState.ON);
-		s.setTextZoom(100);
-		
-		view.setBackgroundColor(0x88ffff00);
+		@Override
+		public boolean onError(MediaPlayer mp, int what, int extra) {
+			Log.e(TAG, "VideoView, onError(), what:"+what+". extra:"+extra);
+			hideWindow();
+			return true;
+		}
+
+		@Override
+		public void onCompletion(MediaPlayer mp) {
+			play(mType);
+		}
 	}
 }

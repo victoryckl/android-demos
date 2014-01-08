@@ -8,12 +8,10 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 
 import com.example.utils.Common;
+import com.example.utils.Common.Type;
 
 public class ProtectEyeActivity extends Activity implements OnClickListener {
 	
-	private Button btn_show;
-	private Button btn_hide;
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -23,10 +21,10 @@ public class ProtectEyeActivity extends Activity implements OnClickListener {
 	}
 
 	private void init() {
-		btn_show = (Button) findViewById(R.id.btn_show);
-		btn_hide = (Button) findViewById(R.id.btn_hide);
-		btn_show.setOnClickListener(this);
-		btn_hide.setOnClickListener(this);
+		findViewById(R.id.btn_show).setOnClickListener(this);
+		findViewById(R.id.btn_hide).setOnClickListener(this);
+		findViewById(R.id.btn_show_512avi).setOnClickListener(this);
+		findViewById(R.id.btn_show_1024avi).setOnClickListener(this);
 	}
 
 	public void onClick(View v) {
@@ -35,11 +33,22 @@ public class ProtectEyeActivity extends Activity implements OnClickListener {
 				"com.example.protecteye.service.ProtectWindowService");
 		switch (v.getId()) {
 		case R.id.btn_show:
-			intent.putExtra(Common.OPERATION, Common.OPERATION_SHOW);
+			intent.putExtra(Common.OPERATION, Common.Operation.SHOW);
+			startService(intent);
+			break;
+		case R.id.btn_show_512avi:
+			intent.putExtra(Common.TYPE, Type.AVI512);
+			intent.putExtra(Common.OPERATION, Common.Operation.SHOW);
+			startService(intent);
+			break;
+		case R.id.btn_show_1024avi:
+			intent.putExtra(Common.TYPE, Type.AVI1024);
+			intent.putExtra(Common.OPERATION, Common.Operation.SHOW);
 			startService(intent);
 			break;
 		case R.id.btn_hide:
-			intent.putExtra(Common.OPERATION, Common.OPERATION_HIDE);
+			intent.putExtra(Common.OPERATION, Common.Operation.HIDE);
+			intent.putExtra(Common.TYPE, Type.AVI1024);
 			startService(intent);
 			break;
 		}
