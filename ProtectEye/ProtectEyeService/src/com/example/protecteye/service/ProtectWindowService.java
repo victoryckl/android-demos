@@ -97,9 +97,9 @@ public class ProtectWindowService extends Service {
 			return ret;
 		}
 		Log.i(TAG, "path: "+ path);
-		File f = new File(path);
 //		if (f.exists()) {//assets file
 			Uri uri = Uri.parse(path);
+			Log.i(TAG, "uri: "+ uri.getPath());
 			mVideoView.setVideoURI(uri);  
 			mVideoView.start();  
 			mVideoView.requestFocus();
