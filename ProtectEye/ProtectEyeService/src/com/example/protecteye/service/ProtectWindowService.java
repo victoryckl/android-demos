@@ -17,14 +17,10 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.webkit.WebSettings;
-import android.webkit.WebSettings.PluginState;
-import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.VideoView;
 
 import com.example.utils.Common;
-import com.example.utils.Common.Type;
 import com.example.utils.PathManager;
 
 @SuppressLint("NewApi")
@@ -62,7 +58,7 @@ public class ProtectWindowService extends Service {
 			String operation = intent.getStringExtra(Common.OPERATION);
 			mType = intent.getStringExtra(Common.TYPE);
 			if (mType == null || mType.isEmpty()) {
-				mType = Common.Type.AVI1024;
+				mType = Common.Type.TYPE2;
 			}
 			if (operation.equals(Common.Operation.SHOW)) {
 				showWindow(mType);
@@ -131,7 +127,6 @@ public class ProtectWindowService extends Service {
 
 		// 设置window type
 		params.type = WindowManager.LayoutParams.TYPE_SYSTEM_ERROR;
-//		params.type = WindowManager.LayoutParams.TYPE_SYSTEM_ERROR;
 //		params.type = WindowManager.LayoutParams.TYPE_KEYGUARD;
 //		params.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
 		/*

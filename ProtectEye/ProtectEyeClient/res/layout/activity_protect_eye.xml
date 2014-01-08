@@ -17,28 +17,6 @@
         tools:targetApi="14" />
     
     <Button
-        android:id="@+id/btn_show_512avi"
-        android:layout_margin="1sp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/holo_green_light"
-        android:text="显示悬浮窗(512avi)"
-        android:textColor="@android:color/holo_blue_dark"
-        android:textSize="20sp"
-        tools:targetApi="14" />
-    
-    <Button
-        android:id="@+id/btn_show_1024avi"
-        android:layout_margin="1sp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/holo_green_light"
-        android:text="显示悬浮窗(1024avi)"
-        android:textColor="@android:color/holo_blue_dark"
-        android:textSize="20sp"
-        tools:targetApi="14" />
-    
-    <Button
         android:id="@+id/btn_hide"
         android:layout_margin="1sp"
         android:layout_width="fill_parent"

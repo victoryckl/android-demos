@@ -23,8 +23,6 @@ public class ProtectEyeActivity extends Activity implements OnClickListener {
 	private void init() {
 		findViewById(R.id.btn_show).setOnClickListener(this);
 		findViewById(R.id.btn_hide).setOnClickListener(this);
-		findViewById(R.id.btn_show_512avi).setOnClickListener(this);
-		findViewById(R.id.btn_show_1024avi).setOnClickListener(this);
 	}
 
 	public void onClick(View v) {
@@ -36,19 +34,8 @@ public class ProtectEyeActivity extends Activity implements OnClickListener {
 			intent.putExtra(Common.OPERATION, Common.Operation.SHOW);
 			startService(intent);
 			break;
-		case R.id.btn_show_512avi:
-			intent.putExtra(Common.TYPE, Type.AVI512);
-			intent.putExtra(Common.OPERATION, Common.Operation.SHOW);
-			startService(intent);
-			break;
-		case R.id.btn_show_1024avi:
-			intent.putExtra(Common.TYPE, Type.AVI1024);
-			intent.putExtra(Common.OPERATION, Common.Operation.SHOW);
-			startService(intent);
-			break;
 		case R.id.btn_hide:
 			intent.putExtra(Common.OPERATION, Common.Operation.HIDE);
-			intent.putExtra(Common.TYPE, Type.AVI1024);
 			startService(intent);
 			break;
 		}
