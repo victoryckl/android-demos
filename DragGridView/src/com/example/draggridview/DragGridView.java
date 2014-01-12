@@ -198,7 +198,7 @@ public class DragGridView extends GridView{
 			mHandler.postDelayed(mLongClickRunnable, dragResponseMS);
 			
 			//根据position获取该item所对应的View
-			mStartDragItemView = getChildAt(mDragPosition - getFirstVisiblePosition());
+			mStartDragItemView = getChildAt(getIndex(mDragPosition));
 			
 			//下面这几个距离大家可以参考我的博客上面的图来理解下
 			mPoint2ItemTop = mDownY - mStartDragItemView.getTop();
@@ -394,8 +394,8 @@ public class DragGridView extends GridView{
 		
 		//假如tempPosition 改变了并且tempPosition不等于-1,则进行交换
 		if(tempPosition != mDragPosition && tempPosition != AdapterView.INVALID_POSITION){
-			getChildAt(tempPosition - getFirstVisiblePosition()).setVisibility(View.INVISIBLE);//拖动到了新的item,新的item隐藏掉
-			getChildAt(mDragPosition - getFirstVisiblePosition()).setVisibility(View.VISIBLE);//之前的item显示出来
+			setChildVisible(tempPosition, View.INVISIBLE);//拖动到了新的item,新的item隐藏掉
+			setChildVisible(mDragPosition, View.VISIBLE);//之前的item显示出来
 			
 			if(mOnChanageListener != null){
 				mOnChanageListener.onChange(mDragPosition, tempPosition);
@@ -412,7 +412,7 @@ public class DragGridView extends GridView{
 		if (mOnChanageListener != null) {
 			mOnChanageListener.onStartDrag();
 		}
-		getChildAt(mDragPosition - getFirstVisiblePosition()).setVisibility(View.VISIBLE);
+		setChildVisible(mDragPosition, View.VISIBLE);
 		removeDragImage();
 	}
 	
@@ -439,6 +439,14 @@ public class DragGridView extends GridView{
         }
         return statusHeight;
     }
+	
+	private void setChildVisible(int position, int visable) {
+		getChildAt(getIndex(position)).setVisibility(visable);
+	}
+	
+	private int getIndex(int position) {
+		return position - getFirstVisiblePosition();
+	}
 	
 	public interface OnChanageListener{
 		void onStartDrag();
