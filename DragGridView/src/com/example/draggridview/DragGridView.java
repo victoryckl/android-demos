@@ -1,5 +1,7 @@
 package com.example.draggridview;
 
+import com.example.utils.MLog;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -17,12 +19,6 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 
-/**
- * @blog http://blog.csdn.net/xiaanming 
- * 
- * @author xiaanming
- *
- */
 @SuppressLint("NewApi")
 public class DragGridView extends GridView{
 	/**
@@ -113,7 +109,7 @@ public class DragGridView extends GridView{
 	/**
 	 * item发生变化回调的接口
 	 */
-	private OnChanageListener onChanageListener;
+	private OnChanageListener mOnChanageListener;
 	
 	
 	
@@ -139,24 +135,25 @@ public class DragGridView extends GridView{
 		
 		@Override
 		public void run() {
+			if (mOnChanageListener != null) {
+				mOnChanageListener.onStartDrag();
+			}
+			
 			isDrag = true; //设置可以拖拽
 			mVibrator.vibrate(50); //震动一下
 			
 			mStartDragItemView.setVisibility(View.INVISIBLE);//隐藏该item
-			
 			//根据我们按下的点显示item镜像
 			createDragImage(mDragBitmap, mDownX, mDownY);
-			
-			
 		}
 	};
 	
 	/**
 	 * 设置回调接口
-	 * @param onChanageListener
+	 * @param listener
 	 */
-	public void setOnChangeListener(OnChanageListener onChanageListener){
-		this.onChanageListener = onChanageListener;
+	public void setOnChangeListener(OnChanageListener listener){
+		mOnChanageListener = listener;
 	}
 	
 	/**
@@ -168,9 +165,21 @@ public class DragGridView extends GridView{
 	}
 
 	@Override
+	public boolean onInterceptTouchEvent(MotionEvent ev) {
+		int action = ev.getAction();
+		if (action == MotionEvent.ACTION_DOWN) {
+			MLog.i("onInterceptTouchEvent(), down");
+		} else if (action == MotionEvent.ACTION_UP) {
+			MLog.i("onInterceptTouchEvent(), up");
+		}
+		return super.onInterceptTouchEvent(ev);
+	}
+	
+	@Override
 	public boolean dispatchTouchEvent(MotionEvent ev) {
 		switch(ev.getAction()){
 		case MotionEvent.ACTION_DOWN:
+			MLog.i("dispatchTouchEvent(), down");
 			//使用Handler延迟dragResponseMS执行mLongClickRunnable
 			mHandler.postDelayed(mLongClickRunnable, dragResponseMS);
 			
@@ -179,6 +188,7 @@ public class DragGridView extends GridView{
 			
 			//根据按下的X,Y坐标获取所点击item的position
 			mDragPosition = pointToPosition(mDownX, mDownY);
+			MLog.i("mDragPosition: "+mDragPosition);
 			
 			if(mDragPosition == AdapterView.INVALID_POSITION){
 				return super.dispatchTouchEvent(ev);
@@ -199,8 +209,6 @@ public class DragGridView extends GridView{
 			//获取DragGridView自动向下滚动的偏移量，大于这个值，DragGridView向上滚动
 			mUpScrollBorder = getHeight() * 3/4;
 			
-			
-			
 			//开启mDragItemView绘图缓存
 			mStartDragItemView.setDrawingCacheEnabled(true);
 			//获取mDragItemView在缓存中的Bitmap对象
@@ -208,9 +216,9 @@ public class DragGridView extends GridView{
 			//这一步很关键，释放绘图缓存，避免出现重复的镜像
 			mStartDragItemView.destroyDrawingCache();
 			
-			
 			break;
 		case MotionEvent.ACTION_MOVE:
+//			MLog.i("dispatchTouchEvent(), move");
 			int moveX = (int)ev.getX();
 			int moveY = (int) ev.getY();
 			
@@ -220,6 +228,7 @@ public class DragGridView extends GridView{
 			}
 			break;
 		case MotionEvent.ACTION_UP:
+			MLog.i("dispatchTouchEvent(), up");
 			mHandler.removeCallbacks(mLongClickRunnable);
 			mHandler.removeCallbacks(mScrollRunnable);
 			break;
@@ -249,19 +258,22 @@ public class DragGridView extends GridView{
 		return true;
 	}
 	
-	
-
 	@Override
 	public boolean onTouchEvent(MotionEvent ev) {
 		if(isDrag && mDragImageView != null){
 			switch(ev.getAction()){
+			case MotionEvent.ACTION_DOWN:
+				MLog.i("onTouchEvent(), down");
+				break;
 			case MotionEvent.ACTION_MOVE:
+//				MLog.i("onTouchEvent(), move");
 				moveX = (int) ev.getX();
 				moveY = (int) ev.getY();
 				//拖动item
 				onDragItem(moveX, moveY);
 				break;
 			case MotionEvent.ACTION_UP:
+				MLog.i("onTouchEvent(), up");
 				onStopDrag();
 				isDrag = false;
 				break;
@@ -270,7 +282,6 @@ public class DragGridView extends GridView{
 		}
 		return super.onTouchEvent(ev);
 	}
-	
 	
 	/**
 	 * 创建拖动的镜像
@@ -305,10 +316,7 @@ public class DragGridView extends GridView{
 			mWindowManager.removeView(mDragImageView);
 			mDragImageView = null;
 		}
-		
 	}
-	
-	
 	
 	/**
 	 * 拖动item，在里面实现了item镜像的位置更新，item的相互交换以及GridView的自行滚动
@@ -324,7 +332,6 @@ public class DragGridView extends GridView{
 		//GridView自动滚动
 		mHandler.post(mScrollRunnable);
 	}
-	
 	
 	/**
 	 * 当moveY的值大于向上滚动的边界值，触发GridView自动向上滚动
@@ -358,7 +365,6 @@ public class DragGridView extends GridView{
 		}
 	};
 	
-	
 	/**
 	 * 交换item,并且控制item之间的显示与隐藏效果
 	 * @param moveX
@@ -373,19 +379,21 @@ public class DragGridView extends GridView{
 			getChildAt(tempPosition - getFirstVisiblePosition()).setVisibility(View.INVISIBLE);//拖动到了新的item,新的item隐藏掉
 			getChildAt(mDragPosition - getFirstVisiblePosition()).setVisibility(View.VISIBLE);//之前的item显示出来
 			
-			if(onChanageListener != null){
-				onChanageListener.onChange(mDragPosition, tempPosition);
+			if(mOnChanageListener != null){
+				mOnChanageListener.onChange(mDragPosition, tempPosition);
 			}
 			
 			mDragPosition = tempPosition;
 		}
 	}
 	
-	
 	/**
 	 * 停止拖拽我们将之前隐藏的item显示出来，并将镜像移除
 	 */
 	private void onStopDrag(){
+		if (mOnChanageListener != null) {
+			mOnChanageListener.onStartDrag();
+		}
 		getChildAt(mDragPosition - getFirstVisiblePosition()).setVisibility(View.VISIBLE);
 		removeDragImage();
 	}
@@ -414,21 +422,17 @@ public class DragGridView extends GridView{
         return statusHeight;
     }
 	
-	
-	/**
-	 * 
-	 * @author xiaanming
-	 *
-	 */
 	public interface OnChanageListener{
+		void onStartDrag();
+		void onStopDrag();
 		
 		/**
 		 * 当item交换位置的时候回调的方法，我们只需要在该方法中实现数据的交换即可
-		 * @param form
+		 * @param from
 		 * 			开始的position
 		 * @param to 
 		 * 			拖拽到的position
 		 */
-		public void onChange(int form, int to);
+		void onChange(int from, int to);
 	}
 }

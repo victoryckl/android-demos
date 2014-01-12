@@ -10,16 +10,12 @@ import android.os.Bundle;
 import android.widget.SimpleAdapter;
 
 import com.example.draggridview.DragGridView.OnChanageListener;
+import com.example.utils.MLog;
 
-/**
- * @blog http://blog.csdn.net/xiaanming 
- * 
- * @author xiaanming
- *
- */
 public class DragGridViewActivity extends Activity {
-	private List<HashMap<String, Object>> dataSourceList = new ArrayList<HashMap<String, Object>>();
-
+	private List<HashMap<String, Object>> mDataList = new ArrayList<HashMap<String, Object>>();
+	SimpleAdapter mAdapter;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -30,45 +26,46 @@ public class DragGridViewActivity extends Activity {
 			HashMap<String, Object> itemHashMap = new HashMap<String, Object>();
 			itemHashMap.put("item_image",R.drawable.com_tencent_open_notice_msg_icon_big);
 			itemHashMap.put("item_text", "拖拽 " + Integer.toString(i));
-			dataSourceList.add(itemHashMap);
+			mDataList.add(itemHashMap);
 		}
-		
 
-		final SimpleAdapter mSimpleAdapter = new SimpleAdapter(this, dataSourceList,
+		mAdapter = new SimpleAdapter(this, mDataList,
 				R.layout.grid_item, new String[] { "item_image", "item_text" },
 				new int[] { R.id.item_image, R.id.item_text });
 		
-		mDragGridView.setAdapter(mSimpleAdapter);
-		
-		mDragGridView.setOnChangeListener(new OnChanageListener() {
-			
-			@Override
-			public void onChange(int from, int to) {
-				HashMap<String, Object> temp = dataSourceList.get(from);
-				//直接交互item
-//				dataSourceList.set(from, dataSourceList.get(to));
-//				dataSourceList.set(to, temp);
-				
-				
-				//这里的处理需要注意下
-				if(from < to){
-					for(int i=from; i<to; i++){
-						Collections.swap(dataSourceList, i, i+1);
-					}
-				}else if(from > to){
-					for(int i=from; i>to; i--){
-						Collections.swap(dataSourceList, i, i-1);
-					}
-				}
-				
-				dataSourceList.set(to, temp);
-				
-				mSimpleAdapter.notifyDataSetChanged();
-				
-				
-			}
-		});
-		
+		mDragGridView.setAdapter(mAdapter);
+		mDragGridView.setOnChangeListener(mChanageListener);
 	}
 
+	private OnChanageListener mChanageListener = new OnChanageListener() {
+		
+		@Override
+		public void onStartDrag() {
+			MLog.i("on start drag");
+		}
+		
+		@Override
+		public void onStopDrag() {
+			MLog.i("on stop drag");
+		}
+		
+		@Override
+		public void onChange(int from, int to) {
+			MLog.i("on change");
+			HashMap<String, Object> temp = mDataList.get(from);
+			//这里的处理需要注意下
+			if(from < to){
+				for(int i=from; i<to; i++){
+					Collections.swap(mDataList, i, i+1);
+				}
+			}else if(from > to){
+				for(int i=from; i>to; i--){
+					Collections.swap(mDataList, i, i-1);
+				}
+			}
+			
+			mDataList.set(to, temp);
+			mAdapter.notifyDataSetChanged();
+		}
+	};
 }
