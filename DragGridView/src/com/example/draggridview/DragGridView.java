@@ -10,6 +10,7 @@ import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.os.Handler;
 import android.os.Vibrator;
+import android.renderscript.Sampler;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -111,6 +112,7 @@ public class DragGridView extends GridView{
 	 */
 	private OnChanageListener mOnChanageListener;
 	
+	private int mDelta; 
 	
 	
 	public DragGridView(Context context) {
@@ -126,13 +128,13 @@ public class DragGridView extends GridView{
 		mVibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
 		mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
 		mStatusHeight = getStatusHeight(context); //获取状态栏的高度
+		mDelta = context.getResources().getDimensionPixelSize(R.dimen.max_delta);
 	}
 	
 	private Handler mHandler = new Handler();
 	
 	//用来处理是否为长按的Runnable
 	private Runnable mLongClickRunnable = new Runnable() {
-		
 		@Override
 		public void run() {
 			if (mOnChanageListener != null) {
@@ -220,15 +222,14 @@ public class DragGridView extends GridView{
 			break;
 		case MotionEvent.ACTION_MOVE:
 //			MLog.i("dispatchTouchEvent(), move");
-			if (mStartDragItemView == null) {
-				break;
-			}
-			
 			int moveX = (int)ev.getX();
 			int moveY = (int) ev.getY();
 			
 			//如果我们在按下的item上面移动，只要不超过item的边界我们就不移除mRunnable
 			if(!isTouchInItem(mStartDragItemView, moveX, moveY)){
+				mHandler.removeCallbacks(mLongClickRunnable);
+			}
+			if (!isMoveSmall(mDownX, mDownY, moveX, moveY)) {
 				mHandler.removeCallbacks(mLongClickRunnable);
 			}
 			break;
@@ -241,6 +242,14 @@ public class DragGridView extends GridView{
 		return super.dispatchTouchEvent(ev);
 	}
 
+	private boolean isMoveSmall(int orgX, int orgY, int newX, int newY) {
+		boolean small = true;
+		if ((Math.abs(orgX-newX) > mDelta)
+				|| (Math.abs(orgY-newY) > mDelta)) {
+			small = false;
+		}
+		return small;
+	}
 	
 	/**
 	 * 是否点击在GridView的item上面
@@ -250,6 +259,10 @@ public class DragGridView extends GridView{
 	 * @return
 	 */
 	private boolean isTouchInItem(View dragView, int x, int y){
+		if (dragView == null) {
+			return false;
+		}
+		
 		int leftOffset = dragView.getLeft();
 		int topOffset = dragView.getTop();
 		if(x < leftOffset || x > leftOffset + dragView.getWidth()){
