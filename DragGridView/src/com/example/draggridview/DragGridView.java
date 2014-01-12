@@ -180,8 +180,6 @@ public class DragGridView extends GridView{
 		switch(ev.getAction()){
 		case MotionEvent.ACTION_DOWN:
 			MLog.i("dispatchTouchEvent(), down");
-			//使用Handler延迟dragResponseMS执行mLongClickRunnable
-			mHandler.postDelayed(mLongClickRunnable, dragResponseMS);
 			
 			mDownX = (int) ev.getX();
 			mDownY = (int) ev.getY();
@@ -193,6 +191,9 @@ public class DragGridView extends GridView{
 			if(mDragPosition == AdapterView.INVALID_POSITION){
 				return super.dispatchTouchEvent(ev);
 			}
+			
+			//使用Handler延迟dragResponseMS执行mLongClickRunnable
+			mHandler.postDelayed(mLongClickRunnable, dragResponseMS);
 			
 			//根据position获取该item所对应的View
 			mStartDragItemView = getChildAt(mDragPosition - getFirstVisiblePosition());
@@ -219,6 +220,10 @@ public class DragGridView extends GridView{
 			break;
 		case MotionEvent.ACTION_MOVE:
 //			MLog.i("dispatchTouchEvent(), move");
+			if (mStartDragItemView == null) {
+				break;
+			}
+			
 			int moveX = (int)ev.getX();
 			int moveY = (int) ev.getY();
 			
