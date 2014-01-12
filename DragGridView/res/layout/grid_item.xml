@@ -12,6 +12,14 @@
         android:layout_centerHorizontal="true" >
     </ImageView>
 
+    <ImageButton 
+        android:id="@+id/ib_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/btn_delete_selector"
+        android:background="@android:color/transparent"
+        android:visibility="invisible"/>
+    
     <TextView
         android:id="@+id/item_text"
         android:layout_width="wrap_content"

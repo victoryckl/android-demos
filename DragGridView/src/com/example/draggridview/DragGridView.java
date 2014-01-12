@@ -174,6 +174,10 @@ public class DragGridView extends GridView{
 		} else if (action == MotionEvent.ACTION_UP) {
 			MLog.i("onInterceptTouchEvent(), up");
 		}
+		
+		if (isDrag) {
+			return true;
+		}
 		return super.onInterceptTouchEvent(ev);
 	}
 	
@@ -278,6 +282,7 @@ public class DragGridView extends GridView{
 	
 	@Override
 	public boolean onTouchEvent(MotionEvent ev) {
+		MLog.i("isDrag: " + isDrag + ", mDragImageView: " + mDragImageView);
 		if(isDrag && mDragImageView != null){
 			switch(ev.getAction()){
 			case MotionEvent.ACTION_DOWN:

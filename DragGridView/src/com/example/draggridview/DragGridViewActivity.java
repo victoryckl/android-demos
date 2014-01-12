@@ -7,7 +7,10 @@ import java.util.List;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.KeyEvent;
+import android.widget.Toast;
 
+import com.example.draggridview.DragAdapter.OnDragClickListener;
 import com.example.draggridview.DragGridView.OnChanageListener;
 import com.example.utils.MLog;
 
@@ -23,16 +26,30 @@ public class DragGridViewActivity extends Activity {
 		init();
 	}
 	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			if (mAdapter.isEdit()) {
+				mAdapter.setEdit(false);
+				return true;
+			}
+		}
+		return super.onKeyDown(keyCode, event);
+	}
+	
 	private void init() {
 		DragGridView mDragGridView = (DragGridView) findViewById(R.id.dragGridView);
 		for (int i = 0; i < 30; i++) {
 			HashMap<String, Object> item = new HashMap<String, Object>();
-			item.put("item_image",R.drawable.com_tencent_open_notice_msg_icon_big);
+			int id = ((i&1) == 0) ? R.drawable.com_tencent_big : R.drawable.music;
+			item.put("item_image", id);
 			item.put("item_text", "item " + Integer.toString(i));
 			mDataList.add(item);
 		}
 		
 		mAdapter = new DragAdapter(this, mDataList);
+		mAdapter.setOnDragClickListener(mDragClickListener);
+		
 		mDragGridView.setAdapter(mAdapter);
 		mDragGridView.setOnChangeListener(mChanageListener);
 	}
@@ -42,6 +59,7 @@ public class DragGridViewActivity extends Activity {
 		@Override
 		public void onStartDrag() {
 			MLog.i("on start drag");
+			mAdapter.setEdit(true);
 		}
 		
 		@Override
@@ -65,6 +83,25 @@ public class DragGridViewActivity extends Activity {
 			}
 			
 			mDataList.set(to, temp);
+			mAdapter.notifyDataSetChanged();
+		}
+	};
+	
+	private OnDragClickListener mDragClickListener = new OnDragClickListener() {
+		@Override
+		public void onIcon(int position) {
+			MLog.i("onIcon(), position: " + position);
+			Toast.makeText(getApplicationContext(), 
+					"onIcon(), pos: "+position, Toast.LENGTH_SHORT).show();
+		}
+		
+		@Override
+		public void onDelete(int position) {
+			MLog.i("onDelete(), position: " + position);
+			mDataList.remove(position);
+			if (mDataList.size() <= 0) {
+				mAdapter.setEdit(false);
+			}
 			mAdapter.notifyDataSetChanged();
 		}
 	};
