@@ -539,7 +539,8 @@ public class DragGridView extends GridView{
         TranslateAnimation anim = new TranslateAnimation(
         		Animation.RELATIVE_TO_SELF, 0, Animation.RELATIVE_TO_SELF, Xoffset, 
                 Animation.RELATIVE_TO_SELF, 0, Animation.RELATIVE_TO_SELF, Yoffset);
-        anim.setFillAfter(true);
+        //是否执行终止填充效果，true表示使能该效果，false表示禁用该效果。    
+        anim.setFillAfter(false);
         anim.setDuration(ANIMATION_TIME);
         anim.setAnimationListener(mAnimListener);
         return anim;
