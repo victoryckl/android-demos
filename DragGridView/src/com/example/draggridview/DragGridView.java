@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.os.Vibrator;
 import android.renderscript.Sampler;
 import android.util.AttributeSet;
@@ -147,6 +148,14 @@ public class DragGridView extends GridView{
 			mStartDragItemView.setVisibility(View.INVISIBLE);//隐藏该item
 			//根据我们按下的点显示item镜像
 			createDragImage(mDragBitmap, mDownX, mDownY);
+			
+			//解决进入了拖动状态，在没有Move前就松开后的异常问题
+			//这里模拟一次move
+			MotionEvent ev = MotionEvent.obtain(
+					SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), 
+					MotionEvent.ACTION_MOVE, 
+					mDownX, mDownY, 0);
+			dispatchTouchEvent(ev);
 		}
 	};
 	
@@ -185,6 +194,7 @@ public class DragGridView extends GridView{
 	public boolean dispatchTouchEvent(MotionEvent ev) {
 		switch(ev.getAction()){
 		case MotionEvent.ACTION_DOWN:
+			MLog.i("----------------------");
 			MLog.i("dispatchTouchEvent(), down");
 			
 			mDownX = (int) ev.getX();
@@ -282,7 +292,7 @@ public class DragGridView extends GridView{
 	
 	@Override
 	public boolean onTouchEvent(MotionEvent ev) {
-		MLog.i("isDrag: " + isDrag + ", mDragImageView: " + mDragImageView);
+		MLog.i("isDrag: " + isDrag);
 		if(isDrag && mDragImageView != null){
 			switch(ev.getAction()){
 			case MotionEvent.ACTION_DOWN:

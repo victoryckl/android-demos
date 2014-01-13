@@ -69,7 +69,7 @@ public class DragGridViewActivity extends Activity {
 		
 		@Override
 		public void onChange(int from, int to) {
-			MLog.i("on change");
+			MLog.i("on change, "+from+" -> " +to);
 			HashMap<String, Object> temp = mDataList.get(from);
 			
 			if(from < to){
