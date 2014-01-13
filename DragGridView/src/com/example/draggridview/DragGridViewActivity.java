@@ -65,6 +65,7 @@ public class DragGridViewActivity extends Activity {
 		@Override
 		public void onStopDrag() {
 			MLog.i("on stop drag");
+			mAdapter.notifyDataSetChanged();
 		}
 		
 		@Override

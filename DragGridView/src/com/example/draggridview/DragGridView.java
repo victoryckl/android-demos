@@ -1,7 +1,5 @@
 package com.example.draggridview;
 
-import com.example.utils.MLog;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -11,15 +9,19 @@ import android.graphics.Rect;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.os.Vibrator;
-import android.renderscript.Sampler;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
+import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
+
+import com.example.utils.MLog;
 
 @SuppressLint("NewApi")
 public class DragGridView extends GridView{
@@ -213,6 +215,7 @@ public class DragGridView extends GridView{
 			
 			//根据position获取该item所对应的View
 			mStartDragItemView = getChildAt(getIndex(mDragPosition));
+			initAnimArgs(mStartDragItemView);
 			
 			//下面这几个距离大家可以参考我的博客上面的图来理解下
 			mPoint2ItemTop = mDownY - mStartDragItemView.getTop();
@@ -292,7 +295,7 @@ public class DragGridView extends GridView{
 	
 	@Override
 	public boolean onTouchEvent(MotionEvent ev) {
-		MLog.i("isDrag: " + isDrag);
+//		MLog.i("isDrag: " + isDrag);
 		if(isDrag && mDragImageView != null){
 			switch(ev.getAction()){
 			case MotionEvent.ACTION_DOWN:
@@ -409,14 +412,15 @@ public class DragGridView extends GridView{
 		
 		//假如tempPosition 改变了并且tempPosition不等于-1,则进行交换
 		if(tempPosition != mDragPosition && tempPosition != AdapterView.INVALID_POSITION){
-			setChildVisible(tempPosition, View.INVISIBLE);//拖动到了新的item,新的item隐藏掉
-			setChildVisible(mDragPosition, View.VISIBLE);//之前的item显示出来
+//			setChildVisible(tempPosition, View.INVISIBLE);//拖动到了新的item,新的item隐藏掉
+//			setChildVisible(mDragPosition, View.VISIBLE);//之前的item显示出来
 			
-			if(mOnChanageListener != null){
-				mOnChanageListener.onChange(mDragPosition, tempPosition);
-			}
-			
-			mDragPosition = tempPosition;
+//			if(mOnChanageListener != null){
+//				mOnChanageListener.onChange(mDragPosition, tempPosition);
+//			}
+//			mDragPosition = tempPosition;
+
+			doItemAnimation(mDragPosition, tempPosition);
 		}
 	}
 	
@@ -425,7 +429,7 @@ public class DragGridView extends GridView{
 	 */
 	private void onStopDrag(){
 		if (mOnChanageListener != null) {
-			mOnChanageListener.onStartDrag();
+			mOnChanageListener.onStopDrag();
 		}
 		setChildVisible(mDragPosition, View.VISIBLE);
 		removeDragImage();
@@ -476,4 +480,95 @@ public class DragGridView extends GridView{
 		 */
 		void onChange(int from, int to);
 	}
+	
+	//-----------------------------
+	private static final int ANIMATION_TIME = 300;
+	private boolean isMoving;
+	private int mColumns;
+	private int mTempPosition;
+	private String LastAnimationID;
+	private float mXscale, mYscale;
+	
+	private void initAnimArgs(View item) {
+		isMoving = false;
+		mTempPosition = -1;
+		mColumns = getNumColumns();
+		
+		mXscale = 1.0f + (1.0f*getHorizontalSpacing() / item.getWidth());
+		mYscale = 1.0f + (1.0f*getVerticalSpacing() / item.getHeight());
+	}
+	
+	private void doItemAnimation(int from, int to) {
+		int moveNum;
+		int dst, src;
+		int vector;
+		View item = null;
+		Animation anim = null;
+		
+		if (isMoving) {
+			return;
+		}
+		
+		moveNum = to - from;
+		if (moveNum == 0) {
+			return;
+		}
+		
+		vector = moveNum>0 ? 1 : -1;
+
+		moveNum = Math.abs(moveNum);
+		dst = from;
+		for (int i=0; i<moveNum; i++) {
+			src = dst + vector;
+			MLog.i("" + src + " -> " + dst);
+			item = getChildAt(getIndex(src)); 
+			anim = startItemAnimation(src, dst);
+			item.startAnimation(anim);
+			dst = src;
+		}
+		LastAnimationID = anim.toString();
+		mTempPosition = to;
+	}
+	
+    public Animation startItemAnimation(int src, int dst){
+    	float Xoffset,Yoffset;
+    	
+    	Xoffset = ((dst % mColumns) - (src % mColumns))*mXscale;
+    	Yoffset = ((dst / mColumns) - (src / mColumns))*mYscale;
+    	
+        TranslateAnimation anim = new TranslateAnimation(
+        		Animation.RELATIVE_TO_SELF, 0, Animation.RELATIVE_TO_SELF, Xoffset, 
+                Animation.RELATIVE_TO_SELF, 0, Animation.RELATIVE_TO_SELF, Yoffset);
+        anim.setFillAfter(true);
+        anim.setDuration(ANIMATION_TIME);
+        anim.setAnimationListener(mAnimListener);
+        return anim;
+    }
+    
+	private AnimationListener mAnimListener = new Animation.AnimationListener() {
+
+		@Override
+		public void onAnimationStart(Animation animation) {
+			isMoving = true;
+		}
+
+		@Override
+		public void onAnimationRepeat(Animation animation) {}
+
+		@Override
+		public void onAnimationEnd(Animation animation) {
+			String animaionID = animation.toString();
+			if (animaionID.equalsIgnoreCase(LastAnimationID)) {
+				// adapter.exchange(startPosition, dropPosition);
+				// startPosition = dropPosition;
+				if (mOnChanageListener != null) {
+					mOnChanageListener.onChange(mDragPosition, mTempPosition);
+				}
+				setChildVisible(mTempPosition, View.INVISIBLE);//拖动到了新的item,新的item隐藏掉
+				setChildVisible(mDragPosition, View.VISIBLE);//之前的item显示出来
+				mDragPosition = mTempPosition;
+				isMoving = false;
+			}
+		}
+	};
 }
