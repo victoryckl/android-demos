@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">DraggGridViewSample</string>
+    <string name="button1Text">Add Word</string>
+    <string name="button2Text">View Poem</string>
+</resources>

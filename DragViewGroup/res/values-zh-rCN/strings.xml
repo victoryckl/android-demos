@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">可拖动GridView</string>
+    <string name="button1Text">增加item</string>
+    <string name="button2Text">查看当前</string>
+</resources>
