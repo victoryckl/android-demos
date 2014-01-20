@@ -3,6 +3,6 @@ set count=0
 :LOOP
 echo -------------------^> %count%
 set /a count=%count%+1
-adb shell busybox netstat -t | grep CLOSE_WAIT
+adb shell busybox netstat -t | grep CLOSE_WAIT | grep CLOSE_WAIT -n
 ping -n 3 0.0.0.0 > nul
 goto LOOP
