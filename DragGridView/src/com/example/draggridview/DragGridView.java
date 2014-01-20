@@ -482,7 +482,7 @@ public class DragGridView extends GridView{
 	}
 	
 	//-----------------------------
-	private static final int ANIMATION_TIME = 300;
+	private static final int ANIMATION_TIME = 150;
 	private boolean isMoving;
 	private int mColumns;
 	private int mTempPosition;
