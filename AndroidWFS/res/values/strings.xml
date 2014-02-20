@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Wifi共享</string>
+    <string name="btn_start">开始</string>
+    <string name="btn_stop">停止</string>
+    <string name="msg_net_off">未连接上网络</string>
+
+</resources>
