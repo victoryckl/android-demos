@@ -27,6 +27,7 @@ public class WebServer extends Thread {
 	private int port;
 	private String webRoot;
 	private boolean isLoop = false;
+	private ServerSocket serverSocket = null;
 
 	public WebServer(int port, final String webRoot) {
 		super();
@@ -36,10 +37,10 @@ public class WebServer extends Thread {
 
 	@Override
 	public void run() {
-		ServerSocket serverSocket = null;
 		try {
 			// 创建服务器套接字
 			serverSocket = new ServerSocket(port);
+			serverSocket.setReuseAddress(true);
 			// 创建HTTP协议处理器
 			BasicHttpProcessor httpproc = new BasicHttpProcessor();
 			// 增加HTTP协议拦截器
@@ -85,20 +86,28 @@ public class WebServer extends Thread {
 				t.start();
 			}
 		} catch (IOException e) {
-			isLoop = false;
-			e.printStackTrace();
-		} finally {
-			try {
-				if (serverSocket != null) {
-					serverSocket.close();
-				}
-			} catch (IOException e) {
+			if (isLoop) {
+				isLoop = false;
+				e.printStackTrace();
 			}
+		} finally {
+			socketClose();
 		}
 	}
 
 	public void close() {
 		isLoop = false;
+		socketClose();
 	}
 
+	private void socketClose() {
+		try {
+			if (serverSocket != null) {
+				serverSocket.close();
+				serverSocket = null;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 }

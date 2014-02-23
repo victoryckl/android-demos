@@ -6,7 +6,7 @@ import android.os.IBinder;
 
 public class WebService extends Service {
 
-	public static final int PORT = 7766;
+	public static final int PORT = 7755;
 	public static final String WEBROOT = "/";
 
 	private WebServer webServer;
