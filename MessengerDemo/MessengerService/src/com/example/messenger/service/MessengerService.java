@@ -7,11 +7,14 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.example.messenger.common.Msg;
 
 public class MessengerService extends Service {
+
+	private static final String TAG = MessengerService.class.getSimpleName();
 
 	private Messenger mActivityMessenger;
     /**
@@ -61,6 +64,7 @@ public class MessengerService extends Service {
     }
     
     private void showToast(String msg) {
+    	Log.i(TAG, msg);
     	Toast.makeText(getApplicationContext(), 
     			"service: "+msg, Toast.LENGTH_SHORT).show();
     }
