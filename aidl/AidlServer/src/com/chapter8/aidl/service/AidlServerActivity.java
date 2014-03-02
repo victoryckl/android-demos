@@ -1,4 +1,4 @@
-package com.chapter8.aidl;
+package com.chapter8.aidl.service;
 
 import android.app.Activity;
 import android.content.Intent;

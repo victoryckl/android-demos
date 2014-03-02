@@ -1,6 +1,9 @@
-package com.chapter8.aidl;
+package com.chapter8.aidl.service;
 import com.chapter8.aidl.IAIDLServerService.Stub;
+import com.chapter8.aidl.Book;
 import com.chapter8.aidl.IAIDLServerService;
+import com.chapter8.aidl.ICallback;
+
 import android.app.Service;
 import android.content.Intent;
 import android.os.Handler;

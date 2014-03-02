@@ -1,4 +1,4 @@
-package com.chapter8.aidlclient;
+package com.chapter8.aidl.client;
 import com.chapter8.aidl.IAIDLServerService;
 import com.chapter8.aidl.ICallback;
 import android.app.Activity;
