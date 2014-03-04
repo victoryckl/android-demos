@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Hello World, main!</string>
+    <string name="app_name">粉红可爱主题</string>
+    <color name="ListView_bg">#efef</color>
+</resources>
