@@ -1,4 +1,4 @@
-package com.chapter8.aidl;
+package com.example.aidl;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;

@@ -1,8 +1,8 @@
-package com.chapter8.aidl.service;
-import com.chapter8.aidl.IAIDLServerService.Stub;
-import com.chapter8.aidl.Book;
-import com.chapter8.aidl.IAIDLServerService;
-import com.chapter8.aidl.ICallback;
+package com.example.aidl.service;
+import com.example.aidl.IAIDLServerService.Stub;
+import com.example.aidl.Book;
+import com.example.aidl.IAIDLServerService;
+import com.example.aidl.ICallback;
 
 import android.app.Service;
 import android.content.Intent;
@@ -50,9 +50,22 @@ public class AidlServerService extends Service {
 	
 	@Override
 	public boolean onUnbind(Intent intent) {
+		Log.i(TAG, "onUnbind()");
 		mHandler.removeMessages(0);
 		mCallbacks.kill();
 		return super.onUnbind(intent);
+	}
+	
+	@Override
+	public int onStartCommand(Intent intent, int flags, int startId) {
+		Log.i(TAG, "onStartCommand() ");
+		return super.onStartCommand(intent, flags, startId);
+	}
+	
+	@Override
+	public void onDestroy() {
+		Log.i(TAG, "onDestroy() ");
+		super.onDestroy();
 	}
 	
     /**

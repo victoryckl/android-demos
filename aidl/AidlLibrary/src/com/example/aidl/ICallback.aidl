@@ -1,4 +1,4 @@
-package com.chapter8.aidl;
+package com.example.aidl;
 interface ICallback {
 	void setCount(int count);
 }

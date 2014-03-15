@@ -1,6 +1,6 @@
-package com.chapter8.aidl;
-import com.chapter8.aidl.Book;
-import com.chapter8.aidl.ICallback;
+package com.example.aidl;
+import com.example.aidl.Book;
+import com.example.aidl.ICallback;
 interface IAIDLServerService {
       
     String sayHello();

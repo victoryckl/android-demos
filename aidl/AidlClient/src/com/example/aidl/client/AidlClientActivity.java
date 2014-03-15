@@ -1,11 +1,8 @@
-package com.chapter8.aidl.client;
-import com.chapter8.aidl.IAIDLServerService;
-import com.chapter8.aidl.ICallback;
+package com.example.aidl.client;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -17,6 +14,10 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
+
+import com.example.aidl.IAIDLServerService;
+import com.example.aidl.ICallback;
+
 public class AidlClientActivity extends Activity {
 
     protected static final String TAG = "AidlClientActivity";
@@ -90,7 +91,7 @@ public class AidlClientActivity extends Activity {
         mButton.setOnClickListener(new OnClickListener(){
             public void onClick(View v) {
                 //bindService
-                Intent service = new Intent("com.chapter8.aidl.IAIDLServerService");
+                Intent service = new Intent("com.example.aidl.IAIDLServerService");
                 if(bindService(service, mConnection,BIND_AUTO_CREATE)){
                 	Log.i(TAG, "bindService() success!");
                 } else {
