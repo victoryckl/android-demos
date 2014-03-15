@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="hello">Hello World, Ex8_5_AidlClientActivity!</string>
+    <string name="hello">Hello World, AidlClientActivity!</string>
     <string name="app_name">AidlClient</string>
 
 </resources>
