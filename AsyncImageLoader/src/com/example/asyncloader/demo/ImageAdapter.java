@@ -1,7 +1,12 @@
-package com.example.asyncimageloader;
+package com.example.asyncloader.demo;
+
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -10,9 +15,12 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 
-import com.example.asyncimageloader.ImageDownLoader.onImageLoaderListener;
+import com.example.asyncimageloader.ImageDownLoader;
+import com.example.asyncimageloader.ImageDownLoader.OnImageLoaderListener;
 
 public class ImageAdapter extends BaseAdapter implements OnScrollListener{
+	protected static final String TAG = ImageAdapter.class.getSimpleName();
+
 	/**
 	 * 上下文对象的引用
 	 */
@@ -141,14 +149,37 @@ public class ImageAdapter extends BaseAdapter implements OnScrollListener{
 		for(int i=firstVisibleItem; i<firstVisibleItem + visibleItemCount; i++){
 			String mImageUrl = imageThumbUrls[i];
 			final ImageView mImageView = (ImageView) mGridView.findViewWithTag(mImageUrl);
-			bitmap = mImageDownLoader.downloadImage(mImageUrl, new onImageLoaderListener() {
+			bitmap = mImageDownLoader.downloadImage(mImageUrl, new OnImageLoaderListener() {
 				
 				@Override
-				public void onImageLoader(Bitmap bitmap, String url) {
+				public void onComplete(Bitmap bitmap, String url) {
 					if(mImageView != null && bitmap != null){
 						mImageView.setImageBitmap(bitmap);
 					}
 					
+				}
+
+				@Override
+				public Bitmap onGetBitmap(String url) {
+					Log.i(TAG, "onGetBitmap(): "+url);
+					Bitmap bitmap = null;
+					HttpURLConnection con = null;
+					try {
+						URL mImageUrl = new URL(url);
+						con = (HttpURLConnection) mImageUrl.openConnection();
+						con.setConnectTimeout(10 * 1000);
+						con.setReadTimeout(10 * 1000);
+						con.setDoInput(true);
+						con.setDoOutput(true);
+						bitmap = BitmapFactory.decodeStream(con.getInputStream());
+					} catch (Exception e) {
+						e.printStackTrace();
+					} finally {
+						if (con != null) {
+							con.disconnect();
+						}
+					}
+					return bitmap;
 				}
 			});
 			

@@ -1,4 +1,7 @@
-package com.example.asyncimageloader;
+package com.example.asyncloader.demo;
+
+import com.example.asyncimageloader.FileUtils;
+import com.example.asyncimageloader.Images;
 
 import android.app.Activity;
 import android.os.Bundle;

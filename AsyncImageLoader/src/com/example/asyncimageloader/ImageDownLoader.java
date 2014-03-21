@@ -169,37 +169,4 @@ public class ImageDownLoader {
 			con = (HttpURLConnection) mImageUrl.openConnection();
 			con.setConnectTimeout(10 * 1000);
 			con.setReadTimeout(10 * 1000);
-			con.setDoInput(true);
-			con.setDoOutput(true);
-			bitmap = BitmapFactory.decodeStream(con.getInputStream());
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			if (con != null) {
-				con.disconnect();
-			}
-		}
-		return bitmap;
-	}
-	
-	/**
-	 * 取消正在下载的任务
-	 */
-	public synchronized void cancelTask() {
-		if(mImageThreadPool != null){
-			mImageThreadPool.shutdownNow();
-			mImageThreadPool = null;
-		}
-	}
-	
-	
-	/**
-	 * 异步下载图片的回调接口
-	 * @author len
-	 *
-	 */
-	public interface onImageLoaderListener{
-		void onImageLoader(Bitmap bitmap, String url);
-	}
-	
-}
+			con.setDoInpu
