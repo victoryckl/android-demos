@@ -1,15 +1,9 @@
 package com.example.utils;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
-import org.xml.sax.InputSource;
-
-import android.util.Log;
 
 public class FileUtil {
 	private static final String TAG = FileUtil.class.getSimpleName();
@@ -30,8 +24,9 @@ public class FileUtil {
 				File srcFile = new File(src);
 				outPath = dst + File.separator + srcFile.getName();
 			} else {
-				Log.e(TAG, "error: " + dst + " is a file!");
-				outPath = null;
+//				Log.e(TAG, "error: " + dst + " is a file!");
+//				outPath = null;
+				dstFile.delete();
 			}
 		} else {
 			File parent = dstFile.getParentFile();
