@@ -1,0 +1,61 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/activity_bg"
+    android:orientation="vertical" >
+
+    <!-- 上边主页面 -->
+
+    <fragment
+        android:id="@+id/fragement_main"
+        android:name="net.loonggg.fragment.FragmentMain"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="10" />
+
+    <fragment
+        android:id="@+id/fragement_search"
+        android:name="net.loonggg.fragment.FragmentSearch"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="10" />
+
+    <fragment
+        android:id="@+id/fragement_setting"
+        android:name="net.loonggg.fragment.FragmentSetting"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="10" />
+
+    <!-- 底部菜单页面 -->
+
+    <RadioGroup
+        android:id="@+id/bottomRg"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.5"
+        android:background="@drawable/tab_footer_bg"
+        android:orientation="horizontal" >
+
+        <RadioButton
+            android:id="@+id/rbOne"
+            style="@style/rg_btn_style"
+            android:checked="true"
+            android:drawableTop="@drawable/rb_one_btn_selector"
+            android:text="首页" />
+
+        <RadioButton
+            android:id="@+id/rbTwo"
+            style="@style/rg_btn_style"
+            android:drawableTop="@drawable/rb_two_btn_selector"
+            android:text="搜索" />
+
+        <RadioButton
+            android:id="@+id/rbThree"
+            style="@style/rg_btn_style"
+            android:drawableTop="@drawable/rb_three_btn_selector"
+            android:text="设置" />
+    </RadioGroup>
+
+</LinearLayout>
