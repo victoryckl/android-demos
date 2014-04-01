@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mainLayout"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:id="@+id/LinearLayout01"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:id="@+id/LinearLayout05"
+            android:layout_width="fill_parent"
+            android:layout_height="2sp"
+            android:background="#888888" >
+        </LinearLayout>
+
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="#5B5B5B"
+            android:orientation="vertical"
+            android:paddingTop="1.0dip" >
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="7.0dip"
+                android:background="@drawable/toolbar_top_frame"
+                android:orientation="horizontal" />
+
+            <HorizontalScrollView
+                android:id="@+id/HorizontalScrollView01"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:background="#5B5B5B"
+                android:fadingEdgeLength="0.0dip"
+                android:scrollbars="none" >
+
+                <LinearLayout
+                    android:id="@+id/toolbar_items"
+                    android:layout_width="wrap_content"
+                    android:layout_height="58dp"
+                    android:layout_gravity="center"
+                    android:orientation="horizontal"
+                    android:paddingBottom="7.0dip"
+                    android:paddingTop="7.0dip" >
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:contentDescription="@string/app_name"
+                        android:src="@drawable/toolbar_slider_grip_left" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="#ffffff" >
+
+                        <ImageButton
+                            android:id="@+id/paste"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/icon_toolbar_paste"
+                            android:contentDescription="@string/app_name"
+                            android:scaleType="centerInside"
+                            android:visibility="gone" >
+                        </ImageButton>
+
+                        <LinearLayout
+                            android:layout_width="1sp"
+                            android:layout_height="wrap_content"
+                            android:background="#000000"
+                            android:paddingLeft="12.0dip" >
+                        </LinearLayout>
+
+                        <ImageButton
+                            android:id="@+id/home"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/icon_toolbar_home"
+                            android:contentDescription="@string/app_name"
+                            android:scaleType="centerInside" >
+                        </ImageButton>
+
+                        <LinearLayout
+                            android:layout_width="1sp"
+                            android:layout_height="wrap_content"
+                            android:background="#000000" >
+                        </LinearLayout>
+
+                        <ImageButton
+                            android:id="@+id/upward"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/icon_toolbar_upward"
+                            android:contentDescription="@string/app_name"
+                            android:scaleType="centerInside" >
+                        </ImageButton>
+
+                        <LinearLayout
+                            android:layout_width="1sp"
+                            android:layout_height="wrap_content"
+                            android:background="#000000" >
+                        </LinearLayout>
+
+                        <ImageButton
+                            android:id="@+id/backward"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/icon_toolbar_backward"
+                            android:contentDescription="@string/app_name"
+                            android:scaleType="centerInside" >
+                        </ImageButton>
+
+                        <LinearLayout
+                            android:layout_width="1sp"
+                            android:layout_height="wrap_content"
+                            android:background="#000000" >
+                        </LinearLayout>
+
+                        <ImageButton
+                            android:id="@+id/forward"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/icon_toolbar_forward"
+                            android:contentDescription="@string/app_name"
+                            android:scaleType="centerInside" >
+                        </ImageButton>
+
+                        <LinearLayout
+                            android:layout_width="1sp"
+                            android:layout_height="wrap_content"
+                            android:background="#000000" >
+                        </LinearLayout>
+
+                        <ImageButton
+                            android:id="@+id/refresh"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/icon_toolbar_refresh"
+                            android:contentDescription="@string/app_name"
+                            android:scaleType="centerInside" >
+                        </ImageButton>
+
+                        <LinearLayout
+                            android:layout_width="1sp"
+                            android:layout_height="wrap_content"
+                            android:background="#000000" >
+                        </LinearLayout>
+
+                        <ImageButton
+                            android:id="@+id/viewmode"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/icon_toolbar_icons"
+                            android:contentDescription="@string/app_name"
+                            android:scaleType="centerInside" >
+                        </ImageButton>
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:contentDescription="@string/app_name"
+                        android:src="@drawable/toolbar_slider_grip_right" />
+                </LinearLayout>
+            </HorizontalScrollView>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="7.0dip"
+                android:background="@drawable/toolbar_bottom_frame"
+                android:orientation="horizontal" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/LinearLayout06"
+            android:layout_width="fill_parent"
+            android:layout_height="2sp"
+            android:background="#888888" >
+        </LinearLayout>
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/listview"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:background="#FFFFFFFF"
+        android:cacheColorHint="#00000000" />
+
+    <GridView
+        android:id="@+id/gridview"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:background="#FFFFFFFF"
+        android:columnWidth="90dp"
+        android:gravity="center"
+        android:horizontalSpacing="10dp"
+        android:numColumns="auto_fit"
+        android:stretchMode="columnWidth"
+        android:verticalSpacing="10dp" />
+
+    <TextView
+        android:id="@+id/empty"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:background="#FFFFFFFF"
+        android:gravity="center"
+        android:text="@string/emptydir"
+        android:textColor="#000000" />
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:ads="http://schemas.android.com/apk/lib/com.google.ads"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFFFFFFF"
+        android:orientation="vertical" >
+
+        <com.google.ads.AdView
+            android:id="@+id/adView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            ads:adSize="SMART_BANNER"
+            ads:adUnitId="@string/MY_AD_UNIT_ID"
+            ads:loadAdOnCreate="true"
+            ads:testDevices="@string/TEST_DEVICE_ID" />
+    </LinearLayout>
+
+</LinearLayout>

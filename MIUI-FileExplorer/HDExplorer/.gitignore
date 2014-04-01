@@ -1,0 +1,18 @@
+#Ignore the Dirs
+gen
+bin
+raw
+.metadata
+
+#Ignore the Files
+*~
+*.apk
+*.o
+*.obj
+*.bak
+a.out
+*.i
+*.s
+*.i
+.*.swp
+
