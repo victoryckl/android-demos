@@ -92,7 +92,7 @@ public class ImageDownLoader {
 	 * @param listener
 	 * @return
 	 */
-	public Bitmap downloadImage(final String url, final onImageLoaderListener listener){
+	public Bitmap downloadImage(final String url, final OnImageLoaderListener listener){
 		//替换Url中非字母和非数字的字符，这里比较重要，因为我们用Url作为文件名，比如我们的Url
 		//是Http://xiaanming/abc.jpg;用这个作为图片名称，系统会认为xiaanming为一个目录，
 		//我们没有创建此目录保存文件就会保存
@@ -106,7 +106,7 @@ public class ImageDownLoader {
 				@Override
 				public void handleMessage(Message msg) {
 					super.handleMessage(msg);
-					listener.onImageLoader((Bitmap)msg.obj, url);
+					listener.onComplete((Bitmap)msg.obj, url);
 				}
 			};
 			
@@ -114,7 +114,7 @@ public class ImageDownLoader {
 				
 				@Override
 				public void run() {
-					Bitmap bitmap = getBitmapFormUrl(url);
+					Bitmap bitmap = listener.onGetBitmap(url);
 					Message msg = handler.obtainMessage();
 					msg.obj = bitmap;
 					handler.sendMessage(msg);
@@ -155,18 +155,22 @@ public class ImageDownLoader {
 		return null;
 	}
 	
+	/**
+	 * 取消正在下载的任务
+	 */
+	public synchronized void cancelTask() {
+		if(mImageThreadPool != null){
+			mImageThreadPool.shutdownNow();
+			mImageThreadPool = null;
+		}
+	}
 	
 	/**
-	 * 从Url中获取Bitmap
-	 * @param url
-	 * @return
+	 * 异步下载图片的回调接口
 	 */
-	private Bitmap getBitmapFormUrl(String url) {
-		Bitmap bitmap = null;
-		HttpURLConnection con = null;
-		try {
-			URL mImageUrl = new URL(url);
-			con = (HttpURLConnection) mImageUrl.openConnection();
-			con.setConnectTimeout(10 * 1000);
-			con.setReadTimeout(10 * 1000);
-			con.setDoInpu
+	public interface OnImageLoaderListener{
+		Bitmap onGetBitmap(String url);
+		void onComplete(Bitmap bitmap, String url);
+	}
+	
+}
