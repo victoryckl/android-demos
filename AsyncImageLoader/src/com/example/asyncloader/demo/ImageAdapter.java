@@ -156,7 +156,6 @@ public class ImageAdapter extends BaseAdapter implements OnScrollListener{
 					if(mImageView != null && bitmap != null){
 						mImageView.setImageBitmap(bitmap);
 					}
-					
 				}
 
 				@Override
