@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+
+        <!-- 相机预览View -->
+
+        <SurfaceView
+            android:id="@+id/preview_view"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
+
+        <!-- 二维码扫描视图 -->
+
+        <com.google.zxing.client.android.ViewfinderView
+            android:id="@+id/viewfinder_view"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:background="@color/transparent" />
+    </FrameLayout>
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="#000000"
+        android:visibility="gone" >
+
+        <RelativeLayout
+            android:id="@+id/relativeLayoutTitleLayout"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="scan" >
+            </TextView>
+
+            <Button
+                android:id="@+id/buttonGoBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="abort" >
+            </Button>
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <!--
+    <LinearLayout
+        android:id="@+id/result_view"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@color/result_view"
+        android:orientation="vertical"
+        android:padding="4dip"
+        android:visibility="gone" >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:gravity="right"
+            android:orientation="vertical" >
+
+            <ImageView
+                android:id="@+id/barcode_image_view"
+                android:layout_width="160dip"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dip"
+                android:adjustViewBounds="true"
+                android:maxHeight="160dip"
+                android:maxWidth="160dip"
+                android:scaleType="centerInside" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:id="@+id/format_text_view_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingRight="4dip"
+                    android:text="@string/format"
+                    android:textColor="@color/result_minor_text"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/format_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/result_minor_text"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:id="@+id/type_text_view_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingRight="4dip"
+                    android:text="@string/msg_result"
+                    android:textColor="@color/result_minor_text"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/textViewResult"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/result_minor_text"
+                    android:textSize="14sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/status_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:background="@color/transparent"
+        android:text="@string/msg_default_status"
+        android:textColor="@color/status_text"
+        android:textSize="14sp" />
+    -->
+
+    <RelativeLayout
+        android:id="@+id/relativeLayoutResult"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        >
+           
+        <Button
+            android:id="@+id/buttonLaser"
+            android:text="切换激光线"
+            android:layout_height="wrap_content" 
+            android:layout_width="fill_parent"
+            android:layout_alignParentTop="true"
+            />
+
+        <TextView
+            android:id="@+id/textViewResult"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:gravity="center"
+            android:autoLink="all"
+            android:text="(扫描完成后，按back键重扫)结果"
+            android:textSize="18px" />
+    </RelativeLayout>
+
+</FrameLayout>

@@ -4,11 +4,6 @@ import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.io.Serializable;
-
-/**
- * Created by Jim on 13-7-10.
- */
 public class BookInfo implements Parcelable {
 
     private String mTitle="";

@@ -16,6 +16,8 @@ import android.widget.Toast;
 
 public class ISBNTestActivity extends Activity {
 	private static final String TAG = ISBNTestActivity.class.getSimpleName();
+	private String strFailed;
+	private String strWaiting;
 	
 	private static final String API_URL = "https://api.douban.com/v2/book/isbn/:";
 	
@@ -24,6 +26,7 @@ public class ISBNTestActivity extends Activity {
 	
 	private ProgressDialog mProgress;
 	private String mResult;
+	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +37,8 @@ public class ISBNTestActivity extends Activity {
 	}
 
 	private void init() {
+		strFailed = getString(R.string.get_info_failed);
+		strWaiting = getString(R.string.proccess_waiting);
 		
 		mEtIsbn = (EditText) findViewById(R.id.et_isbn);
 		mTvUrl = (TextView) findViewById(R.id.tv_url);
@@ -51,6 +56,10 @@ public class ISBNTestActivity extends Activity {
 		public void onClick(View v) {
 			switch (v.getId()) {
 			case R.id.btn_scan:
+				Intent i = new Intent();
+				i.setClass(ISBNTestActivity.this,
+						CaptureActivityPortrait.class);
+				startActivity(i);
 				break;
 			case R.id.btn_get_info:
 				getInfo();
@@ -67,12 +76,12 @@ public class ISBNTestActivity extends Activity {
 	private void getInfo() {
 		String isbn = mEtIsbn.getText().toString();
 		if (TextUtils.isEmpty(isbn)) {
-			showToast("ISBN号不能为空");
+			showToast(getString(R.string.isbn_can_not_empty));
 			return;
 		}
 		
         mProgress = new ProgressDialog(this);
-        mProgress.setMessage("请稍候，正在读取信息...");
+        mProgress.setMessage(strWaiting);
         mProgress.show();
         
         String url = API_URL + isbn;
@@ -83,12 +92,12 @@ public class ISBNTestActivity extends Activity {
 	private void showBook() {
 		String isbn = mEtIsbn.getText().toString();
 		if (TextUtils.isEmpty(isbn)) {
-			showToast("ISBN号不能为空");
+			showToast(getString(R.string.isbn_can_not_empty));
 			return;
 		}
 		
         mProgress=new ProgressDialog(this);
-        mProgress.setMessage("请稍候，正在读取信息...");
+        mProgress.setMessage(strWaiting);
         mProgress.show();
         
         String url = API_URL + isbn;
@@ -140,8 +149,6 @@ public class ISBNTestActivity extends Activity {
     	int SHOW_VIEW = 1;
     }
     
-    private static final String TEXT_FAILED = "get info failed!!!";
-    
     private Handler mHandler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -149,8 +156,8 @@ public class ISBNTestActivity extends Activity {
             switch (msg.what) {
 			case Msg.SHOW_INFO:
 				if (TextUtils.isEmpty(mResult)) {
-					mTvInfo.setText(TEXT_FAILED);
-					showToast(TEXT_FAILED);
+					mTvInfo.setText(strFailed);
+					showToast(strFailed);
 				} else {
 					mTvInfo.setText(mResult);
 				}
@@ -158,8 +165,8 @@ public class ISBNTestActivity extends Activity {
 			case Msg.SHOW_VIEW:
 				BookInfo book = (BookInfo) msg.obj;
 				if (book == null) {
-					mTvInfo.setText(TEXT_FAILED);
-					showToast(TEXT_FAILED);
+					mTvInfo.setText(strFailed);
+					showToast(strFailed);
 				} else {
 					Intent intent = new Intent(ISBNTestActivity.this, BookView.class);
 					intent.putExtra(BookInfo.class.getName(), book);

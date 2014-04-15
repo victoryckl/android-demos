@@ -4,5 +4,15 @@
     <string name="app_name">ISBNTest</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-
+	<string name="proccess_waiting">请稍候，正在读取信息&#8230;</string>
+	<string name="isbn_can_not_empty">ISBN号不能为空</string>
+	<string name="get_info_failed">get info failed!!!</string>
+	
+	<!-- 二维码相关 -->
+    <string name="msg_default_status">镜头范围内进行扫描。  </string>
+    <string name="msg_default_time">时间</string>
+    <string name="msg_result">类型</string>
+    <string name="button_ok">ok</string>
+    <string name="format">格式</string>
+    <string name="msg_camera_framework_bug">相机故障</string>
 </resources>
