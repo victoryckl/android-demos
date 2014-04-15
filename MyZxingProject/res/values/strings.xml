@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, MyZxingProjectActivity!</string>
+    <string name="app_name">MyZxingProject</string>
+    <!-- 二维码相关 -->
+    <string name="msg_default_status">镜头范围内进行扫描。  </string>
+    <string name="msg_default_time">时间</string>
+    <string name="msg_result">类型</string>
+    <string name="button_ok">ok</string>
+    <string name="format">格式</string>
+    <string name="msg_camera_framework_bug">相机故障</string>
+
+</resources>

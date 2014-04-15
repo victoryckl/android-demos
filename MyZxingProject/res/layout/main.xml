@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Zxing改版，横竖都能拍，精简源代码，删除了无用的框架，横竖" />
+
+    <Button
+        android:id="@+id/buttonPortrit"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="竖屏扫描（横竖都能拍包括条码，只是没改激光线，有需要自己改吧）" />
+
+    <Button
+        android:id="@+id/buttonLandScape"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="原生的Zxing包只支持横屏，由于改动较大，这里不再演示了。" />
+
+</LinearLayout>

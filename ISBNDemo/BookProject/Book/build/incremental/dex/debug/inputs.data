@@ -1,0 +1,26 @@
+# incremental data. DO NOT EDIT.
+# format is <lastModified> <length> <SHA-1> <path>
+# Encoding is UTF-8
+1373451216135 3265 5d8342581de69064cc71ed407a9414bbde830b5c C:\Users\Jim\Desktop\test\Android\BookProject\Book\build\classes\debug\com\example\book\MainActivity.class
+1373376474163 1949 18ae940be2a84b41359c849ef1ac36908d84f49b C:\Users\Jim\Desktop\test\Android\BookProject\Book\build\classes\debug\com\google\zxing\integration\android\IntentResult.class
+1373298366526 341 9835c64ea57ed1de1194c778ca7a120844beb165 C:\Users\Jim\Desktop\test\Android\BookProject\Book\build\classes\debug\com\example\book\BuildConfig.class
+1373446899728 3467 cf1b232307e209a8e41352e33744c28547379832 C:\Users\Jim\Desktop\test\Android\BookProject\Book\build\classes\debug\com\example\book\BookInfo.class
+1373376474158 11625 866893ebda6aa113a191385733f9c9e7deed30c2 C:\Users\Jim\Desktop\test\Android\BookProject\Book\build\classes\debug\com\google\zxing\integration\android\IntentIntegrator.class
+1373451216206 425 51a6b87501abdb1a45680c306f5722958f770258 C:\Users\Jim\Desktop\test\Android\BookProject\Book\build\classes\debug\com\example\book\R$style.class
+1373449112550 1703 028a12379a357eb8981e0e8bb131b5221fb4dfaa C:\Users\Jim\Desktop\test\Android\BookProject\Book\build\classes\debug\com\example\book\MainActivity$DownloadThread.class
+1373298366515 401 e35963ed26c3ed23c3fd37256b390eb7740e9d31 C:\Users\Jim\Desktop\test\Android\BookProject\Book\build\classes\debug\com\example\book\R$drawable.class
+1373434959836 382 12c7027cada000608a8245aeed362e54f7bf88d0 C:\Users\Jim\Desktop\test\Android\BookProject\Book\build\classes\debug\com\example\book\R$menu.class
+1373298366512 455 a233d86c20c9a6f36be5ca2e3ec10d1855349f82 C:\Users\Jim\Desktop\test\Android\BookProject\Book\build\classes\debug\com\example\book\R$dimen.class
+1373446899650 1826 bc27dc8b9f82e778ea9cc8ec1cd3c7f0d36b693d C:\Users\Jim\Desktop\test\Android\BookProject\Book\build\classes\debug\com\example\book\BookInfo$1.class
+1373449112546 1424 b79109cd44f838f683b9788e607b9ceecab55ff6 C:\Users\Jim\Desktop\test\Android\BookProject\Book\build\classes\debug\com\example\book\MainActivity$2.class
+1373298327911 484258 bd6479f5dd592790607e0504e66e0f31c2b4d308 C:\Users\Jim\Desktop\test\Android\BookProject\Book\libs\android-support-v4.jar
+1373376474146 1944 dc26e7712a9970dfcffe7a551eb4d9ba743d8ece C:\Users\Jim\Desktop\test\Android\BookProject\Book\build\classes\debug\com\google\zxing\integration\android\IntentIntegrator$1.class
+1373440209490 3837 6f1e584f41f40f1650dd4b1eec1867ce86c7b1ff C:\Users\Jim\Desktop\test\Android\BookProject\Book\build\classes\debug\com\example\book\Util.class
+1373446957810 1796 c4572605981b0536d30e8429441acec82503a7f3 C:\Users\Jim\Desktop\test\Android\BookProject\Book\build\classes\debug\com\example\book\BookView.class
+1373434959835 429 d3d05277b858ebb7fd6aa61b89ec9001b1bf5458 C:\Users\Jim\Desktop\test\Android\BookProject\Book\build\classes\debug\com\example\book\R$layout.class
+1373451216208 657 e45e25fe7ceb22cd7bc2f5b8a679d7546256a23f C:\Users\Jim\Desktop\test\Android\BookProject\Book\build\classes\debug\com\example\book\R.class
+1373451216204 431 9bb9da85d5b4942f8d4a9f462d9b60ead0985007 C:\Users\Jim\Desktop\test\Android\BookProject\Book\build\classes\debug\com\example\book\R$string.class
+1373434959833 743 5a3826282dbbeba669bf6eeab74c96555e066c8b C:\Users\Jim\Desktop\test\Android\BookProject\Book\build\classes\debug\com\example\book\R$id.class
+1373376474147 986 4efbd41f62a32510c8ab35c5ed25fd80061f0ba7 C:\Users\Jim\Desktop\test\Android\BookProject\Book\build\classes\debug\com\google\zxing\integration\android\IntentIntegrator$2.class
+1373449112543 1019 3ff9695ac0ab86f5819b91ca2d09b680977ceb15 C:\Users\Jim\Desktop\test\Android\BookProject\Book\build\classes\debug\com\example\book\MainActivity$1.class
+1373298366510 334 e41f4e6c3e2fdbb3310f618524f3a75bf1232e86 C:\Users\Jim\Desktop\test\Android\BookProject\Book\build\classes\debug\com\example\book\R$attr.class
