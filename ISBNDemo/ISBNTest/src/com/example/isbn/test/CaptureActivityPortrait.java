@@ -7,6 +7,7 @@ import java.util.Vector;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -41,6 +42,7 @@ import com.google.zxing.client.android.camera.CameraManager;
 
 public final class CaptureActivityPortrait extends Activity implements
 		SurfaceHolder.Callback {
+	private static final String TAG = CaptureActivityPortrait.class.getSimpleName();
 
 	private static final float BEEP_VOLUME = 0.10f;
 	private static final long VIBRATE_DURATION = 200L;
@@ -57,7 +59,7 @@ public final class CaptureActivityPortrait extends Activity implements
 		DISPLAYABLE_METADATA_TYPES.add(ResultMetadataType.POSSIBLE_COUNTRY);
 	}
 
-	private enum Source {
+	public enum Source {
 		NATIVE_APP_INTENT, PRODUCT_SEARCH_LINK, ZXING_LINK, NONE
 	}
 
@@ -68,7 +70,7 @@ public final class CaptureActivityPortrait extends Activity implements
 	private Result lastResult;
 	private boolean hasSurface;
 	private boolean playBeep = true;
-	private Source source;
+	private Source source = Source.NONE;;
 	private String returnUrlTemplate;
 	private Vector<BarcodeFormat> decodeFormats;
 	private String characterSet;
@@ -115,6 +117,23 @@ public final class CaptureActivityPortrait extends Activity implements
 		});
 		mVviewfinder_view=(ViewfinderView)findViewById(R.id.viewfinder_view);
 
+		initSource(getIntent());
+	}
+	
+	private void initSource(Intent intent) {
+		source = Source.NONE;
+		if (intent == null) {
+			return ;
+		}
+		Bundle bundle = intent.getExtras();
+		if (bundle == null) {
+			return ;
+		}
+		Source s = (Source) bundle.getSerializable("source");
+		if (s != null) {
+			source = s;
+		}
+		Log.i(TAG, "source:"+source);
 	}
 
 	@Override
@@ -138,7 +157,6 @@ public final class CaptureActivityPortrait extends Activity implements
 			playBeep = false;
 		}
 
-		source = Source.NONE;
 		decodeFormats = null;
 		characterSet = null;
 		initBeepSound();
@@ -162,6 +180,7 @@ public final class CaptureActivityPortrait extends Activity implements
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		Log.i(TAG, "source:"+source);
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			if (source == Source.NATIVE_APP_INTENT) {
 				setResult(RESULT_CANCELED);
@@ -213,9 +232,15 @@ public final class CaptureActivityPortrait extends Activity implements
 		} else {
 			playBeepSoundAndVibrate();// 播放声音和振动代表成功获取二维码
 			drawResultPoints(barcode, rawResult);
-
+			
+			Log.i(TAG, "source:"+source+", rawResult:"+rawResult);
 			switch (source) {
 			case NATIVE_APP_INTENT:
+				Intent data = new Intent();
+				data.putExtra("result", rawResult.getText());
+				setResult(RESULT_OK, data);
+				finish();
+				break;
 			case PRODUCT_SEARCH_LINK:
 				handleDecodeExternally(rawResult, barcode);
 				break;

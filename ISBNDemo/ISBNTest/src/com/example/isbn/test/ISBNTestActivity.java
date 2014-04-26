@@ -1,5 +1,7 @@
 package com.example.isbn.test;
 
+import com.example.isbn.test.CaptureActivityPortrait.Source;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -56,10 +58,14 @@ public class ISBNTestActivity extends Activity {
 		public void onClick(View v) {
 			switch (v.getId()) {
 			case R.id.btn_scan:
+				Bundle bundle = new Bundle();
+				bundle.putSerializable("source", Source.NATIVE_APP_INTENT);
+				
 				Intent i = new Intent();
 				i.setClass(ISBNTestActivity.this,
 						CaptureActivityPortrait.class);
-				startActivity(i);
+				i.putExtras(bundle);
+				startActivityForResult(i, CAPTURE);
 				break;
 			case R.id.btn_get_info:
 				getInfo();
@@ -178,6 +184,17 @@ public class ISBNTestActivity extends Activity {
 			}
         }
     };
+    
+    private static final int CAPTURE = 0;
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    	if (resultCode == RESULT_OK) {
+    		if (requestCode == CAPTURE) {
+    			String result = data.getStringExtra("result");
+    			showToast(result);
+    			mEtIsbn.setText(result);
+    		}
+    	}
+    }
     
 	private void showToast(String msg) {
 		Toast.makeText(ISBNTestActivity.this, msg, Toast.LENGTH_SHORT).show();
