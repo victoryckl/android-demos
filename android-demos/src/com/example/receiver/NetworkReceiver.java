@@ -11,6 +11,9 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
 
+/**
+ * @brief ÍøÂç×´Ì¬½ÓÊÕÕß
+ */
 public class NetworkReceiver extends BroadcastReceiver {
 
     static final String TAG = "NetworkReceiver";
@@ -25,7 +28,7 @@ public class NetworkReceiver extends BroadcastReceiver {
     }
 
     /**
-     * æ³¨å†Œ
+     * ×¢²á
      */
     public static void register(Context context, OnNetworkListener listener) {
         if (mReceiverMap.containsKey(context)) {
@@ -46,7 +49,7 @@ public class NetworkReceiver extends BroadcastReceiver {
     }
 
     /**
-     * æ³¨é”€
+     * ×¢Ïú
      */
     public static void unregister(Context context) {
         NetworkReceiver receiver = mReceiverMap.remove(context);

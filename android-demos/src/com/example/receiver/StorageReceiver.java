@@ -87,8 +87,4 @@ public class StorageReceiver extends BroadcastReceiver {
         if (Intent.ACTION_MEDIA_MOUNTED.equals(action)) {
             mListener.onMounted();
         } else {
-            mListener.onUnmounted();
-        }
-    }
-
-}
+            mListener

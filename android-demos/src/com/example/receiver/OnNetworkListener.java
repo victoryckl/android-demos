@@ -11,5 +11,4 @@ public interface OnNetworkListener {
 	/**
 	 * @brief 网络断开�?
 	 */
-	void onDisconnected();
-}
+	void onDiscon

@@ -9,5 +9,4 @@ public interface OnStorageListener {
     /**
      * 未挂�?
      */
-    void onUnmounted();
-}
+    void onUnmounted();
