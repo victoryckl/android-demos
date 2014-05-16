@@ -12,4 +12,6 @@
     <string name="c1">F00</string>  
     <string name="c2">0F0</string>
     <string name="c3">00F</string>
+    
+    <string name="info_crash">Exception occurred!\nLog to `%1$s`.</string>
 </resources>
