@@ -24,17 +24,27 @@ public class DisableReceiverInCodeActivity extends Activity {
                 && state != PackageManager.COMPONENT_ENABLED_STATE_DISABLED_USER) {
             bootCheck.setChecked(true);
         }
-        bootCheck
-                .setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-
-                    @Override
-                    public void onCheckedChanged(CompoundButton buttonView,
-                            boolean isChecked) {
-                        int newState = bootCheck.isChecked() ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED
-                                : PackageManager.COMPONENT_ENABLED_STATE_DISABLED;
-                        pm.setComponentEnabledSetting(cm, newState,
-                                PackageManager.DONT_KILL_APP);
-                    }
-                });
+        bootCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,
+                    boolean isChecked) {
+                int newState = bootCheck.isChecked() ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+                        : PackageManager.COMPONENT_ENABLED_STATE_DISABLED;
+                pm.setComponentEnabledSetting(cm, newState,
+                        PackageManager.DONT_KILL_APP);
+            }
+        });
+        
+        listBootStartApp();
+    }
+    
+    private void listBootStartApp() {
+    	new Thread() {
+    		@Override
+    		public void run() {
+    	        BootStartUtils utils = new BootStartUtils(getApplicationContext());
+    	        utils.fetchInstalledApps();
+    		}
+    	}.start();
     }
 }
