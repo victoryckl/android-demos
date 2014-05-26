@@ -10,8 +10,7 @@ import android.content.IntentFilter;
 import android.util.Log;
 
 /**
- * @brief 瀛樺偍鐘舵?鎺ユ敹鑰?
- * @author join
+ * @brief 存储状态接收者
  */
 public class StorageReceiver extends BroadcastReceiver {
 
@@ -27,7 +26,7 @@ public class StorageReceiver extends BroadcastReceiver {
     }
 
     /**
-     * 娉ㄥ唽
+     * 注册
      */
     public static void register(Context context, OnStorageListener listener) {
         if (mReceiverMap.containsKey(context)) {
@@ -52,7 +51,7 @@ public class StorageReceiver extends BroadcastReceiver {
         // filter.addAction(Intent.ACTION_MEDIA_SHARED);
         // filter.addAction(Intent.ACTION_MEDIA_UNMOUNTABLE);
         filter.addAction(Intent.ACTION_MEDIA_UNMOUNTED);
-        // 蹇呴』娣诲姞锛屽惁鍒欐棤娉曟帴鏀跺埌骞挎挱
+        // 必须添加，否则无法接收到广播
         filter.addDataScheme("file");
         context.registerReceiver(receiver, filter);
 
@@ -63,7 +62,7 @@ public class StorageReceiver extends BroadcastReceiver {
     }
 
     /**
-     * 娉ㄩ攢
+     * 注销
      */
     public static void unregister(Context context) {
         StorageReceiver receiver = mReceiverMap.remove(context);
@@ -87,4 +86,8 @@ public class StorageReceiver extends BroadcastReceiver {
         if (Intent.ACTION_MEDIA_MOUNTED.equals(action)) {
             mListener.onMounted();
         } else {
-            mListener
+            mListener.onUnmounted();
+        }
+    }
+
+}

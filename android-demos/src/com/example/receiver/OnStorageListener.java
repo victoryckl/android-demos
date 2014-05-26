@@ -2,11 +2,12 @@ package com.example.receiver;
 
 public interface OnStorageListener {
     /**
-     * Ф▄┌Х╫╫
+     * ╧рть
      */
     void onMounted();
 
     /**
-     * Ф°╙Ф▄┌Х╫?
+     * н╢╧рть
      */
-    void onUnmounted();
+    void onUnmounted();
+}

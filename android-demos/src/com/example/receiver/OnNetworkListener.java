@@ -3,12 +3,13 @@ package com.example.receiver;
 public interface OnNetworkListener {
 
 	/**
-	 * @brief 缃戠粶杩炴帴浜?
-	 * @param isWifi 鏄惁Wifi杩炴帴
+	 * @brief 网络连接了
+	 * @param isWifi 是否Wifi连接
 	 */
 	void onConnected(boolean isWifi);
 
 	/**
-	 * @brief 缃戠粶鏂紑浜?
+	 * @brief 网络断开了
 	 */
-	void onDiscon
+	void onDisconnected();
+}
