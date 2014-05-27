@@ -1,9 +1,13 @@
 package com.rsft.test.demo1;
 
+import java.util.List;
+
+import com.cybertron.account.util.PackageUtils;
 import com.rsft.test.demo1.R;
 
 import android.app.Activity;
 import android.content.ComponentName;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.widget.CheckBox;
@@ -30,8 +34,7 @@ public class DisableReceiverInCodeActivity extends Activity {
                     boolean isChecked) {
                 int newState = bootCheck.isChecked() ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED
                         : PackageManager.COMPONENT_ENABLED_STATE_DISABLED;
-                pm.setComponentEnabledSetting(cm, newState,
-                        PackageManager.DONT_KILL_APP);
+                pm.setComponentEnabledSetting(cm, newState, PackageManager.DONT_KILL_APP);
             }
         });
         
@@ -42,8 +45,12 @@ public class DisableReceiverInCodeActivity extends Activity {
     	new Thread() {
     		@Override
     		public void run() {
+    			List<ApplicationInfo> infos = PackageUtils.listApps(getPackageManager());
+    			PackageUtils.printAppInfos(infos);
+    			
     	        BootStartUtils utils = new BootStartUtils(getApplicationContext());
     	        utils.fetchInstalledApps();
+    	        utils.printBootStartReceivers();
     		}
     	}.start();
     }
