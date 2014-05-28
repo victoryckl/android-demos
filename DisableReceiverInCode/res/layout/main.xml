@@ -17,5 +17,41 @@
             android:layout_height="wrap_content"
             android:id="@+id/boot_complete_checkbox"/>
     </LinearLayout>
-    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:orientation="horizontal" >
+        <CheckBox android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="启用应用"
+            android:checked="true"
+            android:id="@+id/cp_enable_app"/>
+		<EditText 
+		    android:id="@+id/et_app_pacakge"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:text="com.cybertron.test.communication"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:orientation="vertical" >
+        <CheckBox android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="启用组件"
+            android:checked="true"
+            android:id="@+id/cp_enable_component"/>
+		<EditText 
+		    android:id="@+id/et_comp_package"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:text="com.cybertron.test.communication"/>
+		<EditText 
+		    android:id="@+id/et_comp_cls"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:text="com.cybertron.test.communication.MyReceiver"/>
+    </LinearLayout>
 </LinearLayout>
