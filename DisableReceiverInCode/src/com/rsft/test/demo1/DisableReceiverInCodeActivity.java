@@ -1,6 +1,7 @@
 package com.rsft.test.demo1;
 
 import java.util.List;
+import java.util.Map;
 
 import com.cybertron.account.util.PackageUtils;
 import com.rsft.test.demo1.R;
@@ -9,6 +10,7 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -55,6 +57,10 @@ public class DisableReceiverInCodeActivity extends Activity {
     			List<ApplicationInfo> infos = PackageUtils.listApps(getPackageManager(), 0);
     			PackageUtils.printAppInfos(pm, infos);
     			PackageUtils.printBootStartReceivers(pm);
+    			
+    			List<ResolveInfo> comps = PackageUtils.listBootReceivers(pm);
+    			Map<String, List<String>> map = PackageUtils.arrangeByPackage(comps);
+    			PackageUtils.printMap(map);
     		}
     	}.start();
     }

@@ -1,8 +1,13 @@
 package com.cybertron.account.util;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
-import android.R.anim;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -58,6 +63,42 @@ public class PackageUtils {
 			Log.i(TAG, "" + state + "," + isBoot + "," + ri.loadLabel(pm) + ","
 					+ componentName.flattenToString());
     	}
+    }
+
+    // one package maybe more than one Component
+    // Map<pkg, List[cls1, cls2, cls3]>
+    public static Map<String, List<String>> arrangeByPackage(List<ResolveInfo> comps) {
+    	HashMap<String, List<String>> map = new HashMap<String, List<String>>();
+    	
+    	ResolveInfo ri = null;
+    	String pkg = null;
+    	String cls = null;
+    	List<String> classes = null;
+    	
+    	for (int i=0; i<comps.size(); i++) {
+    		ri = comps.get(i);
+    		pkg = ri.activityInfo.packageName;
+    		cls = ri.activityInfo.name;
+    		if (map.containsKey(pkg)) {
+    			classes = map.get(pkg);
+    			classes.add(cls);
+    		} else {
+    			classes = new ArrayList<String>();
+    			classes.add(cls);
+    			map.put(pkg, classes);
+    		}
+    	}
+    	return map;
+    }
+    
+    public static void printMap(Map<String, List<String>> map) {
+    	int index = 0;
+    	Set<Entry<String, List<String>>> set = map.entrySet();
+    	for (Iterator<Entry<String, List<String>>> iterator = set.iterator(); 
+    			iterator.hasNext(); index++) {
+			Entry<String, List<String>> entry = iterator.next();
+			Log.i(TAG, "["+index+"]"+ entry.getKey() + entry.getValue());
+		}
     }
     
     public static boolean isAppEnable(PackageManager pm, String packageName) {
