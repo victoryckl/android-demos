@@ -5,7 +5,7 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="8"
+        android:minSdkVersion="14"
         android:targetSdkVersion="16" />
     
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -32,8 +32,9 @@
             </intent-filter>
         </activity>
         
+        <!-- The authenticator service -->
         <service 
-            android:name="com.example.syncdemo.authenticator.AuthenticatorService">
+            android:name="com.example.syncdemo.authenticator.AuthenticationService">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator"/>
             </intent-filter>
@@ -42,7 +43,20 @@
                 android:resource="@xml/authenticator"/>
         </service>
         
-        <provider
+        <activity
+            android:name="com.example.syncdemo.authenticator.AuthenticatorActivity"
+            android:label="@string/ui_activity_title"
+            android:theme="@android:style/Theme.Holo.Light"
+            android:excludeFromRecents="true"
+            android:configChanges="orientation"
+            >
+            <!--
+                No intent-filter here! This activity is only ever launched by
+                someone who explicitly knows the class name
+            -->
+        </activity>
+        
+        <!-- <provider
 			android:name="com.example.syncdemo.provider.StubProvider"
 			android:authorities="com.example.sycndemo.provider"
 			android:exported="false"
@@ -58,7 +72,7 @@
             <meta-data 
                 android:name="android.content.SyncAdapter" 
                 android:resource="@xml/syncadapter"/>
-        </service>
+        </service> -->
         
     </application>
 

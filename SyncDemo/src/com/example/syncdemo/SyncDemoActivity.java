@@ -19,7 +19,7 @@ public class SyncDemoActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_sync_demo);
 		// Create the dummy account
-		mAccount = CreateSyncAccount(this);
+//		mAccount = CreateSyncAccount(this);
 	}
 
 	/**
@@ -32,10 +32,10 @@ public class SyncDemoActivity extends Activity {
 		Log.i(TAG, "uid:" + Binder.getCallingUid());
 		
 		// Create the account type and default account
-		Account newAccount = new Account(AccountInfo.ACCOUNT, AccountInfo.ACCOUNT_TYPE);
+		Account newAccount = new Account(Constants.ACCOUNT, Constants.ACCOUNT_TYPE);
 		// Get an instance of the Android account manager
-		AccountManager accountManager = (AccountManager) context
-				.getSystemService(ACCOUNT_SERVICE);
+		AccountManager accountManager = 
+				(AccountManager) context.getSystemService(ACCOUNT_SERVICE);
 		/*
 		 * Add the account and account type, no password or user data If
 		 * successful, return the Account object, otherwise report an error.
