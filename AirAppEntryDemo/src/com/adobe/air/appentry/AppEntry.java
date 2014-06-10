@@ -43,7 +43,8 @@ public class AppEntry extends Activity {
 	private static Class<?> sAndroidActivityWrapperClass;
 	private static Object sAndroidActivityWrapper = null;
 	private static String RUNTIME_PACKAGE_ID = "com.adobe.air";
-	private static final String RESOURCE_CLASS = "air.com.adobe.appentry.R";
+//	private static final String RESOURCE_CLASS = "air.com.adobe.appentry.R";
+	private String RESOURCE_CLASS;
 	private static final String RESOURCE_TEXT_RUNTIME_REQUIRED = "string.text_runtime_required";
 	private static final String RESOURCE_TITLE_ADOBE_AIR = "string.title_adobe_air";
 	private static final String RESOURCE_BUTTON_INSTALL = "string.button_install";
@@ -52,7 +53,7 @@ public class AppEntry extends Activity {
 	private void BroadcastIntent(String action, String data) {
 		try {
 			startActivity(Intent.parseUri(data, 0).setAction(action)
-					.addFlags(268435456));
+					.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK/*268435456*/));
 		} catch (URISyntaxException err) {
 		} catch (ActivityNotFoundException err) {
 		}
@@ -62,7 +63,7 @@ public class AppEntry extends Activity {
 		String airDownloadURL = null;
 		try {
 			ActivityInfo info = getPackageManager().getActivityInfo(
-					getComponentName(), 128);
+					getComponentName(), PackageManager.GET_META_DATA/*128*/);
 			Bundle metadata = info.metaData;
 
 			if (metadata != null) {
@@ -98,7 +99,9 @@ public class AppEntry extends Activity {
 		try {
 			ApplicationInfo appInfo = pkgMgr.getApplicationInfo(
 					RUNTIME_PACKAGE_ID, PackageManager.GET_UNINSTALLED_PACKAGES/*8192*/);
-			if ((appInfo.flags & 0x40000) == 262144) {
+			//if ((appInfo.flags & 0x40000) == 262144) {
+			if ((appInfo.flags & ApplicationInfo.FLAG_EXTERNAL_STORAGE) 
+					== ApplicationInfo.FLAG_EXTERNAL_STORAGE) {
 				return true;
 			}
 		} catch (PackageManager.NameNotFoundException nfe) {
@@ -150,9 +153,12 @@ public class AppEntry extends Activity {
 				r.getId(RESOURCE_BUTTON_INSTALL), r.getId(RESOURCE_BUTTON_EXIT));
 	}
 
-	public void onCreate(Bundle savedInstanceState) {
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		RESOURCE_CLASS = getPackageName()+".R";
+		
 		Date t = new Date();
 		long millis = t.getTime();
 		Log.i("StartupTime1", ":" + millis);
@@ -206,7 +212,7 @@ public class AppEntry extends Activity {
 				public void onServiceDisconnected(ComponentName name) {
 				}
 			};
-			/*connected = */bindService(intent, conn, 1);
+			/*connected = */bindService(intent, conn, Context.BIND_AUTO_CREATE/*1*/);
 		} catch (Exception e) {
 		}
 	}
@@ -344,13 +350,12 @@ public class AppEntry extends Activity {
 		}
 	}
 
-	protected void onNewIntent(Intent aIntent) {
-		Intent ii = aIntent;
-		super.onNewIntent(ii);
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
 		try {
 			Method method = sAndroidActivityWrapperClass.getMethod(
 					"onNewIntent", new Class[] { Intent.class });
-			InvokeMethod(method, new Object[] { ii });
+			InvokeMethod(method, new Object[] { intent });
 		} catch (Exception e) {
 		}
 	}
@@ -372,7 +377,7 @@ public class AppEntry extends Activity {
 	private void loadSharedRuntimeDex() {
 		try {
 			if (!sRuntimeClassesLoaded) {
-				Context con = createPackageContext(RUNTIME_PACKAGE_ID, 3);
+				Context con = createPackageContext(RUNTIME_PACKAGE_ID, 3/*?*/);
 				sDloader = new DexClassLoader(RUNTIME_PACKAGE_ID, getFilesDir()
 						.getAbsolutePath(), null, con.getClassLoader());
 

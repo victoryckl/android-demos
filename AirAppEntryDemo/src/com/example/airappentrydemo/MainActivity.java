@@ -1,13 +1,14 @@
 package com.example.airappentrydemo;
 
-import android.app.Activity;
 import android.os.Bundle;
 
-public class MainActivity extends Activity {
+import com.adobe.air.appentry.AppEntry;
+
+public class MainActivity extends AppEntry {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+//		setContentView(R.layout.activity_main);
 	}
 }
