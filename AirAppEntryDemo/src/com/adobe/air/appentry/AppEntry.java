@@ -4,7 +4,6 @@ import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.util.Date;
 
-import android.R;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -39,7 +38,6 @@ import com.adobe.air.ResourceIdMap;
 import dalvik.system.DexClassLoader;
 
 public class AppEntry extends Activity {
-	private static final String LOG_TAG = "AppEntry";
 	private static boolean sRuntimeClassesLoaded = false;
 	private static DexClassLoader sDloader;
 	private static Class<?> sAndroidActivityWrapperClass;
@@ -87,7 +85,7 @@ public class AppEntry extends Activity {
 	private boolean isRuntimeInstalled() {
 		PackageManager pkgMgr = getPackageManager();
 		try {
-			pkgMgr.getPackageInfo(RUNTIME_PACKAGE_ID, 256);
+			pkgMgr.getPackageInfo(RUNTIME_PACKAGE_ID, PackageManager.GET_GIDS/*256*/);
 		} catch (PackageManager.NameNotFoundException nfe) {
 			return false;
 		}
@@ -99,7 +97,7 @@ public class AppEntry extends Activity {
 		PackageManager pkgMgr = getPackageManager();
 		try {
 			ApplicationInfo appInfo = pkgMgr.getApplicationInfo(
-					RUNTIME_PACKAGE_ID, 8192);
+					RUNTIME_PACKAGE_ID, PackageManager.GET_UNINSTALLED_PACKAGES/*8192*/);
 			if ((appInfo.flags & 0x40000) == 262144) {
 				return true;
 			}
@@ -137,19 +135,19 @@ public class AppEntry extends Activity {
 	}
 
 	private void showRuntimeNotInstalledDialog() {
-		ResourceIdMap r = new ResourceIdMap("air.com.adobe.appentry.R");
-		String text = getString(r.getId("string.text_runtime_required"))
+		ResourceIdMap r = new ResourceIdMap(RESOURCE_CLASS);
+		String text = getString(r.getId(RESOURCE_TEXT_RUNTIME_REQUIRED))
 				+ getString(r.getId("string.text_install_runtime"));
-		showDialog(r.getId("string.title_adobe_air"), text,
-				r.getId("string.button_install"), r.getId("string.button_exit"));
+		showDialog(r.getId(RESOURCE_TITLE_ADOBE_AIR), text,
+				r.getId(RESOURCE_BUTTON_INSTALL), r.getId(RESOURCE_BUTTON_EXIT));
 	}
 
 	private void showRuntimeOnExternalStorageDialog() {
-		ResourceIdMap r = new ResourceIdMap("air.com.adobe.appentry.R");
-		String text = getString(r.getId("string.text_runtime_required"))
+		ResourceIdMap r = new ResourceIdMap(RESOURCE_CLASS);
+		String text = getString(r.getId(RESOURCE_TEXT_RUNTIME_REQUIRED))
 				+ getString(r.getId("string.text_runtime_on_external_storage"));
-		showDialog(r.getId("string.title_adobe_air"), text,
-				r.getId("string.button_install"), r.getId("string.button_exit"));
+		showDialog(r.getId(RESOURCE_TITLE_ADOBE_AIR), text,
+				r.getId(RESOURCE_BUTTON_INSTALL), r.getId(RESOURCE_BUTTON_EXIT));
 	}
 
 	public void onCreate(Bundle savedInstanceState) {
@@ -183,7 +181,7 @@ public class AppEntry extends Activity {
 	}
 
 	private void launchAIRService() {
-		boolean connected;
+		/*boolean connected;*/
 		try {
 			Intent intent = new Intent("com.adobe.air.AIRServiceAction");
 			intent.setClassName(RUNTIME_PACKAGE_ID, "com.adobe.air.AIRService");
@@ -208,7 +206,7 @@ public class AppEntry extends Activity {
 				public void onServiceDisconnected(ComponentName name) {
 				}
 			};
-			connected = bindService(intent, conn, 1);
+			/*connected = */bindService(intent, conn, 1);
 		} catch (Exception e) {
 		}
 	}
@@ -221,8 +219,8 @@ public class AppEntry extends Activity {
 			String xmlPath = "";
 			String rootDirectory = "";
 			String extraArgs = "-nodebug";
-			Boolean isADL = new Boolean(false);
-			Boolean isDebuggerMode = new Boolean(false);
+			Boolean isADL = false/*new Boolean(false)*/;
+			Boolean isDebuggerMode = false/*new Boolean(false)*/;
 			String[] args = { xmlPath, rootDirectory, extraArgs,
 					isADL.toString(), isDebuggerMode.toString() };
 
@@ -891,7 +889,7 @@ public class AppEntry extends Activity {
 		super.onPrepareDialog(id, dialog);
 		try {
 			Method method = sAndroidActivityWrapperClass
-					.getMethod("onPrepareDialog", new Class[] { R.id.class,
+					.getMethod("onPrepareDialog", new Class[] { android.R.id.class,
 							Dialog.class });
 			InvokeMethod(method, new Object[] { Integer.valueOf(id), dialog });
 		} catch (Exception e) {
@@ -902,7 +900,7 @@ public class AppEntry extends Activity {
 		super.onPrepareDialog(id, dialog, args);
 		try {
 			Method method = sAndroidActivityWrapperClass.getMethod(
-					"onPrepareDialog", new Class[] { R.id.class, Dialog.class,
+					"onPrepareDialog", new Class[] { android.R.id.class, Dialog.class,
 							Bundle.class });
 			InvokeMethod(method, new Object[] { Integer.valueOf(id), dialog,
 					args });
