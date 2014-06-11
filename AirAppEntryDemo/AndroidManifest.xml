@@ -9,7 +9,6 @@
         android:targetSdkVersion="14" />
     
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" />
     
@@ -19,9 +18,8 @@
         android:label="@string/app_name"
         android:theme="@style/Theme.NoShadow"
         android:launchMode="singleTask"
-        android:configChanges="keyboardHidden|orientation"
-        android:hardwareAccelerated="false"
-        android:windowSoftInputMode="stateHidden|adjustResize" >
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale" 
+        android:hardwareAccelerated="true">
         <activity
             android:name="com.example.airappentrydemo.MainActivity"
             android:label="@string/app_name" >
@@ -34,7 +32,7 @@
             <meta-data android:name="aspectRatio" android:value="landscape" />
             <meta-data android:name="autoOrients" android:value="false" />
             <meta-data android:name="fullScreen" android:value="true" />
-            <meta-data android:name="uniqueappversionid" android:value="25b7e3c5-49b9-4883-a767-a97eb8879b59" />
+            <meta-data android:name="uniqueappversionid" android:value="01617431-2d18-4050-b39d-798c92539248" />
             <meta-data android:name="initialcontent" android:value="app.swf" />
         </activity>
     </application>
