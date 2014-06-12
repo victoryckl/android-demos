@@ -2,7 +2,9 @@ package com.example.utils;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import android.util.Log;
 
@@ -96,6 +98,41 @@ public final class RootCmd {
 					e.printStackTrace();
 				}
 			}
+		}
+		return result;
+	}
+	
+	public static void createLink(String path, String link) {
+		File file = new File(link);
+		if (file.exists()) {
+			file.delete();
+		}
+		
+		File parent = file.getParentFile();
+		if (!parent.exists()) {
+			parent.mkdirs();
+		}
+		
+		String cmd = "ln -s \"" + path + "\" \"" + link + "\"";
+		exec(cmd);
+	}
+	
+	public static int exec(String cmd) {
+		int result = 0;
+		try {
+//			Log.i(TAG, cmd);
+			Process p = Runtime.getRuntime().exec("sh");
+			PrintWriter pw = new PrintWriter(p.getOutputStream());
+			pw.println(cmd);    pw.flush();
+			pw.println("exit"); pw.flush();
+			p.waitFor();
+			pw.close();
+			p.destroy();
+			result = p.exitValue();
+			Log.i(TAG, "--------> "+result);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
 		}
 		return result;
 	}
