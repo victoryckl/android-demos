@@ -9,7 +9,10 @@ import org.join.wfs.server.WebService;
 import org.join.wfs.util.CopyUtil;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -47,7 +50,8 @@ public class WFSActivity extends Activity implements OnCheckedChangeListener {
 	@Override
 	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 		if (isChecked) {
-			String ip = getLocalIpAddress();
+//			String ip = getLocalIpAddress();
+			String ip = getIp();
 			if (ip == null) {
 				Toast.makeText(this, R.string.msg_net_off, Toast.LENGTH_SHORT)
 						.show();
@@ -98,4 +102,21 @@ public class WFSActivity extends Activity implements OnCheckedChangeListener {
 		super.onDestroy();
 	}
 
+	private String intToIp(int i) {
+		return (i & 0xFF) + "." + ((i >> 8) & 0xFF) + "." + ((i >> 16) & 0xFF)
+				+ "." + (i >> 24 & 0xFF);
+	}
+	
+	private String getIp() {
+		// 获取wifi服务
+		WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+		// 判断wifi是否开启
+		if (!wifiManager.isWifiEnabled()) {
+			wifiManager.setWifiEnabled(true);
+		}
+		WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+		int ipAddress = wifiInfo.getIpAddress();
+		String ip = intToIp(ipAddress);
+		return ip;
+	}
 }
