@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <include
+        android:id="@+id/head"
+        layout="@layout/head" />
+
+    <com.hck.book.util.MyGridView
+        android:id="@+id/bookShelf"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@id/head"
+        android:layout_marginRight="5dp"
+        android:cacheColorHint="#00000000"
+        android:columnWidth="90.0dip"
+        android:fadingEdge="none"
+        android:gravity="center"
+        android:horizontalSpacing="5dp"
+        android:listSelector="#00000000"
+        android:numColumns="3"
+        android:scrollbars="none"
+        android:verticalSpacing="20dp" />
+
+    <Button
+        android:id="@+id/add"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/test_padding_setting_normal"
+        android:onClick="showAd"
+        android:text="应用推荐"
+        android:textColor="#ffffff"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:visibility="gone" />
+
+</RelativeLayout>
