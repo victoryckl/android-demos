@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <RelativeLayout
+        android:id="@+id/search_par"
+        android:layout_width="match_parent"
+        android:layout_height="40dip"
+        android:layout_marginTop="10dip"
+        android:focusable="true"
+        android:focusableInTouchMode="true" >
+
+        <ImageView
+            android:id="@+id/search_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_alignParentRight="true"
+            android:layout_marginLeft="10dip"
+            android:layout_marginRight="10dip"
+            android:src="@drawable/search" />
+
+        <EditText
+            android:id="@+id/search_et"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/search_btn"
+            android:layout_marginLeft="10dip"
+            android:layout_toLeftOf="@+id/search_btn"
+            android:layout_toRightOf="@+id/spinner"
+            android:hint="书名/作者"
+            android:textColor="@android:color/black" >
+        </EditText>
+    </RelativeLayout>
+
+    <ListView
+        android:id="@+id/search_list"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/search_par"
+        android:layout_marginLeft="10dip"
+        android:layout_marginTop="10dip"
+        android:divider="@color/like_green"
+        android:dividerHeight="1px" >
+    </ListView>
+
+    <LinearLayout
+        android:id="@+id/hotLine"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/search_par"
+        android:layout_marginLeft="10dip"
+        android:layout_marginRight="10dip"
+        android:layout_marginTop="20dip"
+        android:orientation="vertical" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="热门搜索"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="1dip"
+            android:layout_marginTop="5dip"
+            android:background="@color/like_green" />
+
+        <GridView
+            android:id="@+id/grid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/search_grid_margintop"
+            android:horizontalSpacing="10dip"
+            android:numColumns="2"
+            android:paddingLeft="5dip"
+            android:paddingRight="5dip"
+            android:verticalSpacing="10dip" >
+        </GridView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/search_game_margintop"
+            android:textSize="16sp"
+            android:text="热门游戏" />
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="1dip"
+            android:layout_marginTop="5dip"
+            android:background="@color/like_green" />
+
+        <GridView
+            android:id="@+id/grid2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/search_grid_margintop"
+            android:horizontalSpacing="10dip"
+            android:numColumns="2"
+            android:paddingLeft="5dip"
+            android:paddingRight="5dip"
+            android:verticalSpacing="10dip" >
+        </GridView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/miniAdLinearLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="center_horizontal" />
+
+</RelativeLayout>

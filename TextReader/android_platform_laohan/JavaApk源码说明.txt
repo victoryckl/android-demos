@@ -1,0 +1,28 @@
+                ╔═══════════════╗
+                ║       安卓源码服务专家       ║
+  ╔══════╣───────────────╠══════╗
+  ║            ║    http://www.javaapk.com    ║            ║
+  ║            ╚═══════════════╝            ║
+　║                                                          ║
+　║JavaApk声明：                                             ║
+  ║   1) 本站不保证所提供软件或程序的完整性和安全性。        ║
+  ║   2) 转载本站提供的资源请勿删除本说明文件。              ║
+  ║   3) 本站源码为网上搜集或网友提供，如果涉及或侵害到您的版║
+  ║      权，请立即通知我们。                                ║
+  ║   4) 本站提供免费代码只可供研究学习使用，切勿用于商业用途║
+  ║      由此引起一切后果与本站无关。                        ║
+  ║   5) 商业源码请在源码授权范围内进行使用！                ║
+　║                                                          ║
+  ║           JavaApk —— 安卓源码服务专家                  ║
+  ║           联系方式 : javaapk@qq.com                      ║
+  ║    ╔═══════════════════════╗    ║
+  ╚══╣    安卓源码专业站 http://www.JavaApk.com     ╠══╝
+        ╚═══════════════════════╝
+
+源码简介:
+本款源码是一款强大的安卓电子书阅读器源码，可以支持doc、txt、rtf、bf2、oeb、epub、mobi、prc等八种格式的文档（虽然我没有听说过最后五种格式），人性化的操作是项目的一大亮点，点击屏幕上半部分可以选择转跳页数下半部分显示功能菜单点击屏幕右半部分可以阅读下一页，点击左半边分可以阅读上一页，同时可以使用音量键进行翻页，书籍的阅读包括本地阅读和在线阅读，在线阅读的内容来自网友的上传分享。另外项目中大量使用了github上的组件。其他具体情况可以查看运行截图或者自行导入项目编译。
+涉及模块&技术
+异步请求
+图片浏览
+图片加载
+小说阅读

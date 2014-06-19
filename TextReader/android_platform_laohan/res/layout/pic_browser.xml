@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true" >
+
+        <com.svo.platform.picbrowser.PicViewPager
+            android:id="@+id/pic_viewPager"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_centerInParent="true" />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/pic_toptext"
+        android:layout_width="fill_parent"
+        android:layout_height="47dip"
+        android:layout_alignParentTop="true"
+        android:gravity="center"
+        android:textSize="20dip"
+        android:textStyle="bold" >
+    </TextView>
+
+    <RelativeLayout
+        android:id="@+id/picbuttom"
+        android:layout_width="fill_parent"
+        android:layout_height="47dip"
+        android:layout_alignParentBottom="true"
+        >
+
+        <ImageView
+            android:id="@+id/back_iv"
+            android:layout_width="39dip"
+            android:layout_height="36dip"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dip"
+            android:src="@drawable/ic_close" />
+
+        <ImageView
+            android:id="@+id/down_iv"
+            android:layout_width="39dip"
+            android:layout_height="36dip"
+            android:layout_centerInParent="true"
+            android:src="@drawable/ic_download" >
+        </ImageView>
+
+        <ImageView
+            android:id="@+id/share_iv"
+            android:layout_width="39dip"
+            android:layout_height="36dip"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dip"
+            android:src="@drawable/ic_share" />
+    </RelativeLayout>
+
+</RelativeLayout>

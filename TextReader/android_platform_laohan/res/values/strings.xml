@@ -1,0 +1,44 @@
+<resources>
+
+    <string name="app_name">Platform_android2.0</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_main">Platform_android2.0</string>
+    
+    <!-- 关于微博 -->
+    <string name="weibo_bind">微博绑定</string>
+    <string name="oauth_fail">认证失败</string>
+    <string name="oauth_success">认证成功</string>
+    <string name="share2weibo">分享到社交网络</string>
+    <string name="cancle_bind_title">解除绑定</string>
+	<string name="cancle_bind_message">是否解除与微博的绑定，解绑后您将无法分享信息到微博上。</string>
+	<string name="cancel">否</string>
+    <string name="ok">是</string>
+    <string name="share_fail">转发失败</string>
+    <string name="attention">注意</string>
+    <string name="delete_all">是否要清除文本内容？</string>
+    <string name="sina_weibo">新浪微博</string>
+    <string name="weixin">微信好友</string>
+    <string name="weixin_friend">微信朋友圈</string>
+    <string name="tencent">腾讯微博</string>
+    <string name="renren">人人网</string>
+    <string name="qzone">QQ空间</string>
+    <string name="youdao_note">有道云笔记</string>
+    <string name="not_install_weixin">您还没有安装微信</string>
+    <string name="not_support_weixin">您安装的微信版本太低，请安装新版本</string>
+    <string name="wait">稍候</string>
+    <string name="sharing">正在分享...</string>
+    <string name="requesting">请求中,请稍等...</string>
+    <string name="del_pic">是否删除图片？</string>
+    <string name="select_shrae">选择分享</string>
+    <string name="share_sina_success">新浪微博转发成功</string>
+    <string name="share_renren_success">人人网转发成功</string>
+    <string name="share_qzone_success">QQ空间转发成功</string>
+    <string name="share_tencent_success">腾讯微博转发成功</string>
+    <string name="share_weichar_success">微信转发成功</string>
+    <string name="share_youdao_success">有道云笔记转发成功</string>
+    <!-- 文件选择器 -->
+    <string name="filechooser_ok">OK</string>
+    <string name="filechooser_cancel">Cancel</string>
+    <string name="filechooser_parent_folder">[Parent folder]</string>
+</resources>

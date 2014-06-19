@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_marginBottom="5dip"
+    android:layout_marginTop="5dip"
+     >
+
+    <ImageView
+        android:id="@+id/account_img"
+        android:layout_width="48dip"
+        android:layout_height="48dip"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="8dip"
+        android:padding="5dip"
+        android:scaleType="centerCrop"/>
+
+    <TextView
+        android:id="@+id/account_bind"
+        android:layout_width="wrap_content"
+        android:layout_height="50dip"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:gravity="center_vertical"
+        android:padding="8dip"
+        android:layout_marginRight="10dip"
+        android:textSize="18.0sp"
+        android:textColor="#000000" />
+
+    <TextView
+        android:id="@+id/account_name"
+        android:layout_width="wrap_content"
+        android:layout_height="50dip"
+        android:layout_centerInParent="true"
+        android:layout_toLeftOf="@id/account_bind"
+        android:layout_toRightOf="@id/account_img"
+        android:gravity="center_vertical"
+        android:padding="8dip"
+        android:textSize="18.0sp"
+        android:textColor="#000000"/>
+
+</RelativeLayout>

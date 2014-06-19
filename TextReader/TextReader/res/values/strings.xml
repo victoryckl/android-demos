@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="empty_string"></string>
+	<string name="app_name">老汉阅读</string>
+    <string name="attention">注意</string>
+    <string name="delete_all">是否要删除这条微博？</string>
+    <string name="cancel">否</string>
+    <string name="ok">是</string>
+    <string name="delete">删除</string>
+    <string name="delete_sure">确定删除这篇收藏吗？</string>
+    <string name="collect">收藏</string>
+    <string name="share">分享</string>
+    <string name="share_success">分享成功</string>
+    <string name="share_fail">分享失败</string>
+    <string name="share2weibo">分享到社交网络</string>
+    <string name="collect_success">收藏成功</string>
+    <string name="already_collect">已收藏</string>
+    <string name="net_books">网络书库</string>
+     <string name="my_share">我的共享</string>
+    <string name="my_bookshelf">我的书架</string>
+    <string name="default_font">当前字体:默认</string>
+	<string name="full_screen">全屏</string>
+	<string name="weibo_bind">微博绑定</string>
+	<string name="fullScreen_mode">全屏模式</string>
+	<string name="no_fullScreen_mode">非全屏模式</string>
+	<string name="fullScreen_set">全屏设置</string>
+	<string name="about">关于</string>
+	<string name="more">请求更多</string>
+	<string name="bookName">书名</string>
+	<string-array name="search_spinner">
+		<item >书名</item>
+		<item >作者</item>
+	</string-array>
+</resources>

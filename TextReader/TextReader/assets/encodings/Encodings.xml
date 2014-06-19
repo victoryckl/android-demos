@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<known-encodings>
+	<group name="West European">
+		<encoding region="Western" name="ISO-8859-1">
+			<code number="28591"/>
+		</encoding>
+	</group>
+	<group name="East European">
+		<encoding region="Central European" name="MacCE">
+			<code number="10029"/>
+		</encoding>
+		<encoding region="Romanian" name="MacRomanian">
+			<code number="10010"/>
+		</encoding>
+	</group>
+	<group name="East Asia">
+		<encoding region="Chinese Simplified" name="GB2312">
+			<code number="936"/>
+		</encoding>
+		<encoding region="Chinese Simplified" name="GB18030">
+			<code number="54936"/>
+		</encoding>
+		<encoding region="Chinese Simplified" name="GBK">
+		</encoding>
+		<encoding region="Chinese Simplified" name="HZ">
+		</encoding>
+		<encoding region="Chinese Simplified" name="ISO-2022-CN">
+		</encoding>
+		<encoding region="Chinese Traditional" name="Big5">
+			<code number="950"/>
+		</encoding>
+		<encoding region="Chinese Traditional" name="Big5-HKSCS">
+		</encoding>
+		<encoding region="Chinese Traditional" name="EUC-TW">
+		</encoding>
+		<encoding region="Japanese" name="EUC-JP">
+			<code number="51932"/>
+		</encoding>
+		<encoding region="Japanese" name="ISO-2022-JP">
+			<code number="50222"/>
+		</encoding>
+		<encoding region="Japanese" name="Shift_JIS">
+			<code number="932"/>
+		</encoding>
+	</group>
+	<group name="Unicode">
+		<encoding region="Unicode" name="UTF-8">
+			<code number="65001"/>
+		</encoding>
+		<encoding region="Unicode" name="UTF-16">
+		</encoding>
+	</group>
+</known-encodings>

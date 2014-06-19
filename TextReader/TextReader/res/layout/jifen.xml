@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/white"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/topbg"
+            android:gravity="center" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="免费赚取比特币"
+                android:textColor="#ffffffff"
+                android:textSize="22.0sp" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="3dip"
+            android:layout_marginRight="3dip"
+            android:text="快来抢了，比特币总数超过150个即可成为VIP用户，只限前100名。VIP用户无限制，可以搜索到更多的好书。轻松快捷赚取比特币，两种方式任您选择"
+            android:textColor="#663333"
+            android:textColorHighlight="@color/like_green"
+            android:textSize="20.0sp" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="5dip"
+            android:paddingRight="5dip" >
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="方式一："
+                android:textSize="20.0sp" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="分享到微博或者分享给好友即可轻松赚取比特币，分享某个社交网络即可赚取5个比特币，每日限领一次，该方式方便快捷，每日最多可以获取30个比特币"
+                android:textSize="18.0sp" />
+
+            <Button
+                android:id="@+id/share"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dip"
+                android:layout_marginRight="10dip"
+                android:layout_marginTop="6dip"
+                android:background="@drawable/topbg"
+                android:onClick="click"
+                android:text="分享赚取比特币"
+                android:textColor="#ffffffff"
+                android:textSize="20.0sp" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dip"
+                android:text="方式二："
+                android:textSize="20.0sp" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="下载并试用应用即可获得较多的比特币，该方式可以无限制的获得比特币，推荐使用此种方式"
+                android:textSize="18.0sp" />
+
+            <Button
+                android:id="@+id/downApp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dip"
+                android:layout_marginRight="10dip"
+                android:layout_marginTop="6dip"
+                android:background="@drawable/topbg"
+                android:onClick="click"
+                android:text="下载应用赚比特币"
+                android:textColor="#ffffffff"
+                android:textSize="20.0sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+</ScrollView>

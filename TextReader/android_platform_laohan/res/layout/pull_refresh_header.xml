@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ListView的头部 -->
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent" 
+	android:layout_height="wrap_content"
+	>
+	<!-- 内容 -->
+	<RelativeLayout 
+	    android:layout_width="fill_parent"
+		android:layout_height="wrap_content" 
+		android:id="@+id/head_contentLayout"
+		android:paddingLeft="10dp">
+		<!-- 箭头图像、进度条 -->
+		<LinearLayout 
+		    android:layout_width="wrap_content"
+			android:layout_height="wrap_content" 
+			android:layout_alignParentLeft="true"
+			android:layout_centerVertical="true">
+			<!-- 箭头 -->
+			<ImageView 
+			    android:layout_width="wrap_content"
+				android:layout_height="wrap_content" 
+				android:layout_gravity="center"
+				android:src="@drawable/pull_refresh_down" 
+				android:id="@+id/head_arrowImageView" />
+			<!-- 进度条-->
+			 <ProgressBar
+				        android:id="@+id/head_progressBar"
+				        style="?android:attr/progressBarStyleSmall"
+				        android:layout_width="25dip"
+				        android:layout_height="25dip"
+				        android:layout_centerInParent="true"
+				        android:indeterminate="false"
+				        android:indeterminateDrawable="@drawable/progress_black"
+				        android:visibility="invisible" />
+</LinearLayout>
+
+		<!-- 提示、最近更新 -->
+        <LinearLayout 
+            android:layout_width="wrap_content"
+			android:layout_height="wrap_content" 
+			android:layout_centerHorizontal="true"
+			android:orientation="vertical" 
+			android:gravity="center">
+
+			<!-- 提示 -->
+			<TextView android:layout_width="wrap_content"
+			          android:layout_height="wrap_content" 
+			          android:text="下拉刷新"
+			          android:paddingTop="10dip"
+				      android:textColor="#B9B9B9" 
+				      android:textSize="14sp"
+				      android:id="@+id/head_tipsTextView" />
+
+			<!-- 最近更新 -->
+			<TextView 
+			    android:layout_width="wrap_content"
+				android:layout_height="wrap_content" 
+				android:id="@+id/head_lastUpdatedTextView" 
+				android:textColor="#B9B9B9"
+				android:paddingBottom="10dip"
+				android:textSize="12sp" />
+      </LinearLayout>
+
+
+</RelativeLayout>
+
+
+</LinearLayout>

@@ -1,0 +1,44 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+     >
+
+    <RelativeLayout
+        android:id="@+id/bindaccount_top"
+        android:layout_width="fill_parent"
+        android:layout_height="45dip"
+        android:background="@color/text_num_gray">
+
+        <TextView
+            android:id="@+id/bindaccount_top_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:text="@string/weibo_bind"
+            android:textColor="#EDEDED"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/bindaccount_subtext"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/bindaccount_top"
+        android:layout_marginLeft="5dip"
+        android:layout_marginTop="5dip"
+        android:text="绑定账号直接分享"
+        android:textSize="20sp" />
+
+    <ListView
+        android:id="@+id/bindaccount_list"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@id/bindaccount_subtext"
+        android:layout_marginTop="10dip"
+        android:fadingEdge="none"
+        android:fastScrollEnabled="true"
+        android:scrollbars="none" />
+
+</RelativeLayout>

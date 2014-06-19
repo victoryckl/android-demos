@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fram"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <com.svo.photoview.PhotoView
+        android:id="@+id/imag"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:src="@drawable/transparent" />
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+
+        <ProgressBar
+            android:id="@+id/pic_progressbarloading"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="30dip"
+            android:layout_height="30dip"
+            android:layout_centerInParent="true"
+            android:indeterminate="false"
+            android:indeterminateDrawable="@drawable/progress_black"
+            android:visibility="gone" />
+        <ImageView 
+            android:id="@+id/gif_play"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@drawable/gif_play"
+            android:visibility="invisible"
+            />
+    </RelativeLayout>
+
+</FrameLayout>
