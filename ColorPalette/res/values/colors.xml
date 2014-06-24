@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+    <color name="coffee">#6a1f0d</color>
+    <!-- 咖啡色 -->
     <color name="white">#ffffff</color>
     <!-- 白色 -->
     <color name="ivory">#fffff0</color>

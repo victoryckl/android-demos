@@ -2,10 +2,13 @@ package com.example.colorpalette;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.util.Log;
 
 public class ResMgr {
@@ -63,6 +66,12 @@ public class ResMgr {
 				e.printStackTrace();
 			}
 		}
+		Collections.sort(colors, new Comparator<ColorItem>() {
+			@Override
+			public int compare(ColorItem lhs, ColorItem rhs) {
+				return (lhs.color & 0xffffff) - (rhs.color & 0xffffff);
+			}
+		});
 		return colors;
 	}
 }
