@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:paddingBottom="4dip" >
+
+    <TextView
+        android:id="@+id/item_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="color"
+        android:textColor="@color/black" >
+    </TextView>
+    
+    <TextView
+        android:id="@+id/item_color"
+        android:layout_below="@id/item_name"
+        android:layout_width="@dimen/item_height"
+        android:layout_height="@dimen/item_height"
+        android:background="@color/black"
+        android:layout_centerHorizontal="true">
+    </TextView>
+
+</RelativeLayout>

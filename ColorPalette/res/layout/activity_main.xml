@@ -8,28 +8,15 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity" >
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/hello_world" />
-    
-    <ScrollView 
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <LinearLayout 
-            android:id="@+id/ll_colors"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-            <TextView 
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/list_item_height"
-                android:background="@color/aliceblue"/>
-            <TextView 
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/list_item_height"
-                android:background="@color/antiquewhite"/>
-        </LinearLayout>
-    </ScrollView>
+    <GridView
+        android:id="@+id/gridview"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="center"
+        android:columnWidth="@dimen/item_height"
+        android:stretchMode="columnWidth"
+        android:horizontalSpacing="10dp"
+        android:numColumns="auto_fit"
+        android:verticalSpacing="10dp" />
 
 </RelativeLayout>
