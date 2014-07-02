@@ -308,6 +308,7 @@
     <color name="viewfinder_mask">#60000000</color>
     <color name="possible_result_points">#c0ffff00</color>
     <color name="result_view">#b0000000</color>
+    <color name="result_view_1">#c0000000</color>
     <color name="backColor">#2000</color>
     <color name="limit_buy_border_bg">#ffd4bc77</color>
     <color name="search_toolbar_bg">#ff484B50</color>
