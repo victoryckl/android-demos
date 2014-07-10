@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import android.content.res.AssetManager;
-import android.util.Log;
 
 public class AssetUtils {
 	private static final String TAG = AssetUtils.class.getSimpleName();
