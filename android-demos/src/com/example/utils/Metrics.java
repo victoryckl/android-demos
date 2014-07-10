@@ -1,8 +1,10 @@
 package com.example.utils;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.WindowManager;
@@ -11,6 +13,7 @@ public class Metrics {
 	private static final String TAG = Metrics.class.getSimpleName();
 	private static DisplayMetrics mMetrics = new DisplayMetrics();
 	private static int mStatusBarHeight;
+	private static boolean mIsTablet;
 	
 	private Metrics() {}
 	
@@ -18,6 +21,8 @@ public class Metrics {
 		WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
 		wm.getDefaultDisplay().getMetrics(mMetrics);
 		mStatusBarHeight = initStatusBarHeight(context);
+		mIsTablet = initIsTablet(context);
+		
 		Log.i(TAG, "density: " + mMetrics.density
 				+ "\ndensityDpi: " + mMetrics.densityDpi
 				+ "\nscaledDensity: " + mMetrics.scaledDensity
@@ -86,4 +91,25 @@ public class Metrics {
         }
         return statusBarHeight;
     }
+	
+	public static boolean isTablet() {
+		check();
+		return mIsTablet;
+	}
+	
+	private static boolean initIsTablet(Context context) {
+	    if (android.os.Build.VERSION.SDK_INT >= 11) { // honeycomb
+	        // test screen size, use reflection because isLayoutSizeAtLeast is only available since 11
+	        Configuration con = context.getResources().getConfiguration();
+	        try {
+	            Method mIsLayoutSizeAtLeast = con.getClass().getMethod("isLayoutSizeAtLeast", int.class);
+	            Boolean r = (Boolean) mIsLayoutSizeAtLeast.invoke(con, 0x00000004); // Configuration.SCREENLAYOUT_SIZE_XLARGE
+	            return r;
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	            return false;
+	        }
+	    }
+	    return false;
+	}
 }
