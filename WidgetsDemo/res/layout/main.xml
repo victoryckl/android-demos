@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
+	
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="horizontal" android:layout_width="match_parent"
+	android:layout_height="wrap_content">
+	
+	<Button android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:text="Animation"
+		android:id="@+id/btnanim" />
+	<Button android:text="AutoComplete" android:id="@+id/btnactv"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
+	<Button android:text="chronometer" android:id="@+id/btnchronometer"
+		android:layout_width="wrap_content" android:layout_height="wrap_content">
+	</Button>
+	
+	</LinearLayout>
+	
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="horizontal" android:layout_width="match_parent"
+	android:layout_height="wrap_content">
+	
+	<Button android:text="时间日期" android:id="@+id/btndate"
+		android:layout_width="wrap_content" android:layout_height="wrap_content">
+	</Button>
+	<Button android:text="ELView" android:id="@+id/btnelv"
+		android:layout_width="wrap_content" android:layout_height="wrap_content">
+	</Button>
+	<Button android:text="画廊" android:id="@+id/btngallery"
+		android:layout_width="wrap_content" android:layout_height="wrap_content">
+	</Button>
+	<Button android:text="Grid" android:id="@+id/btngrid"
+		android:layout_width="wrap_content" android:layout_height="wrap_content">
+	</Button>
+
+	</LinearLayout>
+	
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="horizontal" android:layout_width="match_parent"
+	android:layout_height="wrap_content">
+	
+	<Button android:text="ImageSwitcher" android:id="@+id/btnimgs"
+		android:layout_width="wrap_content" android:layout_height="wrap_content">
+	</Button>
+	<Button android:text="RatingBar" android:id="@+id/btnrb"
+		android:layout_width="wrap_content" android:layout_height="wrap_content">
+	</Button>
+	<Button android:text="SeekBar" android:id="@+id/btnsb"
+		android:layout_width="wrap_content" android:layout_height="wrap_content">
+	</Button>
+	</LinearLayout>
+	
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="horizontal" android:layout_width="match_parent"
+	android:layout_height="wrap_content">
+	
+	<Button android:text="ProgressBar" android:id="@+id/btnpb"
+		android:layout_width="wrap_content" android:layout_height="wrap_content">
+	</Button>
+	<Button android:text="Spinner" android:id="@+id/btnsp"
+		android:layout_width="wrap_content" android:layout_height="wrap_content">
+	</Button>
+	<!--<Button android:text="SeekBar" android:id="@+id/btnsb"
+		android:layout_width="wrap_content" android:layout_height="wrap_content">
+	</Button>
+	--></LinearLayout>
+	
+</LinearLayout>
