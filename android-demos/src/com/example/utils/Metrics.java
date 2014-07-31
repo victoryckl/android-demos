@@ -3,10 +3,13 @@ package com.example.utils;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.WindowManager;
 
 public class Metrics {
@@ -14,6 +17,7 @@ public class Metrics {
 	private static DisplayMetrics mMetrics = new DisplayMetrics();
 	private static int mStatusBarHeight;
 	private static boolean mIsTablet;
+	private static int mOrientation;
 	
 	private Metrics() {}
 	
@@ -22,6 +26,7 @@ public class Metrics {
 		wm.getDefaultDisplay().getMetrics(mMetrics);
 		mStatusBarHeight = initStatusBarHeight(context);
 		mIsTablet = initIsTablet(context);
+		mOrientation = initOrientation();
 		
 		Log.i(TAG, "density: " + mMetrics.density
 				+ "\ndensityDpi: " + mMetrics.densityDpi
@@ -111,5 +116,38 @@ public class Metrics {
 	        }
 	    }
 	    return false;
+	}
+	
+	//------------
+	private static int initOrientation() {
+		return mIsTablet ? 
+				ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+				:ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT;
+	}
+	
+	public static int getOrientation() {
+		check();
+		return mOrientation;
+	}
+	
+	public static void setOrientation(Activity activity) {
+		check();
+		activity.setRequestedOrientation(mOrientation);
+	}
+	
+	public static boolean isPortrait(Activity activity) {
+        int orient = activity.getRequestedOrientation(); 
+        if(orient != ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE 
+        		&& orient != ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
+            WindowManager windowManager = activity.getWindowManager();
+            Display display = windowManager.getDefaultDisplay();
+            int screenWidth  = display.getWidth();
+            int screenHeight = display.getHeight();
+            Log.i(TAG, "screenWidth:"+screenWidth+", screenHeight:"+screenHeight);
+            orient = screenWidth < screenHeight ? 
+            		ActivityInfo.SCREEN_ORIENTATION_PORTRAIT : 
+            		ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+        }
+       	return (orient == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 	}
 }
