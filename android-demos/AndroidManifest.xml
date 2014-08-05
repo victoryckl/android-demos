@@ -30,6 +30,7 @@
         <activity android:name="com.example.android_demos.EditActivity"/>
         <activity android:name="com.example.android_demos.ArrayResIdActivity"/>
         <activity android:name="com.example.android_demos.TextImageButtonActivity"/>
+        <activity android:name="com.example.android_demos.StringReplaceTestActivity"/>
         
     </application>
 
