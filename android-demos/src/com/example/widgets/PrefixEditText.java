@@ -63,6 +63,9 @@ public class PrefixEditText extends EditText {
 	
 			if (dest != null && 
 				dest.toString().startsWith(prefix)) {
+				if (dend-dstart == dest.length()) {//clear
+					return source;
+				}
 				if (dstart <= prefix.length()) {
 					return dest.subSequence(dstart, dend);
 				}
