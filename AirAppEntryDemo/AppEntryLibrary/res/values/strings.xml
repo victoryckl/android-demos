@@ -15,7 +15,7 @@
  * limitations under the License.
 -->
 <resources>
-   <string name="app_name">APP_NAME</string>
+   <string name="app_name">AirAppEntryDemo</string>
    <string name="app_version">APP_VERSION</string>
    <string name="button_install">Install</string>
    <string name="button_exit">Exit</string>
