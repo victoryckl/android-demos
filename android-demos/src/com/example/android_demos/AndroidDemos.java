@@ -65,6 +65,7 @@ public class AndroidDemos extends Activity {
 		addItem(data, "带文字的图片按钮", activityIntent(TextImageButtonActivity.class.getName()));
 		addItem(data, "标题栏弹出框", activityIntent(EditActivity.class.getName()));
 		addItem(data, "获取资源数组中的资源id", activityIntent(ArrayResIdActivity.class.getName()));
+		addItem(data, "String.replace测试", activityIntent(StringReplaceTestActivity.class.getName()));
 		return data;
 	}
 	

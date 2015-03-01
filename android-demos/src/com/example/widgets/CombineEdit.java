@@ -1,8 +1,5 @@
 package com.example.widgets;
 
-import com.example.android_demos.EditActivity;
-import com.example.android_demos.R;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.text.Editable;
@@ -12,7 +9,6 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -20,6 +16,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
+
+import com.example.android_demos.R;
 
 public class CombineEdit extends LinearLayout {
 

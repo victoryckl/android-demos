@@ -29,7 +29,7 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <meta-data android:name="namespaceVersion" android:value="3.4" />
+            <meta-data android:name="namespaceVersion" android:value="3.8" />
             <meta-data android:name="aspectRatio" android:value="landscape" />
             <meta-data android:name="autoOrients" android:value="false" />
             <meta-data android:name="fullScreen" android:value="true" />

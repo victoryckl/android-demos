@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical" android:padding="4dip"
+    android:gravity="center_horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Chronometer android:id="@+id/chronometer"
+        android:format="Initial format: "
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:paddingBottom="30dip"
+        android:paddingTop="30dip"
+        />
+
+    <Button android:id="@+id/start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" 
+        android:text="开始">
+        <requestFocus />
+    </Button>
+
+    <Button android:id="@+id/stop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" 
+        android:text="停止">
+    </Button>
+
+    <Button android:id="@+id/reset"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" 
+        android:text="重置">
+    </Button>
+
+    <Button android:id="@+id/set_format"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" 
+        android:text="设置格式">
+    </Button>
+
+    <Button android:id="@+id/clear_format"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" 
+        android:text="清除格式">
+    </Button>
+
+</LinearLayout>
+

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Hello World, Main!</string>
+    <string name="app_name">WidgetDemo</string>
+     <string name="spinner_color_prompt">选择一种颜色</string>
+    <string name="spinner_planet_prompt">选择一种星球</string>
+</resources>

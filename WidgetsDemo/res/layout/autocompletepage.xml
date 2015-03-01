@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:layout_width="match_parent"
+	android:layout_height="wrap_content">
+
+	<TextView android:layout_width="match_parent"
+		android:layout_height="wrap_content" android:gravity="center"
+		android:text="智能输入框演示" />
+
+	<LinearLayout android:orientation="horizontal"
+		android:layout_width="match_parent" android:layout_height="wrap_content">
+
+		<TextView android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:text="国家" />
+
+		<AutoCompleteTextView android:id="@+id/edit"
+			android:layout_width="match_parent" android:layout_height="wrap_content" />
+
+	</LinearLayout>
+	<MultiAutoCompleteTextView android:id="@+id/edit1"
+		android:layout_marginLeft="23px" android:layout_width="match_parent"
+		android:layout_height="wrap_content" />
+</LinearLayout>
