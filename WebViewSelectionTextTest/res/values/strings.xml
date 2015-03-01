@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">WebView选择文本测试</string>
+
+    <string name="js_select_text">js选择文本</string>
+
+</resources>
