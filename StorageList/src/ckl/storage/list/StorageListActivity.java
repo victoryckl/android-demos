@@ -3,6 +3,7 @@ package ckl.storage.list;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.storage.StorageManager;
@@ -29,7 +30,7 @@ public class StorageListActivity extends Activity {
         	Log.i(TAG, path);
         	text += path + "\n";
         }
-        
+        Log.i(TAG, "Environment: "+Environment.getExternalStorageDirectory().getAbsolutePath());
         mList = (TextView)findViewById(R.id.list);
         mList.setText(text);
         
