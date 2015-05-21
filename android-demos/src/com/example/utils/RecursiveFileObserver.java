@@ -73,11 +73,13 @@ public class RecursiveFileObserver extends FileObserver {
         ts.updateTimeMillis("RecursiveFileObserver,startWatching()");
     }
 
+    private boolean isStoping = false;
     @Override
     public void stopWatching() {
         if (MapUtils.isEmpty(mObsMap))
             return;
 
+        isStoping = true;
         TimeStat ts = new TimeStat();
         
         Collection<FileObserver> obs = mObsMap.values();
@@ -89,8 +91,9 @@ public class RecursiveFileObserver extends FileObserver {
         mObsMap.clear();
         mObsMap = null;
         ts.updateTimeMillis("RecursiveFileObserver,stopWatching()");
+        isStoping = false;
     }
-
+    
     @Override
     public void onEvent(int event, String path) {
     	if (MapUtils.isEmpty(mObsMap))
@@ -187,8 +190,10 @@ public class RecursiveFileObserver extends FileObserver {
             logi("FILE OPEN: " + path);
             break;
         case 0x8000://停止监听
-        	mObsMap.remove(path);
-        	logi("FILE map remove: "+path);
+        	if (!isStoping) {
+	        	mObsMap.remove(path);
+	        	logi("FILE map remove: "+path);
+        	}
         	break;
         default:
             logi("FILE DEFAULT(0x" + Integer.toHexString(event) + " : " + path);
