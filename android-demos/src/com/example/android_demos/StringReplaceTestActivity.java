@@ -38,5 +38,5 @@ public class StringReplaceTestActivity extends Activity {
 	}
 	
 	private String oText = "\nstring1\nstring2\nstring3";
-	private char[] buf = new char[] {'\n', 'ã€€', 'ã€€', 'å­©', 'å­', 'ä»¬', 'ï¼Œ', '\n', 'æ¯', 'å¤©', 'æ¸…', 'æ™¨', '\n'};
+	private char[] buf = new char[] {'\n', '¡¡', '¡¡', 'º¢', '×Ó', 'ÃÇ', '£¬', '\n', 'Ã¿', 'Ìì', 'Çå', '³¿', '\n'};
 }
