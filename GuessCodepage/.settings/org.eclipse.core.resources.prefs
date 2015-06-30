@@ -1,0 +1,8 @@
+eclipse.preferences.version=1
+encoding//src/com/example/guesscodepage/GuessCodepageActivity.java=GBK
+encoding//src/com/example/utils/GuessCodepage.java=GBK
+encoding//src/com/example/utils/HttpUtils.java=GBK
+encoding//src/com/example/utils/UnicodeBufferedInputStream.java=GBK
+encoding//src/com/example/utils/UnicodeInputStream.java=GBK
+encoding//src/com/example/utils/UnicodeReader.java=GBK
+encoding/<project>=GBK
