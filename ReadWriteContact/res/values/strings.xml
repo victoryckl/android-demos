@@ -1,0 +1,12 @@
+<resources>
+
+    <string name="app_name">ReadWriteContact</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_main">操作联系人</string>
+    <string name="input_name">请输入名字</string>
+    <string name="input_phone">请输入电话号码</string>
+    <string name="save_ok">保存成功</string>
+    <string name="save_failed">保存失败</string>
+
+</resources>
