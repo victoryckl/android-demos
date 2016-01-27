@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical" >
+
+    <!-- com.android.mylistview.view.MyLayout为自定义的布局，主要是为了重写public boolean onInterceptTouchEvent(MotionEvent event)方法 -->
+
+    <com.android.mylistview.view.MyLayout
+        android:id="@+id/mylayout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/child_viewpager"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/testtextview" >
+        </android.support.v4.view.ViewPager>
+
+        <TextView
+            android:id="@+id/testtextview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:background="#999999"
+            android:padding="20dp"
+            android:textColor="@android:color/black" />
+    </com.android.mylistview.view.MyLayout>
+
+</LinearLayout>
