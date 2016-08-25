@@ -107,8 +107,7 @@ public class FloatingWindowService extends Service {
 		btn_floatView.setText("$_$");
 		btn_floatView.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
 
-		wm = (WindowManager) getApplicationContext().getSystemService(
-				Context.WINDOW_SERVICE);
+		wm = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
 		params = new WindowManager.LayoutParams();
 
 		// 设置window type
