@@ -15,7 +15,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ZoomControls;
 
-//´Ë³ÌĞòÒÑ¾­Ìá½»µ½github.com
+//ï¿½Ë³ï¿½ï¿½ï¿½ï¿½Ñ¾ï¿½ï¿½á½»ï¿½ï¿½github.com
 public class ZoomPage extends Activity implements Observer {
 	private ImageZoomView mZoomView;
 	private ZoomState mZoomState;
@@ -25,10 +25,10 @@ public class ZoomPage extends Activity implements Observer {
 	private Button mSwitchBtn;
 	private int mCurrentBmp = 1;
 	private int[] mBmpResId = {
+			R.drawable.audi,
 			R.drawable.mj,
 			R.drawable.mj1,
 			R.drawable.mj2,
-			R.drawable.audi,
 			R.drawable.audir8,
 			R.drawable.bluck};
 
@@ -55,7 +55,7 @@ public class ZoomPage extends Activity implements Observer {
 		int w = mBitmap.getWidth();
 		int h = mBitmap.getHeight();
 		Log.i(TAG, "bmp w,h = " + w + "," + h);
-		mSwitchBtn.setText("ÇĞ»»Í¼Æ¬(" 
+		mSwitchBtn.setText("åˆ‡æ¢å›¾ç‰‡(" 
 				+ getResources().getResourceEntryName(mBmpResId[index % mBmpResId.length])
 				+ ": " + w + "/" + h + "=" + w/(float)h + ")");
 		mZoomView.setImage(mBitmap);
@@ -165,7 +165,7 @@ public class ZoomPage extends Activity implements Observer {
 		}
 	}
 	
-	//µ÷ÊÔ
+	//ï¿½ï¿½ï¿½ï¿½
 	private final boolean debugOn = true;
 	private final String TAG = "ZoomPage";
     private int logd(String msg) {
