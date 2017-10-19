@@ -113,6 +113,7 @@ public class DeviceControlActivity extends Activity {
         }
     };
 
+    int write_count = 0, read_count = 0;
     // If a given GATT characteristic is selected, check for supported features.  This sample
     // demonstrates 'Read' and 'Notify' features.  See
     // http://d.android.com/reference/android/bluetooth/BluetoothGatt.html for the complete
@@ -126,7 +127,11 @@ public class DeviceControlActivity extends Activity {
                         final BluetoothGattCharacteristic characteristic =
                                 mGattCharacteristics.get(groupPosition).get(childPosition);
                         final int charaProp = characteristic.getProperties();
-                        if ((charaProp | BluetoothGattCharacteristic.PROPERTY_READ) > 0) {
+                        if ((charaProp & (BluetoothGattCharacteristic.PROPERTY_WRITE | BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE)) != 0) {
+                        	characteristic.setValue("try write "+write_count++);
+                        	mBluetoothLeService.writeCharacteristic(characteristic);
+                        }
+                        if ((charaProp & BluetoothGattCharacteristic.PROPERTY_READ) != 0) {
                             // If there is an active notification on a characteristic, clear
                             // it first so it doesn't update the data field on the user interface.
                             if (mNotifyCharacteristic != null) {
@@ -134,13 +139,15 @@ public class DeviceControlActivity extends Activity {
                                         mNotifyCharacteristic, false);
                                 mNotifyCharacteristic = null;
                             }
+                            characteristic.setValue("try read "+read_count++);
                             mBluetoothLeService.readCharacteristic(characteristic);
                         }
-                        if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
+                        if ((charaProp & BluetoothGattCharacteristic.PROPERTY_NOTIFY) != 0) {
                             mNotifyCharacteristic = characteristic;
                             mBluetoothLeService.setCharacteristicNotification(
                                     characteristic, true);
                         }
+
                         return true;
                     }
                     return false;

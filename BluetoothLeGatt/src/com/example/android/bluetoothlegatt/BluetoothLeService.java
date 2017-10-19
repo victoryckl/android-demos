@@ -16,6 +16,9 @@
 
 package com.example.android.bluetoothlegatt;
 
+import java.util.List;
+import java.util.UUID;
+
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -31,9 +34,6 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
-
-import java.util.List;
-import java.util.UUID;
 
 /**
  * Service for managing connection and data communication with a GATT server hosted on a
@@ -102,15 +102,40 @@ public class BluetoothLeService extends Service {
         public void onCharacteristicRead(BluetoothGatt gatt,
                                          BluetoothGattCharacteristic characteristic,
                                          int status) {
+        	BluetoothDevice device = gatt.getDevice();
+        	String value = "";
+        	if (characteristic.getValue() != null) {
+        		value = new String(characteristic.getValue());
+        	}
+        	Log.i(TAG, "[onCharacteristicRead] device("+device.getName()+","+device.getAddress()+"), "
+        			+ "characteristic uuid="+characteristic.getUuid()+", status="+status+", value="+value);
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
-            }
+            } else if (status == BluetoothGatt.GATT_READ_NOT_PERMITTED) {
+        		Log.e(TAG, "此属性无读权限，status=GATT_READ_NOT_PERMITTED");
+        	}
         }
 
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt,
                                             BluetoothGattCharacteristic characteristic) {
+        	BluetoothDevice device = gatt.getDevice();
+        	String value = new String(characteristic.getValue());
+        	Log.i(TAG, "[onCharacteristicChanged] device("+device.getName()+","+device.getAddress()+"), "
+        			+ "characteristic uuid="+characteristic.getUuid()+", value="+value);
             broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
+        }
+        
+        public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+        	BluetoothDevice device = gatt.getDevice();
+        	String value = new String(characteristic.getValue());
+        	Log.i(TAG, "[onCharacteristicWrite] device("+device.getName()+","+device.getAddress()+"), "
+        			+ "characteristic uuid="+characteristic.getUuid()+", status="+status+", value="+value);
+        	if (status == BluetoothGatt.GATT_SUCCESS) {
+        		Log.i(TAG, "属性写入成功");
+        	} else if (status == BluetoothGatt.GATT_WRITE_NOT_PERMITTED) {
+        		Log.e(TAG, "此属性无写权限，status=GATT_WRITE_NOT_PERMITTED");
+        	}
         }
     };
 
@@ -303,6 +328,14 @@ public class BluetoothLeService extends Service {
             descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
             mBluetoothGatt.writeDescriptor(descriptor);
         }
+    }
+    
+    public void writeCharacteristic(BluetoothGattCharacteristic characteristic) {
+        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
+            Log.w(TAG, "BluetoothAdapter not initialized");
+            return;
+        }
+        mBluetoothGatt.writeCharacteristic(characteristic);
     }
 
     /**
