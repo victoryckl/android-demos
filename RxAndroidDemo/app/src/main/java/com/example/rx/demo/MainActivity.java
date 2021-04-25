@@ -14,7 +14,7 @@ import io.reactivex.disposables.Disposable;
 
 // RxJava系列教程 https://www.jianshu.com/nb/14302692
 // https://www.jianshu.com/p/a406b94f3188 Android Rxjava：这是一篇 清晰 & 易懂的Rxjava 入门教程
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -22,16 +22,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                switch (v.getId()) {
-                    case R.id.button:
-                        testRx1();
-                        break;
-                }
-            }
-        });
+        findViewById(R.id.button_rx1).setOnClickListener(this);
+        findViewById(R.id.button_rx2).setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.button_rx1: testRx1(); break;
+            case R.id.button_rx2: testRx2(); break;
+        }
     }
 
     private void testRx1() {
@@ -77,5 +77,41 @@ public class MainActivity extends AppCompatActivity {
 
         // 步骤3：通过订阅（subscribe）连接观察者和被观察者
         observable.subscribe(observer);
+    }
+
+    private void testRx2() {
+        // RxJava的流式操作
+        Observable.create(new ObservableOnSubscribe<Integer>() {
+            // 1. 创建被观察者 & 生产事件
+            @Override
+            public void subscribe(ObservableEmitter<Integer> e) throws Exception {
+                e.onNext(1);
+                e.onNext(2);
+                e.onNext(3);
+                e.onComplete();
+            }
+        }).subscribe(new Observer<Integer>() {
+            // 2. 通过通过订阅（subscribe）连接观察者和被观察者
+            // 3. 创建观察者 & 定义响应事件的行为
+            @Override
+            public void onSubscribe(Disposable d) {
+                Log.d(TAG, "rx2 开始采用subscribe连接");
+            }
+
+            @Override
+            public void onNext(Integer value) {
+                Log.d(TAG, "rx2 对Next事件"+ value +"作出响应"  );
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.d(TAG, "rx2 对Error事件作出响应");
+            }
+
+            @Override
+            public void onComplete() {
+                Log.d(TAG, "rx2 对Complete事件作出响应");
+            }
+        });
     }
 }
