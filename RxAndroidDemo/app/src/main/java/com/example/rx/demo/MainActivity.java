@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
@@ -24,6 +27,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         findViewById(R.id.button_rx1).setOnClickListener(this);
         findViewById(R.id.button_rx2).setOnClickListener(this);
+        findViewById(R.id.button_just).setOnClickListener(this);
+        findViewById(R.id.button_array).setOnClickListener(this);
+        findViewById(R.id.button_iterable).setOnClickListener(this);
     }
 
     @Override
@@ -31,6 +37,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
             case R.id.button_rx1: testRx1(); break;
             case R.id.button_rx2: testRx2(); break;
+            case R.id.button_just: testJust(); break;
+            case R.id.button_array: testFromArray(); break;
+            case R.id.button_iterable: testFromIterable(); break;
         }
     }
 
@@ -52,28 +61,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
 
         //步骤2：创建观察者 Observer 并 定义响应事件行为
-        Observer<Integer> observer = new Observer<Integer>() {
-            // 通过复写对应方法来 响应 被观察者
-            @Override
-            public void onSubscribe(Disposable d) {
-                Log.d(TAG, "开始采用subscribe连接");
-            }
-
-            @Override
-            public void onNext(Integer value) {
-                Log.d(TAG, "对Next事件"+ value +"作出响应"  );
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                Log.d(TAG, "对Error事件作出响应");
-            }
-
-            @Override
-            public void onComplete() {
-                Log.d(TAG, "对Complete事件作出响应");
-            }
-        };
+        Observer<Integer> observer = new LogObserver<>("testRx1");
 
         // 步骤3：通过订阅（subscribe）连接观察者和被观察者
         observable.subscribe(observer);
@@ -90,28 +78,44 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 e.onNext(3);
                 e.onComplete();
             }
-        }).subscribe(new Observer<Integer>() {
-            // 2. 通过通过订阅（subscribe）连接观察者和被观察者
-            // 3. 创建观察者 & 定义响应事件的行为
-            @Override
-            public void onSubscribe(Disposable d) {
-                Log.d(TAG, "rx2 开始采用subscribe连接");
-            }
+        })
+        // 2. 通过通过订阅（subscribe）连接观察者和被观察者
+        // 3. 创建观察者 & 定义响应事件的行为
+        .subscribe(new LogObserver<Integer>("testRx2"));
+    }
 
-            @Override
-            public void onNext(Integer value) {
-                Log.d(TAG, "rx2 对Next事件"+ value +"作出响应"  );
-            }
+    private void testJust() {
+        // 1. 创建时传入整型1、2、3、4
+        // 在创建后就会发送这些对象，相当于执行了onNext(1)、onNext(2)、onNext(3)、onNext(4)
+        // 注：最多只能发送10个参数
+        Observable.just(1,2,3,4)
+        // 至此，一个Observable对象创建完毕，以下步骤仅为展示一个完整demo，可以忽略
+        // 2. 通过通过订阅（subscribe）连接观察者和被观察者
+        // 3. 创建观察者 & 定义响应事件的行为
+        .subscribe(new LogObserver<Integer>("testJust"));
+    }
 
-            @Override
-            public void onError(Throwable e) {
-                Log.d(TAG, "rx2 对Error事件作出响应");
-            }
+    private void testFromArray() {
+        // 1. 设置需要传入的数组
+        Integer[] items = new Integer[] {5,6,7,9,6,108};
+        // 2. 创建被观察者对象（Observable）时传入数组
+        // 在创建后就会将该数组转换成Observable & 发送该对象中的所有数据
+        Observable.fromArray(items)
+                .subscribe(new LogObserver<Integer>("testFromArray"));
+        // 可发送10个以上参数
+        // 若直接传递一个list集合进去，否则会直接把list当做一个数据元素发送
+    }
 
-            @Override
-            public void onComplete() {
-                Log.d(TAG, "rx2 对Complete事件作出响应");
-            }
-        });
+    //快速发送集合
+    private void testFromIterable() {
+        // 1. 设置一个集合
+        List<Integer> list = new ArrayList<>();
+        list.add(3);
+        list.add(2);
+        list.add(1);
+
+        // 2. 通过fromIterable()将集合中的对象 / 数据发送出去
+        Observable.fromIterable(list)
+                .subscribe(new LogObserver<Integer>("testFromIterable"));
     }
 }
