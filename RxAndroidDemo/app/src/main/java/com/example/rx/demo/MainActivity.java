@@ -8,10 +8,13 @@ import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 
@@ -25,11 +28,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        findViewById(R.id.button_rx1).setOnClickListener(this);
-        findViewById(R.id.button_rx2).setOnClickListener(this);
-        findViewById(R.id.button_just).setOnClickListener(this);
-        findViewById(R.id.button_array).setOnClickListener(this);
-        findViewById(R.id.button_iterable).setOnClickListener(this);
+//        findViewById(R.id.button_rx1).setOnClickListener(this);
+//        findViewById(R.id.button_rx2).setOnClickListener(this);
+//        findViewById(R.id.button_just).setOnClickListener(this);
+//        findViewById(R.id.button_array).setOnClickListener(this);
     }
 
     @Override
@@ -40,6 +42,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.button_just: testJust(); break;
             case R.id.button_array: testFromArray(); break;
             case R.id.button_iterable: testFromIterable(); break;
+            case R.id.button_defer: testDefer(); break;
+            case R.id.button_timer: testTimer(); break;
+            case R.id.button_interval: testInterval(); break;
+            case R.id.button_interval_range: testIntervalRange(); break;
+            case R.id.button_range: testRange(); break;
+            case R.id.button_range_long: testRangeLong(); break;
         }
     }
 
@@ -117,5 +125,77 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // 2. 通过fromIterable()将集合中的对象 / 数据发送出去
         Observable.fromIterable(list)
                 .subscribe(new LogObserver<Integer>("testFromIterable"));
+    }
+
+    private Integer mIndex = 0;
+    private Observable<Integer> mDeferObservable;
+
+    private void testDefer() {
+        //通过defer 定义被观察者对象
+        if (mDeferObservable == null) {
+            mDeferObservable = Observable.defer(
+                    new Callable<ObservableSource<? extends Integer>>() {
+                        @Override
+                        public ObservableSource<? extends Integer> call() throws Exception {
+                            mIndex++;
+                            Log.i(TAG, "[call] defer index=" + mIndex);
+                            return Observable.just(mIndex);
+                        }
+                    });
+        }
+        //观察者开始订阅
+        mDeferObservable.subscribe(new LogObserver<Integer>("defer " + mIndex));
+    }
+
+    private void testTimer() {
+        // 本质 = 延迟指定时间后，调用一次 onNext(0)，一般用于检测
+        // 该例子 = 延迟2s后，发送一个long类型数值0
+        Observable.timer(2, TimeUnit.SECONDS)
+                .subscribe(new LogObserver<Long>("timer"));
+        // 注：timer操作符默认运行在一个新线程上
+        // 也可自定义线程调度器（第3个参数）：timer(long,TimeUnit,Scheduler)
+    }
+
+    private void testInterval() {
+        // 发送事件的特点：每隔指定时间 就发送 事件
+        // 发送的事件序列 = 从0开始、无限递增1的的整数序列
+        // 参数说明：
+        // 参数1 = 第1次延迟时间；
+        // 参数2 = 间隔时间数字；
+        // 参数3 = 时间单位；
+        Observable.interval(3, 1, TimeUnit.SECONDS)
+                .subscribe(new LogObserver<Long>("interval"));
+        // 注：interval默认在computation调度器上执行
+        // 也可自定义指定线程调度器（第4个参数）：interval(long,long,TimeUnit,Scheduler)
+    }
+
+    private void testIntervalRange() {
+        //发送事件的特点：每隔指定时间 就发送 事件，可指定发送的数据的数量
+        //发送的事件序列 = 从0开始、无限递增1的的整数序列
+        //作用类似于interval（），但可指定发送的数据的数量
+        // 参数说明：
+        // 参数1 = 事件序列起始点；
+        // 参数2 = 事件数量；
+        // 参数3 = 第1次事件延迟发送时间；
+        // 参数4 = 间隔时间数字；
+        // 参数5 = 时间单位
+        Observable.intervalRange(3, 10, 2, 1, TimeUnit.SECONDS)
+                .subscribe(new LogObserver<Long>("intervalRange"));
+    }
+
+    private void testRange() {
+        // 发送事件的特点：连续发送 1个事件序列，可指定范围
+        // 发送的事件序列 = 从0开始、无限递增1的的整数序列
+        // 作用类似于intervalRange（），但区别在于：无延迟发送事件
+        // 参数说明：
+        // 参数1 = 事件序列起始点；
+        // 参数2 = 事件数量；
+        // 注：若设置为负数，则会抛出异常
+        Observable.range(7, 10).subscribe(new LogObserver("range"));
+    }
+
+    private void testRangeLong() {
+        //与range（）类似，此处不作过多描述
+        Observable.rangeLong(5, 10).subscribe(new LogObserver("rangeLong"));
     }
 }

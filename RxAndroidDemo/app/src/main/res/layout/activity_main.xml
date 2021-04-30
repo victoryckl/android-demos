@@ -10,49 +10,123 @@
         android:id="@+id/button_rx1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:onClick="onClick"
         android:text="testRx1"
         android:layout_marginTop="50dp"
+        app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/button_rx2"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/button_rx2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:onClick="onClick"
         android:text="testRx2"
-        android:layout_marginTop="20dp"
-        app:layout_constraintTop_toBottomOf="@id/button_rx1"
-        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="@id/button_rx1"
+        app:layout_constraintLeft_toRightOf="@id/button_rx1"
         app:layout_constraintRight_toRightOf="parent"/>
 
     <Button
         android:id="@+id/button_just"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:onClick="onClick"
         android:text="testJust"
         android:layout_marginTop="20dp"
+        app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintTop_toBottomOf="@id/button_rx2"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"/>
+        app:layout_constraintRight_toLeftOf="@id/button_array"/>
 
     <Button
         android:id="@+id/button_array"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:onClick="onClick"
         android:text="testFromArray"
-        android:layout_marginTop="20dp"
-        app:layout_constraintTop_toBottomOf="@id/button_just"
-        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="@id/button_just"
+        app:layout_constraintLeft_toRightOf="@id/button_just"
         app:layout_constraintRight_toRightOf="parent"/>
 
     <Button
         android:id="@+id/button_iterable"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:onClick="onClick"
         android:text="testFromIterable"
         android:layout_marginTop="20dp"
+        app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintTop_toBottomOf="@id/button_array"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/button_defer"/>
+
+    <Button
+        android:id="@+id/button_defer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onClick"
+        android:text="testDefer"
+        app:layout_constraintTop_toTopOf="@id/button_iterable"
+        app:layout_constraintLeft_toRightOf="@id/button_iterable"
+        app:layout_constraintRight_toRightOf="parent"/>
+
+    <Button
+        android:id="@+id/button_timer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onClick"
+        android:text="testTimer"
+        android:layout_marginTop="20dp"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintTop_toBottomOf="@id/button_iterable"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/button_interval"/>
+
+    <Button
+        android:id="@+id/button_interval"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onClick"
+        android:text="testInterval"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintTop_toTopOf="@id/button_timer"
+        app:layout_constraintLeft_toRightOf="@id/button_timer"
+        app:layout_constraintRight_toRightOf="parent"/>
+
+    <Button
+        android:id="@+id/button_interval_range"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onClick"
+        android:text="testIntervalRange"
+        android:layout_marginTop="20dp"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintTop_toBottomOf="@id/button_interval"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/button_range"/>
+
+    <Button
+        android:id="@+id/button_range"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onClick"
+        android:text="testRange"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintTop_toTopOf="@id/button_interval_range"
+        app:layout_constraintLeft_toRightOf="@id/button_interval_range"
+        app:layout_constraintRight_toRightOf="parent"/>
+
+    <Button
+        android:id="@+id/button_range_long"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onClick"
+        android:text="testRangeLong"
+        android:layout_marginTop="20dp"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintTop_toBottomOf="@id/button_range"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"/>
 
