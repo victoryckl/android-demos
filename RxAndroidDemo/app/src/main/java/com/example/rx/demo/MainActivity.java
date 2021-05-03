@@ -5,6 +5,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
+
+import com.example.util.StackTrace;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +20,8 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 
 // RxJava系列教程 https://www.jianshu.com/nb/14302692
 // https://www.jianshu.com/p/a406b94f3188 Android Rxjava：这是一篇 清晰 & 易懂的Rxjava 入门教程
@@ -48,6 +53,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.button_interval_range: testIntervalRange(); break;
             case R.id.button_range: testRange(); break;
             case R.id.button_range_long: testRangeLong(); break;
+            case R.id.btn_map: testMap(); break;
+            case R.id.btn_flatmap: testFlatMap(); break;
+            case R.id.btn_concatmap: testConcatMap(); break;
+            case R.id.btn_buffer: testBuffer(); break;
         }
     }
 
@@ -197,5 +206,125 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void testRangeLong() {
         //与range（）类似，此处不作过多描述
         Observable.rangeLong(5, 10).subscribe(new LogObserver("rangeLong"));
+    }
+
+    private void testMap() {
+        Observable.create(new ObservableOnSubscribe<Integer>() {
+            // 1. 被观察者发送事件 = 参数为整型 = 1、2、3
+            @Override
+            public void subscribe(ObservableEmitter<Integer> e) throws Exception {
+                StackTrace.printStackTrace("testMap[subscribe]");
+                e.onNext(1);
+                e.onNext(2);
+                e.onNext(3);
+            }
+            //// 2. 使用Map变换操作符中的Function函数对被观察者发送的事件进行统一变换：整型变换成字符串类型
+        }).map(new Function<Integer, String>() {
+            @Override
+            public String apply(Integer integer) throws Exception {
+                Log.i(TAG, "使用 Map变换操作符 将事件" + integer
+                        +"的参数从 整型"+integer + " 变换成 字符串类型" + integer);
+                StackTrace.printStackTrace("testMap[apply]");
+                return "字串 "+integer;
+            }
+        }).subscribe(new Consumer<String>() {
+            // 3. 观察者接收事件时，是接收到变换后的事件 = 字符串类型
+            @Override
+            public void accept(String s) throws Exception {
+                Log.d(TAG, s);
+                StackTrace.printStackTrace("testMap[accept]");
+            }
+        });
+    }
+
+    private void testFlatMap() {
+        //无序的将被观察者发送的整个事件序列进行变换
+        Observable.create(new ObservableOnSubscribe<Integer>() {
+            @Override
+            public void subscribe(ObservableEmitter<Integer> e) throws Exception {
+                e.onNext(1);
+                e.onNext(2);
+                e.onNext(3);
+            }
+            // 采用flatMap（）变换操作符
+        }).flatMap(new Function<Integer, ObservableSource<String>>() {
+            @Override
+            public ObservableSource<String> apply(Integer integer) throws Exception {
+                List<String> list = new ArrayList<>();
+                for (int i = 0; i < 3; i++) {
+                    list.add("我是事件 "+integer+" 拆分后的子事件 "+i);
+                    // 通过flatMap中将被观察者生产的事件序列先进行拆分，再将每个事件转换为一个新的发送三个String事件
+                    // 最终合并，再发送给被观察者
+                }
+                return Observable.fromIterable(list);
+            }
+        }).subscribe(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+                Log.i(TAG, "[testFlatMap]"+s);
+            }
+        });
+        //新合并生成的事件序列顺序是无序的，即 与旧序列发送事件的顺序无关
+    }
+
+    private void testConcatMap() {
+        //拆分 & 重新合并生成的事件序列 的顺序 = 被观察者旧序列生产的顺序
+        Observable.create(new ObservableOnSubscribe<Integer>() {
+            @Override
+            public void subscribe(ObservableEmitter<Integer> e) throws Exception {
+                e.onNext(1);
+                e.onNext(2);
+                e.onNext(3);
+            }
+            // 采用concatMap（）变换操作符
+        }).concatMap(new Function<Integer, ObservableSource<String>>() {
+            @Override
+            public ObservableSource<String> apply(Integer integer) throws Exception {
+                List<String> list = new ArrayList<>();
+                for (int i = 0; i < 3; i++) {
+                    list.add("我是事件 " + integer + "拆分后的子事件" + i);
+                    // 通过concatMap中将被观察者生产的事件序列先进行拆分，再将每个事件转换为一个新的发送三个String事件
+                    // 最终合并，再发送给被观察者
+                }
+                return Observable.fromIterable(list);
+            }
+        }).subscribe(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+                Log.i(TAG, "[testConcatMap]"+s);
+            }
+        });
+    }
+
+    private void testBuffer() {
+        // 被观察者 需要发送5个数字
+        Observable.just(1, 2, 3, 4, 5)
+                .buffer(3, 1) // 设置缓存区大小 & 步长
+                // 缓存区大小 = 每次从被观察者中获取的事件数量
+                // 步长 = 每次获取新事件的数量
+                .subscribe(new Observer<List<Integer>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+                    @Override
+                    public void onNext(List<Integer> stringList) {
+                        //
+                        Log.d(TAG, "[testBuffer] 缓存区里的事件数量 = " +  stringList.size());
+                        for (Integer value : stringList) {
+                            Log.d(TAG, "[testBuffer] 事件 = " + value);
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d(TAG, "[testBuffer] 对Error事件作出响应" );
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.d(TAG, "[testBuffer] 对Complete事件作出响应");
+                    }
+                });
     }
 }
