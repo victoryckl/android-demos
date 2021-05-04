@@ -15,26 +15,34 @@
         android:layout_height="wrap_content">
 
         <Button
-            android:id="@+id/button_rx1"
+            android:id="@+id/button_create1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="onClick"
-            android:text="testRx1"
-            android:layout_marginTop="50dp"
+            android:text="testCreate1"
+            android:layout_marginTop="10dp"
             app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@id/button_rx2"
+            app:layout_constraintRight_toLeftOf="@id/button_create2"
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
-            android:id="@+id/button_rx2"
+            android:id="@+id/button_create2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="onClick"
-            android:text="testRx2"
-            app:layout_constraintTop_toTopOf="@id/button_rx1"
-            app:layout_constraintLeft_toRightOf="@id/button_rx1"
+            android:text="testCreate2"
+            app:layout_constraintTop_toTopOf="@id/button_create1"
+            app:layout_constraintLeft_toRightOf="@id/button_create1"
             app:layout_constraintRight_toRightOf="parent"/>
+
+        <View
+            android:id="@+id/v_line1"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"
+            android:layout_marginTop="10dp"
+            app:layout_constraintTop_toBottomOf="@id/button_create2"/>
 
         <Button
             android:id="@+id/button_just"
@@ -42,9 +50,9 @@
             android:layout_height="wrap_content"
             android:onClick="onClick"
             android:text="testJust"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintTop_toBottomOf="@id/button_rx2"
+            app:layout_constraintTop_toBottomOf="@id/v_line1"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@id/button_array"/>
 
@@ -56,7 +64,7 @@
             android:text="testFromArray"
             app:layout_constraintTop_toTopOf="@id/button_just"
             app:layout_constraintLeft_toRightOf="@id/button_just"
-            app:layout_constraintRight_toRightOf="parent"/>
+            app:layout_constraintRight_toLeftOf="@id/button_iterable"/>
 
         <Button
             android:id="@+id/button_iterable"
@@ -64,11 +72,9 @@
             android:layout_height="wrap_content"
             android:onClick="onClick"
             android:text="testFromIterable"
-            android:layout_marginTop="20dp"
-            app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintTop_toBottomOf="@id/button_array"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@id/button_defer"/>
+            app:layout_constraintTop_toTopOf="@id/button_array"
+            app:layout_constraintLeft_toRightOf="@id/button_array"
+            app:layout_constraintRight_toRightOf="parent"/>
 
         <Button
             android:id="@+id/button_defer"
@@ -76,9 +82,11 @@
             android:layout_height="wrap_content"
             android:onClick="onClick"
             android:text="testDefer"
-            app:layout_constraintTop_toTopOf="@id/button_iterable"
-            app:layout_constraintLeft_toRightOf="@id/button_iterable"
-            app:layout_constraintRight_toRightOf="parent"/>
+            android:layout_marginTop="10dp"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintTop_toBottomOf="@id/button_iterable"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/button_timer"/>
 
         <Button
             android:id="@+id/button_timer"
@@ -86,10 +94,8 @@
             android:layout_height="wrap_content"
             android:onClick="onClick"
             android:text="testTimer"
-            android:layout_marginTop="20dp"
-            app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintTop_toBottomOf="@id/button_iterable"
-            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="@id/button_defer"
+            app:layout_constraintLeft_toRightOf="@id/button_defer"
             app:layout_constraintRight_toLeftOf="@id/button_interval"/>
 
         <Button
@@ -98,7 +104,6 @@
             android:layout_height="wrap_content"
             android:onClick="onClick"
             android:text="testInterval"
-            app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintTop_toTopOf="@id/button_timer"
             app:layout_constraintLeft_toRightOf="@id/button_timer"
             app:layout_constraintRight_toRightOf="parent"/>
@@ -109,9 +114,9 @@
             android:layout_height="wrap_content"
             android:onClick="onClick"
             android:text="testIntervalRange"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintTop_toBottomOf="@id/button_interval"
+            app:layout_constraintTop_toBottomOf="@id/button_defer"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@id/button_range"/>
 
@@ -121,10 +126,9 @@
             android:layout_height="wrap_content"
             android:onClick="onClick"
             android:text="testRange"
-            app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintTop_toTopOf="@id/button_interval_range"
             app:layout_constraintLeft_toRightOf="@id/button_interval_range"
-            app:layout_constraintRight_toRightOf="parent"/>
+            app:layout_constraintRight_toLeftOf="@id/button_range_long"/>
 
         <Button
             android:id="@+id/button_range_long"
@@ -132,53 +136,183 @@
             android:layout_height="wrap_content"
             android:onClick="onClick"
             android:text="testRangeLong"
-            android:layout_marginTop="20dp"
-            app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintTop_toBottomOf="@id/button_range"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@id/btn_map"/>
+            app:layout_constraintTop_toTopOf="@id/button_interval_range"
+            app:layout_constraintLeft_toRightOf="@id/button_range"
+            app:layout_constraintRight_toRightOf="parent"/>
+
+        <View
+            android:id="@+id/v_line2"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"
+            android:layout_marginTop="10dp"
+            app:layout_constraintTop_toBottomOf="@id/button_range_long"/>
 
         <Button
             android:id="@+id/btn_map"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="onClick"
-            android:text="testMap"
-            app:layout_constraintTop_toTopOf="@id/button_range_long"
-            app:layout_constraintLeft_toRightOf="@id/button_range_long"
-            app:layout_constraintRight_toRightOf="parent"/>
+            android:text="Map"
+            android:layout_marginTop="10dp"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintTop_toBottomOf="@id/v_line2"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/btn_flatmap"/>
 
         <Button
             android:id="@+id/btn_flatmap"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="onClick"
-            android:text="testFlatMap"
-            android:layout_marginTop="20dp"
-            app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintTop_toBottomOf="@id/button_range_long"
-            app:layout_constraintRight_toLeftOf="@id/btn_concatmap"
-            app:layout_constraintLeft_toLeftOf="parent"/>
+            android:text="FlatMap"
+            app:layout_constraintTop_toTopOf="@id/btn_map"
+            app:layout_constraintLeft_toRightOf="@id/btn_map"
+            app:layout_constraintRight_toLeftOf="@id/btn_concatmap"/>
 
         <Button
             android:id="@+id/btn_concatmap"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="onClick"
-            android:text="testConcatMap"
+            android:text="ConcatMap"
             app:layout_constraintTop_toTopOf="@id/btn_flatmap"
             app:layout_constraintLeft_toRightOf="@id/btn_flatmap"
-            app:layout_constraintRight_toRightOf="parent"/>
+            app:layout_constraintRight_toLeftOf="@id/btn_buffer"/>
 
         <Button
             android:id="@+id/btn_buffer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="onClick"
-            android:text="testBuffer"
-            android:layout_marginTop="20dp"
-            app:layout_constraintTop_toBottomOf="@id/btn_flatmap"
+            android:text="Buffer"
+            app:layout_constraintTop_toTopOf="@id/btn_concatmap"
+            app:layout_constraintLeft_toRightOf="@id/btn_concatmap"
+            app:layout_constraintRight_toRightOf="parent"/>
+
+        <View
+            android:id="@+id/v_line3"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"
+            android:layout_marginTop="10dp"
+            app:layout_constraintTop_toBottomOf="@id/btn_buffer"/>
+
+        <Button
+            android:id="@+id/btn_concat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onClick"
+            android:layout_marginTop="10dp"
+            android:text="testConcat"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintTop_toBottomOf="@id/v_line3"
             app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/btn_concatArray"/>
+
+        <Button
+            android:id="@+id/btn_concatArray"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onClick"
+            android:text="testConcatArray"
+            app:layout_constraintTop_toTopOf="@id/btn_concat"
+            app:layout_constraintLeft_toRightOf="@id/btn_concat"
+            app:layout_constraintRight_toLeftOf="@id/btn_merge"/>
+
+        <Button
+            android:id="@+id/btn_merge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onClick"
+            android:text="testMerge"
+            app:layout_constraintTop_toTopOf="@id/btn_concatArray"
+            app:layout_constraintLeft_toRightOf="@id/btn_concatArray"
+            app:layout_constraintRight_toRightOf="parent"/>
+
+        <Button
+            android:id="@+id/btn_mergeArray"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onClick"
+            android:text="testMergeArray"
+            android:layout_marginTop="10dp"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintTop_toBottomOf="@id/btn_merge"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/btn_concat_error"/>
+
+        <Button
+            android:id="@+id/btn_concat_error"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onClick"
+            android:text="concatDelayError"
+            app:layout_constraintTop_toTopOf="@id/btn_mergeArray"
+            app:layout_constraintLeft_toRightOf="@id/btn_mergeArray"
+            app:layout_constraintRight_toLeftOf="@id/btn_zip"/>
+
+        <Button
+            android:id="@+id/btn_zip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onClick"
+            android:text="testZip"
+            app:layout_constraintTop_toTopOf="@id/btn_concat_error"
+            app:layout_constraintLeft_toRightOf="@id/btn_concat_error"
+            app:layout_constraintRight_toRightOf="parent"/>
+
+        <Button
+            android:id="@+id/btn_combine_latest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onClick"
+            android:text="combineLatest"
+            android:layout_marginTop="10dp"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintTop_toBottomOf="@id/btn_zip"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/btn_reduce"/>
+
+        <Button
+            android:id="@+id/btn_reduce"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onClick"
+            android:text="testReduce"
+            app:layout_constraintTop_toTopOf="@id/btn_combine_latest"
+            app:layout_constraintLeft_toRightOf="@id/btn_combine_latest"
+            app:layout_constraintRight_toLeftOf="@id/btn_collect"/>
+
+        <Button
+            android:id="@+id/btn_collect"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onClick"
+            android:text="testCollect"
+            app:layout_constraintTop_toTopOf="@id/btn_combine_latest"
+            app:layout_constraintLeft_toRightOf="@id/btn_reduce"
+            app:layout_constraintRight_toRightOf="parent"/>
+
+        <Button
+            android:id="@+id/btn_start_with"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onClick"
+            android:text="testStartWith"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintTop_toBottomOf="@id/btn_collect"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/btn_count"/>
+
+        <Button
+            android:id="@+id/btn_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onClick"
+            android:text="testCount"
+            app:layout_constraintTop_toTopOf="@id/btn_start_with"
+            app:layout_constraintLeft_toRightOf="@id/btn_start_with"
             app:layout_constraintRight_toRightOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
