@@ -13,12 +13,14 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Notification;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
 import io.reactivex.functions.BiConsumer;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Consumer;
@@ -70,6 +72,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btn_collect: testCollect(); break;
             case R.id.btn_start_with: testStartWith(); break;
             case R.id.btn_count: testCount(); break;
+            case R.id.btn_delay: testDelay(); break;
+            case R.id.btn_do: testDo(); break;
         }
     }
 
@@ -600,5 +604,71 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         Log.i(TAG, "发送的事件数量 =  "+count);
                     }
                 });
+    }
+
+    private void testDelay() {
+        Observable.just(1,2,3)
+                .delay(3, TimeUnit.SECONDS) // 延迟3s再发送，由于使用类似，所以此处不作全部展示
+                .subscribe(new LogObserver<Integer>("testDelay"));
+    }
+
+    private void testDo() {
+        Observable.create(new ObservableOnSubscribe<Integer>() {
+            @Override
+            public void subscribe(ObservableEmitter<Integer> e) throws Exception {
+                e.onNext(1);
+                e.onNext(2);
+                e.onNext(3);
+                e.onError(new Throwable("发生错误了"));
+            }
+            // 1. 当Observable每发送1次数据事件就会调用1次
+        }).doOnEach(new Consumer<Notification<Integer>>() {
+            @Override
+            public void accept(Notification<Integer> integerNotification) throws Exception {
+                Log.i(TAG, "doOnEach: "+integerNotification.getValue());
+            }
+            // 2. 执行Next事件前调用
+        }).doOnNext(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer integer) throws Exception {
+                Log.i(TAG, "doOnNext: "+integer);
+            }
+            // 3. 执行Next事件后调用
+        }).doAfterNext(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer integer) throws Exception {
+                Log.i(TAG, "doAfterNext: "+integer);
+            }
+            // 4. Observable正常发送事件完毕后调用
+        }).doOnComplete(new Action() {
+            @Override
+            public void run() throws Exception {
+                Log.e(TAG, "doOnComplete");
+            }
+            // 5. Observable发送错误事件时调用
+        }).doOnError(new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable throwable) throws Exception {
+                Log.i(TAG, "doOnError: " + throwable.getMessage());
+            }
+            // 6. 观察者订阅时调用
+        }).doOnSubscribe(new Consumer<Disposable>() {
+            @Override
+            public void accept(Disposable disposable) throws Exception {
+                Log.i(TAG, "doOnSubscribe");
+            }
+            // 7. 最后执行
+        }).doFinally(new Action() {
+            @Override
+            public void run() throws Exception {
+                Log.i(TAG, "doFinally");
+            }
+            // 8. Observable发送事件完毕后调用，无论正常发送完毕 / 异常终止
+        }).doAfterTerminate(new Action() {
+            @Override
+            public void run() throws Exception {
+                Log.i(TAG, "doAfterTerminate");
+            }
+        }).subscribe(new LogObserver<Integer>("testDo"));
     }
 }
