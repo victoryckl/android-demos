@@ -26,6 +26,37 @@
         android:text="Sync GET"
         app:layout_constraintTop_toTopOf="@id/btn_get_async"
         app:layout_constraintLeft_toRightOf="@id/btn_get_async"
+        app:layout_constraintRight_toLeftOf="@id/btn_post_string"/>
+
+    <Button
+        android:id="@+id/btn_post_string"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onClick"
+        android:text="POST String"
+        app:layout_constraintTop_toTopOf="@id/btn_get_sync"
+        app:layout_constraintLeft_toRightOf="@id/btn_get_sync"
+        app:layout_constraintRight_toRightOf="parent"/>
+
+    <Button
+        android:id="@+id/btn_post_buffer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onClick"
+        android:text="POST Buffer"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintTop_toBottomOf="@id/btn_post_string"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/btn_post_file"/>
+
+    <Button
+        android:id="@+id/btn_post_file"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onClick"
+        android:text="POST file"
+        app:layout_constraintTop_toTopOf="@id/btn_post_buffer"
+        app:layout_constraintLeft_toRightOf="@id/btn_post_buffer"
         app:layout_constraintRight_toRightOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
