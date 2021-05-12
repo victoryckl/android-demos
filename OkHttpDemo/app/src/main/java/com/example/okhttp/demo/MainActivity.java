@@ -14,6 +14,7 @@ import java.io.IOException;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Headers;
+import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -45,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btn_post_string: postString(); break;
             case R.id.btn_post_buffer: postBuffer(); break;
             case R.id.btn_post_file: postFile(); break;
+            case R.id.btn_interceptor: interceptor(); break;
         }
     }
 
@@ -163,6 +165,50 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
+    private void interceptor() {
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .addInterceptor(new LogInterceptor())
+                .build();
+
+        Request request = new Request.Builder()
+                .url("http://www.publicobject.com/helloworld.txt")
+                .header("User-Agent", "OkHttp Example")
+                .build();
+
+        okHttpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e(TAG, "[onFailure] "+e.getMessage());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                Log.i(TAG, "[onResponse] " + response);
+            }
+        });
+    }
+
+
+    private class LogInterceptor implements Interceptor {
+        private static final String TAG = "LogInterceptor";
+
+        @Override
+        public Response intercept(Chain chain) throws IOException {
+            Request request = chain.request();
+
+            long startTime = System.currentTimeMillis();
+            Log.i(TAG, String.format("Sending request %s on %s%n%s",
+                    request.url(), chain.connection(), request.headers()));
+
+            Response response = chain.proceed(request);
+
+            long endTime = System.currentTimeMillis();
+            Log.d(TAG, String.format("Received response for %s in %dms%n%s",
+                    response.request().url(), (endTime - startTime), response.headers()));
+
+            return response;
+        }
+    }
 
 
 

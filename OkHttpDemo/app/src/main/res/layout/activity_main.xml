@@ -59,4 +59,14 @@
         app:layout_constraintLeft_toRightOf="@id/btn_post_buffer"
         app:layout_constraintRight_toRightOf="parent"/>
 
+    <Button
+        android:id="@+id/btn_interceptor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onClick"
+        android:text="Interceptor"
+        app:layout_constraintTop_toBottomOf="@id/btn_post_file"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
