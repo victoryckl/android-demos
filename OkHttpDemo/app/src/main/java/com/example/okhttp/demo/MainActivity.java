@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.example.util.FileUtils;
+import com.example.util.StackTrace;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,6 +23,8 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import okio.BufferedSink;
+
+// https://www.jianshu.com/p/da4a806e599b
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -167,7 +170,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void interceptor() {
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                .addInterceptor(new LogInterceptor())
+                .addInterceptor(new LogInterceptor("1"))
+                .addInterceptor(new LogInterceptor("2"))
                 .build();
 
         Request request = new Request.Builder()
@@ -192,19 +196,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private class LogInterceptor implements Interceptor {
         private static final String TAG = "LogInterceptor";
 
+        private String tag;
+
+        private LogInterceptor(String name) {
+            tag = TAG+"."+name;
+        }
+
         @Override
         public Response intercept(Chain chain) throws IOException {
             Request request = chain.request();
 
             long startTime = System.currentTimeMillis();
-            Log.i(TAG, String.format("Sending request %s on %s%n%s",
+            Log.i(tag, String.format("Sending request %s on %s%n%s",
                     request.url(), chain.connection(), request.headers()));
 
             Response response = chain.proceed(request);
 
             long endTime = System.currentTimeMillis();
-            Log.d(TAG, String.format("Received response for %s in %dms%n%s",
+            Log.d(tag, String.format("Received response for %s in %dms%n%s",
                     response.request().url(), (endTime - startTime), response.headers()));
+
+            StackTrace.printStackTrace(tag);
 
             return response;
         }
@@ -212,13 +224,49 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
 
+    private interface Inter1 {
+        void method1();
+    }
 
+    private interface Inter2 {
+        void method1();
+        void method2();
+    }
 
+    private class Clazz1 implements Inter1,Inter2 {
+        @Override
+        public void method1() {
 
+        }
 
+        @Override
+        public void method2() {
 
+        }
+    }
 
+    //Java中的接口是支持多继承的
+    //接口之间是继承关系，而非实现关系
+    private interface Inter3 extends Inter1, Inter2 {
+        void method1();
+        void method3();
+    }
 
+    private class Clazz2 implements Inter3, Inter1 {
+        @Override
+        public void method1() {
 
+        }
+
+        @Override
+        public void method2() {
+
+        }
+
+        @Override
+        public void method3() {
+
+        }
+    }
 
 }
