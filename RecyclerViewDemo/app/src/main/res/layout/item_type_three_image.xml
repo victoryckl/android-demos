@@ -44,7 +44,7 @@
                     android:layout_weight="1"
                     android:padding="5dp"
                     android:scaleType="fitXY"
-                    android:src="@drawable/ic_launcher_foreground" />
+                    android:src="@drawable/ic_launcher_background" />
 
                 <ImageView
                     android:id="@+id/three_3"
