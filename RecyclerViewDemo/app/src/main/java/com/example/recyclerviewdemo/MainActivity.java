@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
         mData = new ArrayList<>();
         for (int i = 0; i < 20; i++) {
             MoreTypeBean bean = new MoreTypeBean();
-            bean.pic = R.drawable.ic_launcher_foreground;
+            bean.pic = R.drawable.ic_launcher_background;
             bean.type = random.nextInt(3);
             mData.add(bean);
         }

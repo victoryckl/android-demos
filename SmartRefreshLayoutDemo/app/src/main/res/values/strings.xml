@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">SmartRefreshLayoutDemo</string>
+    <string name="item_example_number_title">Item %02d</string>
+    <string name="item_example_number_abstract">This is the abstract item %02d</string>
+</resources>
