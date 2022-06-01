@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">无障碍服务测试</string>
+    <string name="accessibility_desc">无障碍服务简介</string>
+</resources>

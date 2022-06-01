@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.aservice">
+
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.SYSTEM_OVERLAY_WINDOW"/>
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.MyAccessibilityService">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <service android:name=".AccessibilitySampleService"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+            android:process=":BackgroundService">
+            <!--为了被视为无障碍服务，您必须在清单的 application 元素中添加一个 service 元素（而非 activity 元素）。
+                此外，在 service 元素中，您还必须添加一个无障碍服务 intent 过滤器。为了与 Android 4.1 及更高版本兼容，
+                清单还必须保护该服务，方法是添加 BIND_ACCESSIBILITY_SERVICE 权限以确保只有系统可以绑定到它 -->
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <!--从 Android 4.0 开始，您可以在清单中添加一个引用配置文件的 <meta-data> 元素，这样可让您为无障碍服务设置所有选项-->
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_config" />
+        </service>
+
+    </application>
+
+</manifest>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:accessibilityEventTypes="typeAllMask"
+    android:accessibilityFeedbackType="feedbackGeneric"
+    android:canRetrieveWindowContent="true"
+    android:description="@string/accessibility_desc"
+    android:notificationTimeout="100"
+    android:settingsActivity="com.example.aservice.MainActivity"/>
+
+    <!--android:packageNames="cn.wps.note"-->
+<!--
+这里基本是固定的在meta-data信息中配置的android:resource="@xml/accessibility_config"是指定我们服务的配置信息，
+这个配置工作也可以在上面的onServiceConnected方法通过AccessibilityServiceInfo配置。
+-->
