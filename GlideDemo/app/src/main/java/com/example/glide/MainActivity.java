@@ -91,21 +91,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private static final String IMAGE_URL = "http://pic2.zhimg.com/v2-a5b909e499c3b0437b44785bd7512d39_r.jpg";
+    private static final String IMAGE_URL2 = "http://hbimg.b0.upaiyun.com/9c04c8c0ac4ba85b78bc139a5a120d7169f6348135a1e-rCzooD_fw658";
+    private static final String IMAGE_URL3 = "http://img.8794.cn/2017%2F0311%2F20170311015414975.jpg";
 
     private void startGlide() {
-        Glide.with(this)
-                .load(Uri.parse(IMAGE_URL))
+        Glide.with(this/*getApplicationContext()*/)
+                .load(Uri.parse(IMAGE_URL3))
                 .into(mImageView);
-        Glide.with(this)
-                .asBitmap()
-                .load(Uri.parse(IMAGE_URL))
-                .downloadOnly(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
-//                .into(new SimpleTarget<byte[]>() {
-//
-//                    @Override
-//                    public void onResourceReady(@NonNull byte[] resource, @Nullable Transition<? super byte[]> transition) {
-//
-//                    }
-//                });
+
+//        Glide.with(this)
+//                .asBitmap()
+//                .load(Uri.parse(IMAGE_URL2))
+//                .downloadOnly(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
     }
 }
