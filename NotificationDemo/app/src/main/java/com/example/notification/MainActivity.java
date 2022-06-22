@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         //创建通知
         NotificationCompat.Builder nb = new NotificationCompat.Builder(context, NotificationChannels.MEDIA)
                 //设置通知左侧的小图标
-                .setSmallIcon(R.drawable.small)
+                .setSmallIcon(R.drawable.shield2)
                 //设置通知标题
                 .setContentTitle("Simple notification")
                 //设置通知内容
